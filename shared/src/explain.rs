@@ -69,7 +69,7 @@ pub async fn explain(question: &str, cards: &[Card]) -> Result<String, ExplainEr
         .collect::<Vec<_>>()
         .join("\n");
 
-    let system = "Você é um tarólogo experiente. Interprete a leitura com empatia, de forma prática e objetiva. Use linguagem clara, em até 8 parágrafos curtos.";
+    let system = "Você é um tarólogo experiente. Interprete a leitura com empatia, de forma prática e objetiva. Use linguagem clara, em até 8 parágrafos.";
 
     let user = format!(
         "Pergunta: {}\nCartas (na ordem):\n{}\n\nFaça uma leitura que conecte as cartas à pergunta, considerando cartas invertidas quando indicado.",
@@ -94,8 +94,7 @@ pub async fn explain(question: &str, cards: &[Card]) -> Result<String, ExplainEr
 
     // Compose request body for Chat Completions API
     let body = serde_json::json!({
-        "model": "gpt-4o-mini",
-        "temperature": 0.7,
+        "model": "gpt-5-mini",
         "messages": [
             {"role": "system", "content": system},
             {"role": "user", "content": user}
