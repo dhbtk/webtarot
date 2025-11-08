@@ -1,0 +1,9 @@
+[package]
+name = "webtarot"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+clap = { version = "4.5.51", features = ["derive"] }
+tokio = { version = "1.47.2", features = ["full"] }
+webtarot-shared = { path = "../shared" }

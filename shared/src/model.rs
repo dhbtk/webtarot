@@ -1,3 +1,4 @@
+use std::fmt::{Display, Formatter};
 use rand::seq::SliceRandom;
 use rand::{random, random_range, rng};
 use std::hash::{DefaultHasher, Hash, Hasher};
@@ -25,7 +26,7 @@ impl Deck {
         Deck(cards)
     }
     
-    pub fn shuffle(&mut self, question: &str) {
+    pub fn shuffle(&mut self, question: &str) -> usize {
         let mut hasher = DefaultHasher::new();
         question.hash(&mut hasher);
         let question_hash = (hasher.finish() % (MAX_SHUFFLES as u64)) as usize;
@@ -38,6 +39,7 @@ impl Deck {
                 card.flipped = random::<bool>();
             }
         }
+        shuffles
     }
     
     pub fn draw(&self, count: usize) -> Vec<Card> {
@@ -79,10 +81,26 @@ pub struct Card {
     pub flipped: bool,
 }
 
+impl Display for Card {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        let flipped = if self.flipped { " (invertido)" } else { "" };
+        write!(f, "{}{}", self.arcana, flipped)
+    }
+}
+
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub enum Arcana {
     Major { name: MajorArcana },
     Minor { rank: Rank, suit: Suit },
+}
+
+impl Display for Arcana {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Arcana::Major { name, .. } => write!(f, "{}", name),
+            Arcana::Minor { rank, suit } => write!(f, "{} de {}", rank, suit),
+        }
+    }
 }
 
 #[derive(Copy, Clone, EnumIter, Debug,Eq, PartialEq)]
@@ -111,6 +129,36 @@ pub enum MajorArcana {
     World
 }
 
+impl Display for MajorArcana {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        let label: &str = match self {
+            MajorArcana::Fool => "O Louco",
+            MajorArcana::Magician => "O Mago",
+            MajorArcana::HighPriestess => "A Suma Sacerdotisa",
+            MajorArcana::Empress => "A Imperatriz",
+            MajorArcana::Emperor => "O Imperador",
+            MajorArcana::Hierophant => "O Hierofante",
+            MajorArcana::Lovers => "Os Enamorados",
+            MajorArcana::Chariot => "O Carro",
+            MajorArcana::Strength => "A Força",
+            MajorArcana::Hermit => "O Eremita",
+            MajorArcana::WheelOfFortune => "A Roda da Fortuna",
+            MajorArcana::Justice => "A Justiça",
+            MajorArcana::HangedMan => "O Enforcado",
+            MajorArcana::Death => "A Morte",
+            MajorArcana::Temperance => "A Temperança",
+            MajorArcana::Devil => "O Diabo",
+            MajorArcana::Tower => "A Torre",
+            MajorArcana::Star => "A Estrela",
+            MajorArcana::Moon => "A Lua",
+            MajorArcana::Sun => "O Sol",
+            MajorArcana::Judgement => "O Julgamento",
+            MajorArcana::World => "O Mundo"
+        };
+        write!(f, "{}", label)
+    }
+}
+
 #[derive(Copy, Clone, EnumIter, Debug,Eq, PartialEq)]
 pub enum Rank {
     Ace,
@@ -129,12 +177,46 @@ pub enum Rank {
     King,
 }
 
+impl Display for Rank {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        let label: &str = match self {
+            Rank::Ace => "Ás",
+            Rank::Two => "Dois",
+            Rank::Three => "Três",
+            Rank::Four => "Quatro",
+            Rank::Five => "Cinco",
+            Rank::Six => "Seis",
+            Rank::Seven => "Sete",
+            Rank::Eight => "Oito",
+            Rank::Nine => "Nove",
+            Rank::Ten => "Dez",
+            Rank::Page => "Valete",
+            Rank::Knight => "Cavaleiro",
+            Rank::Queen => "Rainha",
+            Rank::King => "Rei",
+        };
+        write!(f, "{}", label)
+    }
+}
+
 #[derive(Copy, Clone, EnumIter, Debug,Eq, PartialEq)]
 pub enum Suit {
     Cups,
     Pentacles,
     Swords,
     Wands
+}
+
+impl Display for Suit {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        let label: &str = match self {
+            Suit::Cups => "Copas",
+            Suit::Pentacles => "Ouros",
+            Suit::Swords => "Espadas",
+            Suit::Wands => "Paus",
+        };
+        write!(f, "{}", label)
+    }
 }
 
 #[cfg(test)]
@@ -153,7 +235,7 @@ mod tests {
         deck.shuffle("this is a question");
         assert_ne!(Deck::build(), deck);
         for card in deck.0 {
-            println!("* {:?}", card)
+            println!("* {}", card)
         }
     }
     
@@ -164,7 +246,7 @@ mod tests {
         let cards = deck.draw(6);
         assert_eq!(6, cards.len());
         for card in cards {
-            println!("* {:?}", card)
+            println!("* {}", card)
         }
     }
 }
