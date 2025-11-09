@@ -3,6 +3,7 @@ use rand::seq::SliceRandom;
 use rand::{random, random_range, rng};
 use std::hash::{DefaultHasher, Hash, Hasher};
 use rand::distr::uniform::SampleRange;
+use serde::{Deserialize, Serialize};
 use strum::IntoEnumIterator;
 use strum_macros::EnumIter;
 
@@ -75,7 +76,7 @@ impl Default for Deck {
     }
 }
 
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct Card {
     pub arcana: Arcana,
     pub flipped: bool,
@@ -88,7 +89,7 @@ impl Display for Card {
     }
 }
 
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub enum Arcana {
     Major { name: MajorArcana },
     Minor { rank: Rank, suit: Suit },
@@ -103,7 +104,7 @@ impl Display for Arcana {
     }
 }
 
-#[derive(Copy, Clone, EnumIter, Debug,Eq, PartialEq)]
+#[derive(Copy, Clone, EnumIter, Debug,Eq, PartialEq, Serialize, Deserialize)]
 pub enum MajorArcana {
     Fool,
     Magician,
@@ -159,7 +160,7 @@ impl Display for MajorArcana {
     }
 }
 
-#[derive(Copy, Clone, EnumIter, Debug,Eq, PartialEq)]
+#[derive(Copy, Clone, EnumIter, Debug,Eq, PartialEq, Serialize, Deserialize)]
 pub enum Rank {
     Ace,
     Two,
@@ -199,7 +200,7 @@ impl Display for Rank {
     }
 }
 
-#[derive(Copy, Clone, EnumIter, Debug,Eq, PartialEq)]
+#[derive(Copy, Clone, EnumIter, Debug,Eq, PartialEq, Serialize, Deserialize)]
 pub enum Suit {
     Cups,
     Pentacles,

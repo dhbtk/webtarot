@@ -2,6 +2,7 @@ use crate::model::Card;
 use serde::Deserialize;
 use std::error::Error as StdError;
 use std::fmt;
+use std::sync::Arc;
 
 #[derive(Deserialize)]
 struct ChatResponse {
@@ -18,13 +19,15 @@ struct Message {
     content: String,
 }
 
-#[derive(Debug)]
+pub type ExplainResult = Result<String, ExplainError>;
+
+#[derive(Clone, Debug)]
 pub enum ExplainError {
     MissingApiKey,
-    HttpClientBuild(reqwest::Error),
-    Request(reqwest::Error),
+    HttpClientBuild(Arc<reqwest::Error>),
+    Request(Arc<reqwest::Error>),
     ApiError { status: reqwest::StatusCode, body: String },
-    ParseResponse(reqwest::Error),
+    ParseResponse(Arc<reqwest::Error>),
     EmptyResponse,
 }
 
@@ -89,7 +92,7 @@ pub async fn explain(question: &str, cards: &[Card]) -> Result<String, ExplainEr
         .build()
     {
         Ok(c) => c,
-        Err(e) => return Err(ExplainError::HttpClientBuild(e)),
+        Err(e) => return Err(ExplainError::HttpClientBuild(Arc::new(e))),
     };
 
     // Compose request body for Chat Completions API
@@ -109,7 +112,7 @@ pub async fn explain(question: &str, cards: &[Card]) -> Result<String, ExplainEr
 
     let resp = match req.send().await {
         Ok(r) => r,
-        Err(e) => return Err(ExplainError::Request(e)),
+        Err(e) => return Err(ExplainError::Request(Arc::new(e))),
     };
 
     if !resp.status().is_success() {
@@ -120,7 +123,7 @@ pub async fn explain(question: &str, cards: &[Card]) -> Result<String, ExplainEr
 
     let parsed: ChatResponse = match resp.json().await {
         Ok(p) => p,
-        Err(e) => return Err(ExplainError::ParseResponse(e)),
+        Err(e) => return Err(ExplainError::ParseResponse(Arc::new(e))),
     };
 
     if let Some(first) = parsed.choices.into_iter().next() {
