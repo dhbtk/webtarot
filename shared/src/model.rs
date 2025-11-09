@@ -249,4 +249,12 @@ mod tests {
             println!("* {}", card)
         }
     }
+
+    #[test]
+    fn slice_works() {
+        let deck = Deck::build();
+        let slices = deck.slice();
+        assert_eq!(3, slices.len());
+        assert_eq!(78, slices[0].len() + slices[1].len() + slices[2].len());
+    }
 }
