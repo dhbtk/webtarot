@@ -1,22 +1,20 @@
-use std::collections::HashMap;
-use std::fmt::{Debug, Formatter};
-use std::iter::Map;
-use std::sync::{Arc, Mutex};
+use crate::reading::Reading;
 use cached::{Cached, SizedCache};
 use serde::{Deserialize, Serialize};
+use std::fmt::{Debug, Formatter};
+use std::sync::{Arc, Mutex};
 use uuid::Uuid;
 use webtarot_shared::explain::ExplainResult;
-use crate::reading::Reading;
 
 #[derive(Clone)]
 pub struct InterpretationManager {
-    interpretations: Arc<Mutex<SizedCache<Uuid, Option<ExplainResult>>>>
+    interpretations: Arc<Mutex<SizedCache<Uuid, Option<ExplainResult>>>>,
 }
 
 impl Default for InterpretationManager {
     fn default() -> Self {
         Self {
-            interpretations: Arc::new(Mutex::new(SizedCache::with_size(128 * 1024 * 1024)))
+            interpretations: Arc::new(Mutex::new(SizedCache::with_size(128 * 1024 * 1024))),
         }
     }
 }
@@ -25,14 +23,23 @@ impl Debug for InterpretationManager {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         let mut interpretations = self.interpretations.lock().unwrap();
         let all_keys = interpretations.key_order().copied().collect::<Vec<_>>();
-        let in_flight = all_keys.iter().filter(|(k)| interpretations.cache_get(k).unwrap().is_none()).count();
-        let finished = all_keys.iter().filter(|(k)| interpretations.cache_get(k).unwrap().is_some()).count();
-        write!(f, "InterpretationManager {{ in_flight: {} finished: {} }}", in_flight, finished)
+        let in_flight = all_keys
+            .iter()
+            .filter(|k| interpretations.cache_get(k).unwrap().is_none())
+            .count();
+        let finished = all_keys
+            .iter()
+            .filter(|k| interpretations.cache_get(k).unwrap().is_some())
+            .count();
+        write!(
+            f,
+            "InterpretationManager {{ in_flight: {} finished: {} }}",
+            in_flight, finished
+        )
     }
 }
 
 impl InterpretationManager {
-
     #[tracing::instrument]
     pub fn request_interpretation(self, reading: Reading) {
         let uuid = reading.id;
@@ -74,8 +81,12 @@ impl From<Option<ExplainResult>> for GetInterpretationResult {
     fn from(value: Option<ExplainResult>) -> Self {
         Self {
             done: value.is_some(),
-            error: value.clone().and_then(|v| v.err() ).map(|e| e.to_string()).unwrap_or_default(),
-            interpretation: value.and_then(|v| v.ok()).unwrap_or_default()
+            error: value
+                .clone()
+                .and_then(|v| v.err())
+                .map(|e| e.to_string())
+                .unwrap_or_default(),
+            interpretation: value.and_then(|v| v.ok()).unwrap_or_default(),
         }
     }
 }
@@ -88,7 +99,7 @@ impl From<Option<Option<ExplainResult>>> for GetInterpretationResult {
         Self {
             done: false,
             error: "Not found".to_string(),
-            interpretation: "".to_string()
+            interpretation: "".to_string(),
         }
     }
 }

@@ -1,9 +1,9 @@
-use std::fmt::{Display, Formatter};
+use rand::distr::uniform::SampleRange;
 use rand::seq::SliceRandom;
 use rand::{random, random_range, rng};
-use std::hash::{DefaultHasher, Hash, Hasher};
-use rand::distr::uniform::SampleRange;
 use serde::{Deserialize, Serialize};
+use std::fmt::{Display, Formatter};
+use std::hash::{DefaultHasher, Hash, Hasher};
 use strum::IntoEnumIterator;
 use strum_macros::EnumIter;
 
@@ -17,16 +17,22 @@ impl Deck {
     pub fn build() -> Deck {
         let mut cards = Vec::with_capacity(78);
         for major in MajorArcana::iter() {
-            cards.push(Card { arcana: Arcana::Major { name: major }, flipped: false })
+            cards.push(Card {
+                arcana: Arcana::Major { name: major },
+                flipped: false,
+            })
         }
         for suit in Suit::iter() {
             for rank in Rank::iter() {
-                cards.push(Card { arcana: Arcana::Minor { rank, suit }, flipped: false })
+                cards.push(Card {
+                    arcana: Arcana::Minor { rank, suit },
+                    flipped: false,
+                })
             }
         }
         Deck(cards)
     }
-    
+
     pub fn shuffle(&mut self, question: &str) -> usize {
         let mut hasher = DefaultHasher::new();
         question.hash(&mut hasher);
@@ -42,7 +48,7 @@ impl Deck {
         }
         shuffles
     }
-    
+
     pub fn draw(&self, count: usize) -> Vec<Card> {
         let mut indices: Vec<usize> = Vec::with_capacity(count);
         let slices = self.slice();
@@ -54,14 +60,18 @@ impl Deck {
             }
             indices.push(index);
         }
-        
+
         indices.into_iter().map(|i| slice[i]).collect()
     }
-    
+
     fn slice(&self) -> [&[Card]; 3] {
         let mut rng = rng();
-        let second_slice_start_index = (MAX_DRAWS..(70 - MAX_DRAWS * 2)).sample_single(&mut rng).unwrap();
-        let third_slice_start_index = ((second_slice_start_index + MAX_DRAWS)..(77 - MAX_DRAWS)).sample_single(&mut rng).unwrap();
+        let second_slice_start_index = (MAX_DRAWS..(70 - MAX_DRAWS * 2))
+            .sample_single(&mut rng)
+            .unwrap();
+        let third_slice_start_index = ((second_slice_start_index + MAX_DRAWS)..(77 - MAX_DRAWS))
+            .sample_single(&mut rng)
+            .unwrap();
         [
             &self.0[0..second_slice_start_index],
             &self.0[second_slice_start_index..third_slice_start_index],
@@ -104,7 +114,7 @@ impl Display for Arcana {
     }
 }
 
-#[derive(Copy, Clone, EnumIter, Debug,Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Copy, Clone, EnumIter, Debug, Eq, PartialEq, Serialize, Deserialize)]
 pub enum MajorArcana {
     Fool,
     Magician,
@@ -127,7 +137,7 @@ pub enum MajorArcana {
     Moon,
     Sun,
     Judgement,
-    World
+    World,
 }
 
 impl Display for MajorArcana {
@@ -154,13 +164,13 @@ impl Display for MajorArcana {
             MajorArcana::Moon => "A Lua",
             MajorArcana::Sun => "O Sol",
             MajorArcana::Judgement => "O Julgamento",
-            MajorArcana::World => "O Mundo"
+            MajorArcana::World => "O Mundo",
         };
         write!(f, "{}", label)
     }
 }
 
-#[derive(Copy, Clone, EnumIter, Debug,Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Copy, Clone, EnumIter, Debug, Eq, PartialEq, Serialize, Deserialize)]
 pub enum Rank {
     Ace,
     Two,
@@ -200,12 +210,12 @@ impl Display for Rank {
     }
 }
 
-#[derive(Copy, Clone, EnumIter, Debug,Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Copy, Clone, EnumIter, Debug, Eq, PartialEq, Serialize, Deserialize)]
 pub enum Suit {
     Cups,
     Pentacles,
     Swords,
-    Wands
+    Wands,
 }
 
 impl Display for Suit {
@@ -229,7 +239,7 @@ mod tests {
         let deck = Deck::build();
         assert_eq!(78, deck.0.len());
     }
-    
+
     #[test]
     fn shuffle_works() {
         let mut deck = Deck::build();
@@ -239,7 +249,7 @@ mod tests {
             println!("* {}", card)
         }
     }
-    
+
     #[test]
     fn draw_works() {
         let mut deck = Deck::build();

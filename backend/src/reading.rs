@@ -21,7 +21,7 @@ impl From<Reading> for CreateReadingResponse {
             cards: reading.cards,
             interpretation_id: reading.id.to_string(),
         }
-    }   
+    }
 }
 
 #[derive(Debug, Clone)]

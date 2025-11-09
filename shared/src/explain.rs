@@ -26,7 +26,10 @@ pub enum ExplainError {
     MissingApiKey,
     HttpClientBuild(Arc<reqwest::Error>),
     Request(Arc<reqwest::Error>),
-    ApiError { status: reqwest::StatusCode, body: String },
+    ApiError {
+        status: reqwest::StatusCode,
+        body: String,
+    },
     ParseResponse(Arc<reqwest::Error>),
     EmptyResponse,
 }
@@ -126,10 +129,10 @@ pub async fn explain(question: &str, cards: &[Card]) -> Result<String, ExplainEr
         Err(e) => return Err(ExplainError::ParseResponse(Arc::new(e))),
     };
 
-    if let Some(first) = parsed.choices.into_iter().next() {
-        if !first.message.content.trim().is_empty() {
-            return Ok(first.message.content);
-        }
+    if let Some(first) = parsed.choices.into_iter().next()
+        && !first.message.content.trim().is_empty()
+    {
+        return Ok(first.message.content);
     }
 
     Err(ExplainError::EmptyResponse)

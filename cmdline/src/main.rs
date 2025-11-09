@@ -18,7 +18,10 @@ async fn main() {
     let mut deck = Deck::default();
     let shuffles = deck.shuffle(&args.question);
 
-    println!("A pergunta foi: {}\n\nEmbaralhando {} vezes...", args.question, shuffles);
+    println!(
+        "A pergunta foi: {}\n\nEmbaralhando {} vezes...",
+        args.question, shuffles
+    );
 
     let cards = deck.draw(args.cards);
     println!("\n\n");
