@@ -11,6 +11,7 @@ use reading::{CreateReadingRequest, CreateReadingResponse};
 use tower_http::trace::DefaultMakeSpan;
 use tower_http::trace::DefaultOnResponse;
 use tower_http::trace::TraceLayer;
+use tower_http::services::{ServeDir, ServeFile};
 use tracing::Level;
 use tracing_subscriber::{fmt, prelude::*};
 
@@ -26,7 +27,8 @@ async fn main() {
                 .make_span_with(DefaultMakeSpan::new().level(Level::INFO))
                 .on_response(DefaultOnResponse::new().level(Level::INFO)),
         )
-        .with_state(InterpretationManager::default());
+        .with_state(InterpretationManager::default())
+        .fallback_service(ServeDir::new("/static").not_found_service(ServeFile::new("/static/index.html")));
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
     axum::serve(listener, app).await.unwrap();
