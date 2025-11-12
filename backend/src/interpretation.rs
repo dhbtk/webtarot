@@ -71,6 +71,7 @@ impl InterpretationManager {
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone, Default)]
+#[serde(rename_all = "camelCase")]
 pub struct GetInterpretationResult {
     pub done: bool,
     pub error: String,

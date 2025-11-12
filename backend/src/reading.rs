@@ -2,12 +2,14 @@ use serde::{Deserialize, Serialize};
 use webtarot_shared::model::{Card, Deck};
 
 #[derive(Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
 pub struct CreateReadingRequest {
     pub question: String,
     pub cards: u8,
 }
 
 #[derive(Serialize, Debug)]
+#[serde(rename_all = "camelCase")]
 pub struct CreateReadingResponse {
     pub shuffled_times: usize,
     pub cards: Vec<Card>,

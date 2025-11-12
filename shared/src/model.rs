@@ -87,6 +87,7 @@ impl Default for Deck {
 }
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct Card {
     pub arcana: Arcana,
     pub flipped: bool,
@@ -100,6 +101,7 @@ impl Display for Card {
 }
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub enum Arcana {
     Major { name: MajorArcana },
     Minor { rank: Rank, suit: Suit },
@@ -115,6 +117,7 @@ impl Display for Arcana {
 }
 
 #[derive(Copy, Clone, EnumIter, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub enum MajorArcana {
     Fool,
     Magician,
@@ -171,6 +174,7 @@ impl Display for MajorArcana {
 }
 
 #[derive(Copy, Clone, EnumIter, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub enum Rank {
     Ace,
     Two,
@@ -211,6 +215,7 @@ impl Display for Rank {
 }
 
 #[derive(Copy, Clone, EnumIter, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub enum Suit {
     Cups,
     Pentacles,
