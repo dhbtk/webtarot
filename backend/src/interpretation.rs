@@ -14,7 +14,7 @@ pub struct InterpretationManager {
 impl Default for InterpretationManager {
     fn default() -> Self {
         Self {
-            interpretations: Arc::new(Mutex::new(SizedCache::with_size(128 * 1024 * 1024))),
+            interpretations: Arc::new(Mutex::new(SizedCache::with_size(512 * 1024))),
         }
     }
 }
