@@ -48,7 +48,7 @@ COPY --from=backend-builder /app/backend/target/release/webtarot-backend /app/we
 # Copy built frontend to /static as requested
 COPY --from=frontend-builder /app/frontend/dist/ /static/
 
-ENV RUST_LOG=info
+ENV RUST_LOG=trace
 EXPOSE 3000
 
 WORKDIR /app
