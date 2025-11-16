@@ -27,6 +27,7 @@ impl From<Reading> for CreateReadingResponse {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct Reading {
     pub id: uuid::Uuid,
     pub created_at: chrono::DateTime<chrono::Utc>,

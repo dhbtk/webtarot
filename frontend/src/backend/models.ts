@@ -61,6 +61,16 @@ export interface Card {
   flipped: boolean;
 }
 
+// Mirrors Rust: Reading { id: Uuid, created_at: DateTime<Utc>, question: String, shuffled_times: usize, cards: Vec<Card> }
+// Note: backend uses serde(rename_all = "camelCase"), so fields are camelCase in JSON.
+export interface Reading {
+  id: string; // UUID string
+  createdAt: string; // ISO 8601 timestamp
+  question: string;
+  shuffledTimes: number;
+  cards: Card[];
+}
+
 // Mirrors Rust: CreateReadingRequest { question: String, cards: u8 }
 export interface CreateReadingRequest {
   question: string;
@@ -74,9 +84,10 @@ export interface CreateReadingResponse {
   interpretationId: string; // UUID string
 }
 
-// Mirrors Rust: GetInterpretationResult { done: bool, error: String, interpretation: String }
+// Mirrors Rust: GetInterpretationResult { done: bool, error: String, interpretation: String, reading: Option<Reading> }
 export interface GetInterpretationResult {
   done: boolean;
   error: string;
   interpretation: string;
+  reading: Reading | null;
 }
