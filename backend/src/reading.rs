@@ -26,9 +26,10 @@ impl From<Reading> for CreateReadingResponse {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Reading {
     pub id: uuid::Uuid,
+    pub created_at: chrono::DateTime<chrono::Utc>,
     pub question: String,
     pub shuffled_times: usize,
     pub cards: Vec<Card>,
@@ -41,6 +42,7 @@ pub fn perform_reading(request: &CreateReadingRequest) -> Reading {
     let cards = deck.draw(request.cards as usize);
     Reading {
         id: uuid::Uuid::new_v4(),
+        created_at: chrono::Utc::now(),
         question: request.question.clone(),
         shuffled_times: shuffles,
         cards,

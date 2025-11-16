@@ -10,6 +10,7 @@ tracing = "0.1.41"
 tracing-subscriber = { version = "0.3.20", features = ["env-filter"] }
 serde = { version = "1.0.228", features = ["derive"] }
 webtarot-shared = { path = "../shared" }
-uuid = { version = "1.18.1", features = ["v4"] }
+uuid = { version = "1.18.1", features = ["v4", "serde"] }
 tower-http = { version = "0.6.6", features = ["trace", "fs"] }
 cached = "0.56.0"
+chrono = { version = "0.4.42", features = ["serde"] }
