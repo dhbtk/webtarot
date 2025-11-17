@@ -2,13 +2,24 @@ import React, { useState } from 'react'
 import { createReading } from '../backend/api'
 import type { CreateReadingRequest } from '../backend/models'
 import { useRouter } from '@tanstack/react-router'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { getSavedReadings, saveReadings } from '../backend/savedReadings.ts'
 
 export default function ReadingForm() {
   const router = useRouter()
+  const queryClient = useQueryClient()
   const [question, setQuestion] = useState('')
   const [cards, setCards] = useState(3)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  const submitMutation = useMutation({
+    mutationFn: (reading: CreateReadingRequest) => createReading(reading),
+    onSuccess: async (data) => {
+      saveReadings([...getSavedReadings(), data.interpretationId])
+      await queryClient.invalidateQueries({ queryKey: ['readings'] })
+    }
+  })
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -16,7 +27,7 @@ export default function ReadingForm() {
     setSubmitting(true)
     try {
       const payload: CreateReadingRequest = { question: question.trim(), cards }
-      const res = await createReading(payload)
+      const res = await submitMutation.mutateAsync(payload)
       // Navigate to /readings/:id using the returned interpretationId
       await router.navigate({ to: '/readings/$id', params: { id: res.interpretationId } })
     } catch (err: any) {

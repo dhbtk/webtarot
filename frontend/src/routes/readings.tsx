@@ -1,6 +1,7 @@
 import { createFileRoute, Outlet } from '@tanstack/react-router'
 import ReadingForm from '../components/ReadingForm.tsx'
 import React from 'react'
+import ReadingTabs from '../components/ReadingTabs.tsx'
 
 export const Route = createFileRoute('/readings')({
   component: RouteComponent,
@@ -36,6 +37,7 @@ function RouteComponent() {
           {/* Placeholder for a tabbed view of all readings */}
           Tabs: (coming soon)
         </div>
+        <ReadingTabs/>
         <div style={{ flex: 1, minHeight: 0 }}>
           <Outlet />
         </div>
