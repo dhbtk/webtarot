@@ -1,11 +1,12 @@
 import type { Card } from '../backend/models.ts'
 import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
-import { arcanaLabel } from '../util/cards.ts'
+import { arcanaImage } from '../util/cards.ts'
+import cardBackUrl from '../assets/cardimages/CardBacks.jpg'
 
-const CARD_WIDTH = 70 * 1.5
-const CARD_HEIGHT = 120 * 1.5
-const GAP = 10
+const CARD_WIDTH = 300 / 3
+const CARD_HEIGHT = 527 / 3
+const GAP = 25
 const ANIMATION_DURATION_PER_CARD = 0.25
 
 const PlayMat = styled.div<{ cards: Card[] }>`
@@ -26,16 +27,29 @@ const CardDiv = styled.div`
   justify-content: center;
   font-size: 9px;
   transform-origin: center;
+  transform-style: preserve-3d;
   transition: all ${ANIMATION_DURATION_PER_CARD}s ease-in-out;
-  
+  background-size: cover;
+  transform: rotateY(180deg);
+  box-shadow: 5px 5px 5px 0 rgba(0, 0, 0, 0.25);
+
   &.anchored {
     translate: 0 calc(50cqh - ${CARD_HEIGHT / 2}px) !important;
   }
-  
+
   &.flipped {
-    rotate: x 180deg;
+    transform: rotateX(180deg) rotateY(0);
+    box-shadow: -5px -5px 5px 0 rgba(0, 0, 0, 0.25);
+
+    &.revealed {
+      transform: rotateX(180deg) rotateY(180deg);
+    }
   }
-  
+
+  &.revealed {
+    transform: rotateY(0);
+  }
+
   .border {
     flex: 1;
     display: flex;
@@ -43,11 +57,10 @@ const CardDiv = styled.div`
     align-items: center;
     justify-content: flex-end;
     height: 100%;
-    background: #111111;
     color: #fff;
     border-radius: 6px;
     border: 3px solid #fff;
-    
+
     div {
       border-top: 2px solid #fff;
       padding: 0.12rem 0.25rem;
@@ -55,6 +68,28 @@ const CardDiv = styled.div`
       text-align: center;
     }
   }
+`
+
+const CardImage = styled.div`
+  background-size: cover;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  position: absolute;
+  `
+
+const CardBack = styled.div`
+  background-image: url(${cardBackUrl});
+  background-size: cover;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  transform: rotateY(180deg);
+  backface-visibility: hidden;
+  position: absolute;
 `
 
 function calculateCardPosition(index: number, total: number): string {
@@ -82,12 +117,14 @@ const CardWidget: React.FC<{ card: Card, index: number, total: number }> = ({ ca
     setTimeout(() => {
       setClassName(card.flipped ? ' flipped' : '')
     }, (ANIMATION_DURATION_PER_CARD * 1000) * index)
+    setTimeout(() => {
+      setClassName(card.flipped ? 'revealed flipped' : 'revealed')
+    }, (ANIMATION_DURATION_PER_CARD * 1000 * total) + (ANIMATION_DURATION_PER_CARD * 1000) * index)
   }, [setClassName])
   return (
     <CardDiv className={className} style={{ translate: calculateCardPosition(index, total) }}>
-      <div className="border">
-        <div>{arcanaLabel(card.arcana)}</div>
-      </div>
+      <CardImage style={{backgroundImage: `url(${arcanaImage(card.arcana)})`}}/>
+      <CardBack/>
     </CardDiv>
   )
 }
