@@ -1,8 +1,9 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { createFileRoute, useParams } from '@tanstack/react-router'
 import { getInterpretation, pollInterpretation } from '../../backend/api'
 import type { Card, GetInterpretationResult } from '../../backend/models'
 import { CardDisplay } from '../../components/CardDisplay.tsx'
+import { cardLabel } from '../../util/cards.ts'
 
 export const Route = createFileRoute('/readings/$id')({
   component: ReadingDetails
@@ -47,22 +48,16 @@ export default function ReadingDetails() {
           </div>
           <div style={{ fontSize: 12, color: '#6b7280', display: 'flex', justifyContent: 'space-between' }}>
             <span>
-              Shuffled {reading.shuffledTimes} time{reading.shuffledTimes === 1 ? '' : 's'} · Created at {new Date(reading.createdAt).toLocaleString()}
+              Embaralhado {reading.shuffledTimes} vez{reading.shuffledTimes === 1 ? '' : 'es'} · Pergunta feita em {new Date(reading.createdAt).toLocaleString()}
             </span>
             <code style={{ color: '#6b7280', fontSize: 12 }}>{id}</code>
           </div>
-
-          {error && (
-            <div style={{ color: '#b91c1c', marginTop: '0.75rem' }}>
-              {error}
-            </div>
-          )}
 
           {reading && (
             <section style={{ marginTop: '1rem', display: 'grid', gap: '0.75rem' }}>
               <div>
                 <div style={{ fontSize: 12, color: '#6b7280' }}>Cards ({reading.cards.length})</div>
-                <CardDisplay cards={reading.cards}/>
+                <CardDisplay cards={reading.cards} uuid={reading.id} />
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginTop: '0.25rem' }}>
                   {reading.cards.map((c, i) => (
                     <CardBadge key={i} card={c} />
@@ -71,7 +66,7 @@ export default function ReadingDetails() {
               </div>
 
               <div>
-                <div style={{ fontSize: 12, color: '#6b7280' }}>Interpretation</div>
+                <div style={{ fontSize: 12, color: '#6b7280' }}>Interpretação</div>
                 <pre style={{ whiteSpace: 'pre-wrap', fontFamily: 'inherit' }}>
               {result?.interpretation || (result?.done ? 'No interpretation.' : 'Awaiting interpretation…')}
             </pre>
@@ -91,7 +86,6 @@ export default function ReadingDetails() {
 }
 
 function CardBadge({ card }: { card: Card }) {
-  const label = useMemo(() => formatCard(card), [card])
   return (
     <span
       style={{
@@ -102,28 +96,9 @@ function CardBadge({ card }: { card: Card }) {
         background: '#fff',
         fontSize: 12,
       }}
-      title={JSON.stringify(card)}
+      title={cardLabel(card)}
     >
-      {label}
-      {card.flipped ? ' (reversed)' : ''}
+      {cardLabel(card)}
     </span>
   )
-}
-
-function formatCard(card: Card): string {
-  if ('major' in card.arcana) {
-    return toTitle(card.arcana.major.name.replace(/([A-Z])/g, ' $1'))
-  }
-  if ('minor' in card.arcana) {
-    const r = card.arcana.minor.rank
-    const s = card.arcana.minor.suit
-    return `${toTitle(r)} of ${toTitle(s)}`
-  }
-  return 'Card'
-}
-
-function toTitle(s: string): string {
-  return s
-    .replaceAll('-', ' ')
-    .replace(/\b\w/g, (m) => m.toUpperCase())
 }
