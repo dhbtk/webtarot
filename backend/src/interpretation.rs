@@ -1,6 +1,9 @@
 use crate::reading::Reading;
 use cached::{Cached, SizedCache};
+use redis::aio::ConnectionManager;
+use redis::AsyncCommands;
 use serde::{Deserialize, Serialize};
+use std::env;
 use std::fmt::{Debug, Formatter};
 use std::sync::{Arc, Mutex};
 use uuid::Uuid;
@@ -8,83 +11,95 @@ use webtarot_shared::explain::ExplainResult;
 
 #[derive(Clone)]
 pub struct InterpretationManager {
-    interpretations: Arc<Mutex<SizedCache<Uuid, Interpretation>>>,
+    connection_manager: ConnectionManager,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum Interpretation {
     Pending(Reading),
-    Done(Reading, ExplainResult),
+    Done(Reading, String),
+    Failed(Reading, String)
 }
 
 impl Interpretation {
     pub fn is_done(&self) -> bool {
-        matches!(self, Self::Done(_, _))
+        matches!(self, Self::Done(_,..))
     }
     pub fn reading(&self) -> &Reading {
         match self {
             Self::Pending(reading) => reading,
             Self::Done(reading, _) => reading,
-        }
-    }
-}
-
-impl Default for InterpretationManager {
-    fn default() -> Self {
-        Self {
-            interpretations: Arc::new(Mutex::new(SizedCache::with_size(512 * 1024))),
+            Self::Failed(reading, _) => reading
         }
     }
 }
 
 impl Debug for InterpretationManager {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        let mut interpretations = self.interpretations.lock().unwrap();
-        let all_keys = interpretations.key_order().copied().collect::<Vec<_>>();
-        let in_flight = all_keys
-            .iter()
-            .filter(|k| !interpretations.cache_get(k).unwrap().is_done())
-            .count();
-        let finished = all_keys
-            .iter()
-            .filter(|k| interpretations.cache_get(k).unwrap().is_done())
-            .count();
         write!(
             f,
-            "InterpretationManager {{ in_flight: {} finished: {} }}",
-            in_flight, finished
+            "InterpretationManager {{ }}"
         )
     }
 }
 
 impl InterpretationManager {
-    #[tracing::instrument]
-    pub fn request_interpretation(self, reading: Reading) {
-        let uuid = reading.id;
-        self.mark_started(reading.clone());
-        tokio::spawn(self.start_interpretation_request(reading));
-    }
-
-    fn mark_started(&self, reading: Reading) {
-        let mut interpretations = self.interpretations.lock().unwrap();
-        interpretations.cache_set(reading.id, Interpretation::Pending(reading));
+    pub async fn new() -> Self {
+        let client = redis::Client::open(env::var("REDIS_URL").expect("REDIS_URL not set")).unwrap();
+        let manager = ConnectionManager::new(client).await.unwrap();
+        Self {
+            connection_manager: manager,
+        }
     }
 
     #[tracing::instrument]
-    async fn start_interpretation_request(self, reading: Reading) {
+    pub fn request_interpretation(&self, reading: Reading) {
+        let mut cloned = self.clone();
+        tokio::spawn(async move {
+            cloned.mark_started(reading.clone()).await;
+            cloned.start_interpretation_request(reading).await;
+        });
+    }
+
+    async fn mark_started(&mut self, reading: Reading) {
+        let to_store = Interpretation::Pending(reading);
+        let mut manager = self.connection_manager.clone();
+        manager.set::<String, String, String>(
+            self.key_for_uuid(to_store.reading().id),
+            serde_json::to_string(&to_store).unwrap()
+        ).await.unwrap();
+    }
+
+    #[tracing::instrument]
+    async fn start_interpretation_request(&mut self, reading: Reading) {
         tracing::debug!("start_interpretation_request");
         let result = webtarot_shared::explain::explain(&reading.question, &reading.cards).await;
         tracing::debug!(result = ?result, "start_interpretation_request result");
-        let mut interpretations = self.interpretations.lock().unwrap();
-        interpretations.cache_set(reading.id, Interpretation::Done(reading, result));
+        let uuid = reading.id;
+        let result = match result {
+            Ok(result) => Interpretation::Done(reading, result),
+            Err(e) => Interpretation::Failed(reading, e.to_string())
+        };
+        let mut manager = self.connection_manager.clone();
+        manager.set::<String, String, String>(
+            self.key_for_uuid(uuid),
+            serde_json::to_string(&result).unwrap()
+        ).await.unwrap();
     }
 
-    pub fn get_interpretation(&self, uuid: Uuid) -> Option<Interpretation> {
-        let mut interpretations = self.interpretations.lock().unwrap();
-        if let Some(interpretation) = interpretations.cache_get(&uuid) {
-            return Some((*interpretation).clone());
-        }
-        None
+    pub async fn get_interpretation(&self, uuid: Uuid) -> Option<Interpretation> {
+        let mut manager = self.connection_manager.clone();
+        let Ok(value) = manager.get::<String, String>(self.key_for_uuid(uuid)).await else {
+            return None;
+        };
+        let Ok(parsed) = serde_json::from_str::<Interpretation>(&value) else {
+            return None;
+        };
+        Some(parsed)
+    }
+
+    fn key_for_uuid(&self, uuid: Uuid) -> String {
+        format!("interpretation:{}", uuid)
     }
 }
 
@@ -111,8 +126,17 @@ impl From<Interpretation> for GetInterpretationResult {
             Interpretation::Done(reading, result) => {
                 Self {
                     done: true,
-                    error: result.clone().err().map(|e| e.to_string()).unwrap_or_default(),
-                    interpretation: result.ok().unwrap_or_default(),
+                    error: Default::default(),
+                    interpretation: result,
+                    reading: Some(reading),
+                }
+            }
+
+            Interpretation::Failed(reading, err) => {
+                Self {
+                    done: true,
+                    error: err,
+                    interpretation: Default::default(),
                     reading: Some(reading),
                 }
             }

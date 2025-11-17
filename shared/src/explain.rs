@@ -1,5 +1,5 @@
 use crate::model::Card;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use std::error::Error as StdError;
 use std::fmt;
 use std::sync::Arc;

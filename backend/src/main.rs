@@ -8,16 +8,17 @@ use axum::routing::get;
 use axum::routing::post;
 use axum::{Json, Router};
 use reading::{CreateReadingRequest, CreateReadingResponse};
+use tower_http::services::{ServeDir, ServeFile};
 use tower_http::trace::DefaultMakeSpan;
 use tower_http::trace::DefaultOnResponse;
 use tower_http::trace::TraceLayer;
-use tower_http::services::{ServeDir, ServeFile};
 use tracing::Level;
 use tracing_subscriber::{fmt, prelude::*};
 
 #[tokio::main]
 async fn main() {
     fmt().with_env_filter("info,webtarot=trace").init();
+    let interpretation_manager = InterpretationManager::new().await;
 
     let app = Router::new()
         .route("/api/v1/reading", post(create_reading))
@@ -27,7 +28,7 @@ async fn main() {
                 .make_span_with(DefaultMakeSpan::new().level(Level::INFO))
                 .on_response(DefaultOnResponse::new().level(Level::INFO)),
         )
-        .with_state(InterpretationManager::default())
+        .with_state(interpretation_manager)
         .fallback_service(ServeDir::new("/static").not_found_service(ServeFile::new("/static/index.html")));
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
@@ -56,6 +57,6 @@ async fn interpretation_result(
     };
     (
         StatusCode::OK,
-        Json(interpretation_manager.get_interpretation(uuid).into()),
+        Json(interpretation_manager.get_interpretation(uuid).await.into()),
     )
 }
