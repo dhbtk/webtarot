@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { createFileRoute, useParams } from '@tanstack/react-router'
 import { getInterpretation, pollInterpretation } from '../../backend/api'
 import type { Card, GetInterpretationResult } from '../../backend/models'
+import { CardDisplay } from '../../components/CardDisplay.tsx'
 
 export const Route = createFileRoute('/readings/$id')({
   component: ReadingDetails
@@ -38,52 +39,52 @@ export default function ReadingDetails() {
 
   return (
     <div style={{ padding: '1rem', height: '100%', overflow: 'auto' }}>
-      <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.5rem' }}>
-        <h2 style={{ margin: 0, fontSize: 18 }}>Reading</h2>
-        <code style={{ color: '#6b7280', fontSize: 12 }}>{id}</code>
-      </div>
-
-      {error && (
-        <div style={{ color: '#b91c1c', marginTop: '0.75rem' }}>
-          {error}
-        </div>
-      )}
-
       {loading && !result && <p style={{ color: '#6b7280' }}>Loading…</p>}
-
       {reading && (
-        <section style={{ marginTop: '1rem', display: 'grid', gap: '0.75rem' }}>
-          <div>
-            <div style={{ fontSize: 12, color: '#6b7280' }}>Question</div>
-            <div style={{ fontSize: 16 }}>{reading.question}</div>
+        <>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.5rem', marginBottom: '0.5rem' }}>
+            <h2 style={{ margin: 0, fontSize: 18 }}>{reading.question}</h2>
+          </div>
+          <div style={{ fontSize: 12, color: '#6b7280', display: 'flex', justifyContent: 'space-between' }}>
+            <span>
+              Shuffled {reading.shuffledTimes} time{reading.shuffledTimes === 1 ? '' : 's'} · Created at {new Date(reading.createdAt).toLocaleString()}
+            </span>
+            <code style={{ color: '#6b7280', fontSize: 12 }}>{id}</code>
           </div>
 
-          <div>
-            <div style={{ fontSize: 12, color: '#6b7280' }}>Cards ({reading.cards.length})</div>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginTop: '0.25rem' }}>
-              {reading.cards.map((c, i) => (
-                <CardBadge key={i} card={c} />
-              ))}
+          {error && (
+            <div style={{ color: '#b91c1c', marginTop: '0.75rem' }}>
+              {error}
             </div>
-          </div>
+          )}
 
-          <div>
-            <div style={{ fontSize: 12, color: '#6b7280' }}>Interpretation</div>
-            <pre style={{ whiteSpace: 'pre-wrap', fontFamily: 'inherit' }}>
+          {reading && (
+            <section style={{ marginTop: '1rem', display: 'grid', gap: '0.75rem' }}>
+              <div>
+                <div style={{ fontSize: 12, color: '#6b7280' }}>Cards ({reading.cards.length})</div>
+                <CardDisplay cards={reading.cards}/>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginTop: '0.25rem' }}>
+                  {reading.cards.map((c, i) => (
+                    <CardBadge key={i} card={c} />
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <div style={{ fontSize: 12, color: '#6b7280' }}>Interpretation</div>
+                <pre style={{ whiteSpace: 'pre-wrap', fontFamily: 'inherit' }}>
               {result?.interpretation || (result?.done ? 'No interpretation.' : 'Awaiting interpretation…')}
             </pre>
-          </div>
+              </div>
+            </section>
+          )}
 
-          <footer style={{ fontSize: 12, color: '#6b7280' }}>
-            Shuffled {reading.shuffledTimes} time{reading.shuffledTimes === 1 ? '' : 's'} · Created at {new Date(reading.createdAt).toLocaleString()}
-          </footer>
-        </section>
-      )}
-
-      {!reading && result && (
-        <p style={{ color: '#6b7280', marginTop: '0.75rem' }}>
-          No reading details available yet. This page will update automatically.
-        </p>
+          {!reading && result && (
+            <p style={{ color: '#6b7280', marginTop: '0.75rem' }}>
+              No reading details available yet. This page will update automatically.
+            </p>
+          )}
+        </>
       )}
     </div>
   )
