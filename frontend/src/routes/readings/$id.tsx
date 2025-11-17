@@ -68,7 +68,7 @@ export default function ReadingDetails() {
               <div>
                 <div style={{ fontSize: 12, color: '#6b7280' }}>Interpretação</div>
                 <pre style={{ whiteSpace: 'pre-wrap', fontFamily: 'inherit' }}>
-              {result?.interpretation || (result?.done ? 'No interpretation.' : 'Awaiting interpretation…')}
+              {result?.done ? result?.interpretation : 'Aguardando...'}
             </pre>
               </div>
             </section>
