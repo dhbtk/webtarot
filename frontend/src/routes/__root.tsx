@@ -9,7 +9,7 @@ export const AppShell: React.FC<React.PropsWithChildren> = ({ children }) => {
           <h1 style={{ margin: 0, fontSize: '1.125rem' }}>WebTarot</h1>
         </Link>
       </header>
-      <main style={{ flex: 1, minHeight: 0 }}>{children}</main>
+      <main style={{ flex: 1, minHeight: 0, display: 'flex' }}>{children}</main>
     </div>
   )
 }

@@ -9,7 +9,7 @@ export const Route = createFileRoute('/readings')({
 
 function RouteComponent() {
   return (
-    <div style={{ display: 'flex', height: '100%', minHeight: 'calc(100vh - 57px)' }}>
+    <div style={{ display: 'flex', height: '100%', minHeight: 'calc(100vh - 57px)', flex: 1, width: '100%' }}>
       <aside
         style={{
           width: 320,
@@ -25,18 +25,6 @@ function RouteComponent() {
         <ReadingForm />
       </aside>
       <section style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
-        <div
-          style={{
-            borderBottom: '1px solid #e5e7eb',
-            padding: '0.5rem 1rem',
-            background: '#fafafa',
-            fontSize: 13,
-            color: '#6b7280',
-          }}
-        >
-          {/* Placeholder for a tabbed view of all readings */}
-          Tabs: (coming soon)
-        </div>
         <ReadingTabs/>
         <div style={{ flex: 1, minHeight: 0 }}>
           <Outlet />
