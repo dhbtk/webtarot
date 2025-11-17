@@ -1,13 +1,10 @@
 use crate::reading::Reading;
-use cached::{Cached, SizedCache};
-use redis::aio::ConnectionManager;
 use redis::AsyncCommands;
+use redis::aio::ConnectionManager;
 use serde::{Deserialize, Serialize};
 use std::env;
 use std::fmt::{Debug, Formatter};
-use std::sync::{Arc, Mutex};
 use uuid::Uuid;
-use webtarot_shared::explain::ExplainResult;
 
 #[derive(Clone)]
 pub struct InterpretationManager {
@@ -18,34 +15,32 @@ pub struct InterpretationManager {
 pub enum Interpretation {
     Pending(Reading),
     Done(Reading, String),
-    Failed(Reading, String)
+    Failed(Reading, String),
 }
 
 impl Interpretation {
     pub fn is_done(&self) -> bool {
-        matches!(self, Self::Done(_,..))
+        matches!(self, Self::Done(..))
     }
     pub fn reading(&self) -> &Reading {
         match self {
             Self::Pending(reading) => reading,
             Self::Done(reading, _) => reading,
-            Self::Failed(reading, _) => reading
+            Self::Failed(reading, _) => reading,
         }
     }
 }
 
 impl Debug for InterpretationManager {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(
-            f,
-            "InterpretationManager {{ }}"
-        )
+        write!(f, "InterpretationManager {{ }}")
     }
 }
 
 impl InterpretationManager {
     pub async fn new() -> Self {
-        let client = redis::Client::open(env::var("REDIS_URL").expect("REDIS_URL not set")).unwrap();
+        let client =
+            redis::Client::open(env::var("REDIS_URL").expect("REDIS_URL not set")).unwrap();
         let manager = ConnectionManager::new(client).await.unwrap();
         Self {
             connection_manager: manager,
@@ -64,10 +59,13 @@ impl InterpretationManager {
     async fn mark_started(&mut self, reading: Reading) {
         let to_store = Interpretation::Pending(reading);
         let mut manager = self.connection_manager.clone();
-        manager.set::<String, String, String>(
-            self.key_for_uuid(to_store.reading().id),
-            serde_json::to_string(&to_store).unwrap()
-        ).await.unwrap();
+        manager
+            .set::<String, String, String>(
+                self.key_for_uuid(to_store.reading().id),
+                serde_json::to_string(&to_store).unwrap(),
+            )
+            .await
+            .unwrap();
     }
 
     #[tracing::instrument]
@@ -78,13 +76,16 @@ impl InterpretationManager {
         let uuid = reading.id;
         let result = match result {
             Ok(result) => Interpretation::Done(reading, result),
-            Err(e) => Interpretation::Failed(reading, e.to_string())
+            Err(e) => Interpretation::Failed(reading, e.to_string()),
         };
         let mut manager = self.connection_manager.clone();
-        manager.set::<String, String, String>(
-            self.key_for_uuid(uuid),
-            serde_json::to_string(&result).unwrap()
-        ).await.unwrap();
+        manager
+            .set::<String, String, String>(
+                self.key_for_uuid(uuid),
+                serde_json::to_string(&result).unwrap(),
+            )
+            .await
+            .unwrap();
     }
 
     pub async fn get_interpretation(&self, uuid: Uuid) -> Option<Interpretation> {
@@ -115,31 +116,25 @@ pub struct GetInterpretationResult {
 impl From<Interpretation> for GetInterpretationResult {
     fn from(value: Interpretation) -> Self {
         match value {
-            Interpretation::Pending(reading) => {
-                Self {
-                    done: false,
-                    error: "".to_string(),
-                    interpretation: reading.question.clone(),
-                    reading: Some(reading),
-                }
-            }
-            Interpretation::Done(reading, result) => {
-                Self {
-                    done: true,
-                    error: Default::default(),
-                    interpretation: result,
-                    reading: Some(reading),
-                }
-            }
+            Interpretation::Pending(reading) => Self {
+                done: false,
+                error: "".to_string(),
+                interpretation: reading.question.clone(),
+                reading: Some(reading),
+            },
+            Interpretation::Done(reading, result) => Self {
+                done: true,
+                error: Default::default(),
+                interpretation: result,
+                reading: Some(reading),
+            },
 
-            Interpretation::Failed(reading, err) => {
-                Self {
-                    done: true,
-                    error: err,
-                    interpretation: Default::default(),
-                    reading: Some(reading),
-                }
-            }
+            Interpretation::Failed(reading, err) => Self {
+                done: true,
+                error: err,
+                interpretation: Default::default(),
+                reading: Some(reading),
+            },
         }
     }
 }

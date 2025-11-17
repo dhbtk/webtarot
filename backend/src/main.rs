@@ -29,7 +29,9 @@ async fn main() {
                 .on_response(DefaultOnResponse::new().level(Level::INFO)),
         )
         .with_state(interpretation_manager)
-        .fallback_service(ServeDir::new("/static").not_found_service(ServeFile::new("/static/index.html")));
+        .fallback_service(
+            ServeDir::new("/static").not_found_service(ServeFile::new("/static/index.html")),
+        );
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
     axum::serve(listener, app).await.unwrap();
