@@ -1,6 +1,5 @@
 import { createFileRoute, Outlet } from '@tanstack/react-router'
 import ReadingForm from '../components/ReadingForm.tsx'
-import React from 'react'
 import ReadingTabs from '../components/ReadingTabs.tsx'
 
 export const Route = createFileRoute('/readings')({

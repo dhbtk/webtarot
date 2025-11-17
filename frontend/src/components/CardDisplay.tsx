@@ -1,6 +1,6 @@
 import type { Card } from '../backend/models.ts'
 import React, { useEffect, useState } from 'react'
-import styled, { css, keyframes } from 'styled-components'
+import styled from 'styled-components'
 
 const CARD_WIDTH = 70
 const CARD_HEIGHT = 120
@@ -13,20 +13,6 @@ const PlayMat = styled.div<{ cards: Card[] }>`
   flex: 1;
   height: ${({cards}) => cards.length > 5 ? CARD_HEIGHT * 2 + GAP * 4 : CARD_HEIGHT + 2 * GAP}px;
   container-type: size;
-`
-
-const animFactory = (index: number, total: number) => keyframes`
-  from {
-    translate: ${-CARD_WIDTH - GAP}px calc(50cqh - ${CARD_HEIGHT / 2}px);
-  }
-  to {
-    translate: ${(() => {
-      if (total < 6) {
-        return `${index * (CARD_WIDTH + GAP)}px calc(50cqh - ${CARD_HEIGHT / 2}px)`
-      }
-      return ``
-    })()}
-  }
 `
 
 const CardDiv = styled.div`

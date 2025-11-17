@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { createFileRoute, useParams } from '@tanstack/react-router'
 import { getInterpretation, pollInterpretation } from '../../backend/api'
 import type { Card, GetInterpretationResult } from '../../backend/models'
