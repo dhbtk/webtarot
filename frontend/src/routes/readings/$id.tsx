@@ -13,7 +13,7 @@ export default function ReadingDetails() {
   const { id } = useParams({ from: '/readings/$id' }) as { id: string }
   const [result, setResult] = useState<GetInterpretationResult | null>(null)
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const [_error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     let abort = new AbortController()
