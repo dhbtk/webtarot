@@ -5,6 +5,7 @@ import styled from 'styled-components'
 
 const Wrapper = styled.div`
   display: flex;
+  flex-wrap: wrap;
   gap: 0.5rem;
   padding: 0.25rem 0.25rem 0;
   border-bottom: 1px solid #e5e7eb;

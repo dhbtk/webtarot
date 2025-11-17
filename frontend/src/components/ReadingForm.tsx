@@ -40,7 +40,7 @@ export default function ReadingForm() {
   return (
     <form onSubmit={onSubmit} style={{ display: 'grid', gap: '0.5rem' }}>
       <label style={{ display: 'grid', gap: '0.25rem' }}>
-        <span style={{ fontSize: 12, color: '#6b7280' }}>Question</span>
+        <span style={{ fontSize: 12, color: '#6b7280' }}>Pergunta</span>
         <textarea
           required
           value={question}
@@ -51,11 +51,11 @@ export default function ReadingForm() {
         />
       </label>
       <label style={{ display: 'grid', gap: '0.25rem' }}>
-        <span style={{ fontSize: 12, color: '#6b7280' }}>Cards</span>
+        <span style={{ fontSize: 12, color: '#6b7280' }}>Cartas</span>
         <input
           type="number"
           min={1}
-          max={10}
+          max={13}
           value={cards}
           onChange={(e) => setCards(Number(e.target.value))}
           style={{ padding: '0.5rem', borderRadius: 6, border: '1px solid #e5e7eb' }}
@@ -66,7 +66,7 @@ export default function ReadingForm() {
         disabled={submitting || !question.trim()}
         style={{ padding: '0.5rem 0.75rem', borderRadius: 6, background: '#111827', color: 'white', border: 0 }}
       >
-        {submitting ? 'Shuffling…' : 'Create Reading'}
+        {submitting ? 'Embaralhando…' : 'Criar Tiragem'}
       </button>
       {error && <div style={{ color: '#b91c1c', fontSize: 12 }}>{error}</div>}
     </form>
