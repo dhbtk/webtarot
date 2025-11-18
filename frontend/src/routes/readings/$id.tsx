@@ -5,6 +5,9 @@ import { CardDisplay } from '../../components/CardDisplay.tsx'
 import { cardLabel } from '../../util/cards.ts'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { getSavedReadings, removeReading } from '../../backend/savedReadings.ts'
+import Markdown from 'react-markdown'
+import remarkBreaks from 'remark-breaks'
+import styled from 'styled-components'
 
 export const Route = createFileRoute('/readings/$id')({
   component: ReadingDetails
@@ -81,12 +84,11 @@ export default function ReadingDetails() {
                 </div>
               </div>
 
-              <div>
-                <div style={{ fontSize: 12, color: '#6b7280' }}>Interpretação</div>
-                <pre style={{ whiteSpace: 'pre-wrap', fontFamily: 'inherit' }}>
-              {query.data?.done ? query.data?.interpretation : 'Aguardando...'}
-            </pre>
-              </div>
+              <MarkdownContainer>
+                <Markdown remarkPlugins={[remarkBreaks]}>
+              {query.data?.done ? query.data?.interpretation : 'Aguardando interpretação...'}
+                </Markdown>
+              </MarkdownContainer>
             </section>
           )}
         </>
@@ -94,6 +96,14 @@ export default function ReadingDetails() {
     </div>
   )
 }
+
+const MarkdownContainer = styled.div`
+  h1, h2, h3, h4, h5, h6 {
+    font-size: 110%;
+    font-weight: bold;
+    margin: 0.5rem 0;
+  }
+`
 
 function CardBadge({ card }: { card: Card }) {
   return (

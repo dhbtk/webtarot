@@ -75,10 +75,8 @@ pub async fn explain(question: &str, cards: &[Card]) -> Result<String, ExplainEr
         .collect::<Vec<_>>()
         .join("\n");
 
-    let system = "Você é um tarólogo experiente. Interprete a leitura com empatia, de forma prática e objetiva. Use linguagem clara, em até 8 parágrafos.";
-
     let user = format!(
-        "Pergunta: {}\nCartas (na ordem):\n{}\n\nFaça uma leitura que conecte as cartas à pergunta, considerando cartas invertidas quando indicado.",
+        "Pergunta: {}\nCartas (na ordem):\n{}",
         question, cards_list
     );
 
@@ -102,7 +100,7 @@ pub async fn explain(question: &str, cards: &[Card]) -> Result<String, ExplainEr
     let body = serde_json::json!({
         "model": "gpt-5-mini",
         "messages": [
-            {"role": "system", "content": system},
+            {"role": "system", "content": include_str!("system_prompt.txt")},
             {"role": "user", "content": user}
         ]
     });
