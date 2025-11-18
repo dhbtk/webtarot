@@ -7,7 +7,7 @@ import cardBackUrl from '../assets/cardimages/CardBacks.jpg'
 const CARD_WIDTH = 300 / 3
 const CARD_HEIGHT = 527 / 3
 const GAP = 25
-const ANIMATION_DURATION_PER_CARD = 0.25
+const ANIMATION_DURATION_PER_CARD = 0.4
 
 const PlayMat = styled.div<{ cards: Card[] }>`
   background: #fafafa;
@@ -28,7 +28,7 @@ const CardDiv = styled.div`
   font-size: 9px;
   transform-origin: center;
   transform-style: preserve-3d;
-  transition: all ${ANIMATION_DURATION_PER_CARD}s ease-in-out;
+  transition: all ${ANIMATION_DURATION_PER_CARD}s cubic-bezier(0.65, 0, 0.35, 1);
   background-size: cover;
   transform: rotateY(180deg);
   box-shadow: 5px 5px 5px 0 rgba(0, 0, 0, 0.25);
