@@ -3,6 +3,7 @@ use serde::Deserialize;
 use std::error::Error as StdError;
 use std::fmt;
 use std::sync::Arc;
+use std::time::Duration;
 
 #[derive(Deserialize)]
 struct ChatResponse {
@@ -98,7 +99,7 @@ pub async fn explain(question: &str, cards: &[Card]) -> Result<String, ExplainEr
 
     // Compose request body for Chat Completions API
     let body = serde_json::json!({
-        "model": "gpt-5-mini",
+        "model": "gpt-5",
         "messages": [
             {"role": "system", "content": include_str!("system_prompt.txt")},
             {"role": "user", "content": user}
@@ -109,6 +110,7 @@ pub async fn explain(question: &str, cards: &[Card]) -> Result<String, ExplainEr
         .post("https://api.openai.com/v1/chat/completions")
         .bearer_auth(key)
         .header(reqwest::header::CONTENT_TYPE, "application/json")
+        .timeout(Duration::from_mins(5))
         .json(&body);
 
     let resp = match req.send().await {

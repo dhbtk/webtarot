@@ -10,7 +10,6 @@ const GAP = 25
 const ANIMATION_DURATION_PER_CARD = 0.4
 
 const PlayMat = styled.div<{ cards: Card[] }>`
-  background: #fafafa;
   position: relative;
   flex: 1;
   height: ${({cards}) => cards.length > 5 ? CARD_HEIGHT * 2 + GAP * 4 : CARD_HEIGHT + 2 * GAP}px;

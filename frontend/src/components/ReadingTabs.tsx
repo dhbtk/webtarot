@@ -10,12 +10,17 @@ const Wrapper = styled.div`
   padding: 0.25rem 0.25rem 0;
   border-bottom: 1px solid #e5e7eb;
   background: #fafafa;
+  
+  @media (prefers-color-scheme: dark) {
+    background: #1f2937;
+    border-color: #374151;
+  }
 `
 
 export default function ReadingTabs() {
   const result = useQuery(useReadingIds())
   return (
-    <Wrapper>
+    <Wrapper style={{ display: (result.data?.length ?? 0) > 0 ? 'flex' : 'none' }}>
       {result.data?.map(id => <ReadingTab key={id} id={id} />)}
     </Wrapper>
   )

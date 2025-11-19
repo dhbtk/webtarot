@@ -23,6 +23,19 @@ const TabLink = styled(Link)`
   &:hover {
     color: inherit;
   }
+  
+  @media (prefers-color-scheme: dark) {
+    background: #1f2937;
+    border-color: #374151;
+    
+    &.active {
+      background: #2d3748;
+    }
+    
+    &:hover {
+      color: #e5e7eb;
+    }
+  }
 `
 
 export const ReadingTab: React.FC<{ id: string }> = ( { id }: { id: string }) => {

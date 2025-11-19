@@ -61,21 +61,21 @@ export default function ReadingDetails() {
         <>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.5rem', marginBottom: '0.5rem', justifyContent: 'space-between' }}>
             <h2 style={{ margin: 0, fontSize: 18 }}>{reading.question}</h2>
-            <button onClick={() => removeMutation.mutate()} style={{ fontSize: 12, padding: '0.25rem 0.5rem', background: '#eaeaea', color: '#6b7280', border: 0, borderRadius: 6 }}>
+            <CloseButton onClick={() => removeMutation.mutate()}>
               &times;
-            </button>
+            </CloseButton>
           </div>
-          <div style={{ fontSize: 12, color: '#6b7280', display: 'flex', justifyContent: 'space-between' }}>
+          <MiniHeading style={{ display: 'flex', justifyContent: 'space-between' }}>
             <span>
               Embaralhado {reading.shuffledTimes} vez{reading.shuffledTimes === 1 ? '' : 'es'} · Pergunta feita em {new Date(reading.createdAt).toLocaleString()}
             </span>
-            <code style={{ color: '#6b7280', fontSize: 12 }}>{id}</code>
-          </div>
+            <code>{id}</code>
+          </MiniHeading>
 
           {reading && (
             <section style={{ marginTop: '1rem', display: 'grid', gap: '0.75rem' }}>
               <div>
-                <div style={{ fontSize: 12, color: '#6b7280' }}>Cards ({reading.cards.length})</div>
+                <MiniHeading>Cards ({reading.cards.length})</MiniHeading>
                 <CardDisplay cards={reading.cards} uuid={reading.id} />
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginTop: '0.25rem' }}>
                   {reading.cards.map((c, i) => (
@@ -97,6 +97,29 @@ export default function ReadingDetails() {
   )
 }
 
+// { fontSize: 12, padding: '0.25rem 0.5rem', background: '#eaeaea', color: '#6b7280', border: 0, borderRadius: 6 }
+const CloseButton = styled.button`
+  font-size: 12px;
+  padding: 0.25rem 0.5rem;
+  background: #eaeaea;
+  color: #6b7280;
+  border: 0;
+  border-radius: 6px;
+  
+  @media (prefers-color-scheme: dark) {
+    background: #374151;
+    color: #9ca3af;
+  }
+`
+
+const MiniHeading = styled.header`
+  font-size: 12px;
+  color: #6b7280;
+  
+  @media (prefers-color-scheme: dark) {
+    color: #9ca3af;
+  }
+  `
 const MarkdownContainer = styled.div`
   h1, h2, h3, h4, h5, h6 {
     font-size: 110%;
@@ -105,20 +128,26 @@ const MarkdownContainer = styled.div`
   }
 `
 
+const BadgeSpan = styled.span`
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 999px;
+  background: #fff;
+  font-size: 12px;
+  
+  @media (prefers-color-scheme: dark) {
+    background: #1f2937;
+    border-color: #374151;
+  }
+`
+
 function CardBadge({ card }: { card: Card }) {
   return (
-    <span
-      style={{
-        display: 'inline-block',
-        padding: '0.25rem 0.5rem',
-        border: '1px solid #e5e7eb',
-        borderRadius: 999,
-        background: '#fff',
-        fontSize: 12,
-      }}
+    <BadgeSpan
       title={cardLabel(card)}
     >
       {cardLabel(card)}
-    </span>
+    </BadgeSpan>
   )
 }
