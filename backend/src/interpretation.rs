@@ -99,6 +99,20 @@ impl InterpretationManager {
         Some(parsed)
     }
 
+    pub async fn get_all_interpretations(&self) -> Vec<Interpretation> {
+        let mut manager = self.connection_manager.clone();
+        let keys: Vec<String> = manager.keys("interpretation:*").await.unwrap();
+        let mut results = Vec::new();
+        for key in keys {
+            let Ok(value) = manager.get::<String, String>(key).await else { continue };
+            let Ok(parsed) = serde_json::from_str::<Interpretation>(&value) else { continue };
+            if parsed.is_done() {
+                results.push(parsed);
+            };
+        }
+        results
+    }
+
     fn key_for_uuid(&self, uuid: Uuid) -> String {
         format!("interpretation:{}", uuid)
     }

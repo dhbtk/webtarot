@@ -100,7 +100,7 @@ impl Display for Card {
     }
 }
 
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Serialize, Deserialize, Hash)]
 #[serde(rename_all = "camelCase")]
 pub enum Arcana {
     Major { name: MajorArcana },
@@ -116,7 +116,7 @@ impl Display for Arcana {
     }
 }
 
-#[derive(Copy, Clone, EnumIter, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Copy, Clone, EnumIter, Debug, Eq, PartialEq, Serialize, Deserialize, Hash)]
 #[serde(rename_all = "camelCase")]
 pub enum MajorArcana {
     Fool,
@@ -173,7 +173,7 @@ impl Display for MajorArcana {
     }
 }
 
-#[derive(Copy, Clone, EnumIter, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Copy, Clone, EnumIter, Debug, Eq, PartialEq, Serialize, Deserialize, Hash)]
 #[serde(rename_all = "camelCase")]
 pub enum Rank {
     Ace,
@@ -214,7 +214,7 @@ impl Display for Rank {
     }
 }
 
-#[derive(Copy, Clone, EnumIter, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Copy, Clone, EnumIter, Debug, Eq, PartialEq, Serialize, Deserialize, Hash)]
 #[serde(rename_all = "camelCase")]
 pub enum Suit {
     Cups,
