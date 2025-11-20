@@ -104,8 +104,12 @@ impl InterpretationManager {
         let keys: Vec<String> = manager.keys("interpretation:*").await.unwrap();
         let mut results = Vec::new();
         for key in keys {
-            let Ok(value) = manager.get::<String, String>(key).await else { continue };
-            let Ok(parsed) = serde_json::from_str::<Interpretation>(&value) else { continue };
+            let Ok(value) = manager.get::<String, String>(key).await else {
+                continue;
+            };
+            let Ok(parsed) = serde_json::from_str::<Interpretation>(&value) else {
+                continue;
+            };
             if parsed.is_done() {
                 results.push(parsed);
             };

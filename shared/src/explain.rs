@@ -76,10 +76,7 @@ pub async fn explain(question: &str, cards: &[Card]) -> Result<String, ExplainEr
         .collect::<Vec<_>>()
         .join("\n");
 
-    let user = format!(
-        "Pergunta: {}\nCartas (na ordem):\n{}",
-        question, cards_list
-    );
+    let user = format!("Pergunta: {}\nCartas (na ordem):\n{}", question, cards_list);
 
     // Read API key from environment
     let key = match std::env::var("OPENAI_KEY") {

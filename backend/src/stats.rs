@@ -1,8 +1,8 @@
-use std::collections::HashMap;
-use serde::{Deserialize, Serialize};
-use webtarot_shared::model::{Arcana, MajorArcana};
 use crate::interpretation::Interpretation;
 use crate::reading::Reading;
+use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
+use webtarot_shared::model::{Arcana, MajorArcana};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -47,7 +47,9 @@ pub fn calculate_stats(readings: &Vec<Reading>) -> Stats {
     let mut arcana_stats = HashMap::<Arcana, ArcanaStats>::new();
     for reading in readings {
         for card in &reading.cards {
-            let arcana_stats = arcana_stats.entry(card.arcana).or_insert_with(|| ArcanaStats::new(card.arcana));
+            let arcana_stats = arcana_stats
+                .entry(card.arcana)
+                .or_insert_with(|| ArcanaStats::new(card.arcana));
             arcana_stats.total_count += 1;
             if card.flipped {
                 arcana_stats.drawn_flipped_count += 1;

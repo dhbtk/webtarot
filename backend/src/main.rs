@@ -3,6 +3,7 @@ mod reading;
 mod stats;
 
 use crate::interpretation::{GetInterpretationResult, InterpretationManager};
+use crate::stats::calculate_stats;
 use axum::extract::{Path, State};
 use axum::http::StatusCode;
 use axum::routing::get;
@@ -15,7 +16,6 @@ use tower_http::trace::DefaultOnResponse;
 use tower_http::trace::TraceLayer;
 use tracing::Level;
 use tracing_subscriber::{fmt, prelude::*};
-use crate::stats::calculate_stats;
 
 #[tokio::main]
 async fn main() {
@@ -68,7 +68,10 @@ async fn interpretation_result(
 
 async fn stats(State(interpretation_manager): State<InterpretationManager>) -> Json<stats::Stats> {
     let interpretations = interpretation_manager.get_all_interpretations().await;
-    let readings = interpretations.into_iter().map(|r| r.reading().clone()).collect::<Vec<_>>();
+    let readings = interpretations
+        .into_iter()
+        .map(|r| r.reading().clone())
+        .collect::<Vec<_>>();
     let stats = calculate_stats(&readings);
     Json(stats)
 }
