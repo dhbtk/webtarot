@@ -2,6 +2,7 @@
 // Routes:
 //  - POST /api/v1/reading → createReading
 //  - GET  /api/v1/interpretation/{id} → getInterpretation
+//  - GET  /api/v1/stats → getStats
 //
 // Models are defined in ./models.ts and mirror the Rust types.
 
@@ -9,6 +10,7 @@ import type {
   CreateReadingRequest,
   CreateReadingResponse,
   GetInterpretationResult,
+  Stats,
 } from './models';
 
 const JSON_HEADERS = {
@@ -78,41 +80,14 @@ export async function getInterpretation(
 }
 
 /**
- * Convenience helper to poll an interpretation until it's done or a timeout occurs.
+ * Fetch aggregate statistics about readings and cards.
+ * GET /api/v1/stats
  */
-export async function pollInterpretation(
-  interpretationId: string,
-  options?: { intervalMs?: number; timeoutMs?: number; signal?: AbortSignal },
-): Promise<GetInterpretationResult> {
-  const interval = options?.intervalMs ?? 1000;
-  const timeout = options?.timeoutMs ?? 60_000;
-  const start = Date.now();
-
-  // If the caller passed an AbortSignal, honor it.
-  const signal = options?.signal;
-
-  // eslint-disable-next-line no-constant-condition
-  while (true) {
-    if (signal?.aborted) throw new DOMException('Aborted', 'AbortError');
-
-    const result = await getInterpretation(interpretationId, { signal });
-    if (result.done) return result;
-
-    if (Date.now() - start >= timeout) {
-      const err = new Error('Polling interpretation timed out');
-      (err as any).lastResult = result;
-      throw err;
-    }
-    await new Promise((r, j) => {
-      const id = setTimeout(r, interval);
-      if (signal) {
-        const onAbort = () => {
-          clearTimeout(id);
-          signal.removeEventListener('abort', onAbort);
-          j(new DOMException('Aborted', 'AbortError'));
-        };
-        signal.addEventListener('abort', onAbort, { once: true });
-      }
-    });
-  }
+export async function getStats(init?: RequestInit): Promise<Stats> {
+  const res = await fetch(`${API_BASE}/stats`, {
+    method: 'GET',
+    headers: { ...(init?.headers ?? {}) },
+    ...init,
+  });
+  return handleJsonResponse<Stats>(res);
 }

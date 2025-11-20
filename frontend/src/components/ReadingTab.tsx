@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useReadingById } from '../backend/queries.ts'
 import styled from 'styled-components'
 
-const TabLink = styled(Link)`
+export const TabLink = styled(Link)`
   padding: 0.25rem 0.5rem;
   border: 1px solid #e5e7eb;
   border-bottom: none;

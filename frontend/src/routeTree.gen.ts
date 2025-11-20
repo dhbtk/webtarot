@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as ReadingsRouteImport } from './routes/readings'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ReadingsIndexRouteImport } from './routes/readings/index'
+import { Route as ReadingsStatsRouteImport } from './routes/readings/stats'
 import { Route as ReadingsIdRouteImport } from './routes/readings/$id'
 
 const ReadingsRoute = ReadingsRouteImport.update({
@@ -29,6 +30,11 @@ const ReadingsIndexRoute = ReadingsIndexRouteImport.update({
   path: '/',
   getParentRoute: () => ReadingsRoute,
 } as any)
+const ReadingsStatsRoute = ReadingsStatsRouteImport.update({
+  id: '/stats',
+  path: '/stats',
+  getParentRoute: () => ReadingsRoute,
+} as any)
 const ReadingsIdRoute = ReadingsIdRouteImport.update({
   id: '/$id',
   path: '/$id',
@@ -39,11 +45,13 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/readings': typeof ReadingsRouteWithChildren
   '/readings/$id': typeof ReadingsIdRoute
+  '/readings/stats': typeof ReadingsStatsRoute
   '/readings/': typeof ReadingsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/readings/$id': typeof ReadingsIdRoute
+  '/readings/stats': typeof ReadingsStatsRoute
   '/readings': typeof ReadingsIndexRoute
 }
 export interface FileRoutesById {
@@ -51,14 +59,26 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/readings': typeof ReadingsRouteWithChildren
   '/readings/$id': typeof ReadingsIdRoute
+  '/readings/stats': typeof ReadingsStatsRoute
   '/readings/': typeof ReadingsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/readings' | '/readings/$id' | '/readings/'
+  fullPaths:
+    | '/'
+    | '/readings'
+    | '/readings/$id'
+    | '/readings/stats'
+    | '/readings/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/readings/$id' | '/readings'
-  id: '__root__' | '/' | '/readings' | '/readings/$id' | '/readings/'
+  to: '/' | '/readings/$id' | '/readings/stats' | '/readings'
+  id:
+    | '__root__'
+    | '/'
+    | '/readings'
+    | '/readings/$id'
+    | '/readings/stats'
+    | '/readings/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -89,6 +109,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ReadingsIndexRouteImport
       parentRoute: typeof ReadingsRoute
     }
+    '/readings/stats': {
+      id: '/readings/stats'
+      path: '/stats'
+      fullPath: '/readings/stats'
+      preLoaderRoute: typeof ReadingsStatsRouteImport
+      parentRoute: typeof ReadingsRoute
+    }
     '/readings/$id': {
       id: '/readings/$id'
       path: '/$id'
@@ -101,11 +128,13 @@ declare module '@tanstack/react-router' {
 
 interface ReadingsRouteChildren {
   ReadingsIdRoute: typeof ReadingsIdRoute
+  ReadingsStatsRoute: typeof ReadingsStatsRoute
   ReadingsIndexRoute: typeof ReadingsIndexRoute
 }
 
 const ReadingsRouteChildren: ReadingsRouteChildren = {
   ReadingsIdRoute: ReadingsIdRoute,
+  ReadingsStatsRoute: ReadingsStatsRoute,
   ReadingsIndexRoute: ReadingsIndexRoute,
 }
 

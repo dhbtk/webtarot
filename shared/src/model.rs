@@ -11,7 +11,9 @@ const MAX_SHUFFLES: usize = 7033;
 const MAX_DRAWS: usize = 13;
 
 #[derive(Debug, Clone, Eq, PartialEq)]
-pub struct Deck(Vec<Card>);
+pub struct Deck {
+    pub cards: Vec<Card>,
+}
 
 impl Deck {
     pub fn build() -> Deck {
@@ -30,7 +32,7 @@ impl Deck {
                 })
             }
         }
-        Deck(cards)
+        Deck { cards }
     }
 
     pub fn shuffle(&mut self, question: &str) -> usize {
@@ -41,8 +43,8 @@ impl Deck {
         let shuffles = (question_hash + base_shuffle_count) % MAX_SHUFFLES;
         let mut rng = rng();
         for _ in 0..shuffles {
-            self.0.shuffle(&mut rng);
-            for card in self.0.iter_mut() {
+            self.cards.shuffle(&mut rng);
+            for card in self.cards.iter_mut() {
                 card.flipped = random::<bool>();
             }
         }
@@ -73,9 +75,9 @@ impl Deck {
             .sample_single(&mut rng)
             .unwrap();
         [
-            &self.0[0..second_slice_start_index],
-            &self.0[second_slice_start_index..third_slice_start_index],
-            &self.0[third_slice_start_index..],
+            &self.cards[0..second_slice_start_index],
+            &self.cards[second_slice_start_index..third_slice_start_index],
+            &self.cards[third_slice_start_index..],
         ]
     }
 }
@@ -242,7 +244,7 @@ mod tests {
     #[test]
     fn deck_build_works() {
         let deck = Deck::build();
-        assert_eq!(78, deck.0.len());
+        assert_eq!(78, deck.cards.len());
     }
 
     #[test]
@@ -250,7 +252,7 @@ mod tests {
         let mut deck = Deck::build();
         deck.shuffle("this is a question");
         assert_ne!(Deck::build(), deck);
-        for card in deck.0 {
+        for card in deck.cards {
             println!("* {}", card)
         }
     }

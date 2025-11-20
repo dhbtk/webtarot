@@ -91,3 +91,22 @@ export interface GetInterpretationResult {
   interpretation: string;
   reading: Reading | null;
 }
+
+// Mirrors Rust: stats::ArcanaStats with serde(rename_all = "camelCase")
+export interface ArcanaStats {
+  arcana: Arcana;
+  drawnFlippedCount: number;
+  drawnCount: number;
+  totalCount: number;
+  percentFlipped: number;
+  percentDrawn: number;
+  percentTotal: number;
+}
+
+// Mirrors Rust: stats::Stats with serde(rename_all = "camelCase")
+export interface Stats {
+  totalReadings: number;
+  totalCardsDrawn: number;
+  arcanaStats: ArcanaStats[];
+  neverDrawn: Arcana[];
+}

@@ -2,7 +2,7 @@ use crate::interpretation::Interpretation;
 use crate::reading::Reading;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use webtarot_shared::model::{Arcana, MajorArcana};
+use webtarot_shared::model::{Arcana, Deck, MajorArcana};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -10,6 +10,7 @@ pub struct Stats {
     pub total_readings: u64,
     pub total_cards_drawn: u64,
     pub arcana_stats: Vec<ArcanaStats>,
+    pub never_drawn: Vec<Arcana>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -43,6 +44,7 @@ pub fn calculate_stats(readings: &Vec<Reading>) -> Stats {
         total_readings: readings.len() as u64,
         total_cards_drawn: readings.iter().map(|r| r.cards.len()).sum::<usize>() as u64,
         arcana_stats: Vec::new(),
+        never_drawn: Vec::new(),
     };
     let mut arcana_stats = HashMap::<Arcana, ArcanaStats>::new();
     for reading in readings {
@@ -58,6 +60,12 @@ pub fn calculate_stats(readings: &Vec<Reading>) -> Stats {
             }
         }
     }
+    stats.never_drawn = Deck::build()
+        .cards
+        .iter()
+        .filter(|c| !arcana_stats.contains_key(&c.arcana))
+        .map(|c| c.arcana)
+        .collect();
     stats.arcana_stats = arcana_stats.into_values().collect();
 
     for stat in &mut stats.arcana_stats {
