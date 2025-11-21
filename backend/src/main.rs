@@ -2,7 +2,11 @@ mod interpretation;
 mod reading;
 mod stats;
 
-use crate::interpretation::{GetInterpretationResult, InterpretationManager};
+use crate::interpretation::{
+    CreateInterpretationRequest, CreateInterpretationResponse, GetInterpretationResult,
+    InterpretationManager,
+};
+use crate::reading::Reading;
 use crate::stats::calculate_stats;
 use axum::extract::{Path, State};
 use axum::http::StatusCode;
@@ -25,6 +29,7 @@ async fn main() {
     let app = Router::new()
         .route("/api/v1/reading", post(create_reading))
         .route("/api/v1/interpretation/{id}", get(interpretation_result))
+        .route("/api/v1/interpretation", post(create_interpretation))
         .route("/api/v1/stats", get(stats))
         .layer(
             TraceLayer::new_for_http()
@@ -64,6 +69,15 @@ async fn interpretation_result(
         StatusCode::OK,
         Json(interpretation_manager.get_interpretation(uuid).await.into()),
     )
+}
+
+async fn create_interpretation(
+    State(interpretation_manager): State<InterpretationManager>,
+    Json(create_interpretation_request): Json<CreateInterpretationRequest>,
+) -> (StatusCode, Json<CreateInterpretationResponse>) {
+    let reading: Reading = create_interpretation_request.into();
+    interpretation_manager.request_interpretation(reading.clone());
+    (StatusCode::OK, Json(reading.id.into()))
 }
 
 async fn stats(State(interpretation_manager): State<InterpretationManager>) -> Json<stats::Stats> {

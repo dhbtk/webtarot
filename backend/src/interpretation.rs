@@ -5,6 +5,7 @@ use serde::{Deserialize, Serialize};
 use std::env;
 use std::fmt::{Debug, Formatter};
 use uuid::Uuid;
+use webtarot_shared::model::Card;
 
 #[derive(Clone)]
 pub struct InterpretationManager {
@@ -31,6 +32,39 @@ impl Interpretation {
     }
 }
 
+#[derive(Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct CreateInterpretationRequest {
+    pub question: String,
+    pub cards: Vec<Card>,
+}
+
+impl From<CreateInterpretationRequest> for Reading {
+    fn from(value: CreateInterpretationRequest) -> Self {
+        Reading {
+            id: Uuid::new_v4(),
+            created_at: chrono::Utc::now(),
+            question: value.question,
+            shuffled_times: 0,
+            cards: value.cards,
+        }
+    }
+}
+
+#[derive(Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct CreateInterpretationResponse {
+    pub interpretation_id: Uuid,
+}
+
+impl From<Uuid> for CreateInterpretationResponse {
+    fn from(value: Uuid) -> Self {
+        Self {
+            interpretation_id: value,
+        }
+    }
+}
+
 impl Debug for InterpretationManager {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         write!(f, "InterpretationManager {{ }}")
@@ -47,7 +81,6 @@ impl InterpretationManager {
         }
     }
 
-    #[tracing::instrument]
     pub fn request_interpretation(&self, reading: Reading) {
         let mut cloned = self.clone();
         tokio::spawn(async move {
@@ -68,7 +101,6 @@ impl InterpretationManager {
             .unwrap();
     }
 
-    #[tracing::instrument]
     async fn start_interpretation_request(&mut self, reading: Reading) {
         tracing::debug!("start_interpretation_request");
         let result = webtarot_shared::explain::explain(&reading.question, &reading.cards).await;

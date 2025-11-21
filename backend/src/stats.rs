@@ -1,8 +1,7 @@
-use crate::interpretation::Interpretation;
 use crate::reading::Reading;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use webtarot_shared::model::{Arcana, Deck, MajorArcana};
+use webtarot_shared::model::{Arcana, Deck};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
