@@ -3,9 +3,9 @@ import { createReading } from '../backend/api'
 import type { CreateReadingRequest } from '../backend/models'
 import { useRouter } from '@tanstack/react-router'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { getSavedReadings, saveReadings } from '../backend/savedReadings.ts'
+import { addToHistory, getSavedReadings, saveReadings } from '../backend/savedReadings.ts'
 
-export default function ReadingForm() {
+export default function ReadingForm () {
   const router = useRouter()
   const queryClient = useQueryClient()
   const [question, setQuestion] = useState('')
@@ -17,11 +17,12 @@ export default function ReadingForm() {
     mutationFn: (reading: CreateReadingRequest) => createReading(reading),
     onSuccess: async (data) => {
       saveReadings([...getSavedReadings(), data.interpretationId])
+      addToHistory(data.interpretationId)
       await queryClient.invalidateQueries({ queryKey: ['readings'] })
     }
   })
 
-  async function onSubmit(e: React.FormEvent) {
+  async function onSubmit (e: React.FormEvent) {
     e.preventDefault()
     setError(null)
     setSubmitting(true)

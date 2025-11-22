@@ -55,6 +55,10 @@ export const TabLink = styled(Link)`
     &:hover {
       background: rgba(255, 255, 255, 0.1);
     }
+
+    @media (max-width: 768px) {
+      visibility: visible;
+    }
   }
 `
 

@@ -1,7 +1,8 @@
-import { createFileRoute, Outlet } from '@tanstack/react-router'
+import { createFileRoute, MatchRoute, Outlet } from '@tanstack/react-router'
 import ReadingForm from '../components/ReadingForm.tsx'
 import ReadingTabs from '../components/ReadingTabs.tsx'
 import styled from 'styled-components'
+import useWindowDimensions from '../util/useWindowDimensions.ts'
 
 export const Route = createFileRoute('/readings')({
   component: RouteComponent,
@@ -49,12 +50,20 @@ const Section = styled.section`
 `
 
 function RouteComponent () {
+  const { width } = useWindowDimensions()
+  const showFormWrapper = width > 768
   return (
     <Wrapper>
-      <FormWrapper>
-        <h2>Nova Tiragem</h2>
-        <ReadingForm/>
-      </FormWrapper>
+      {showFormWrapper && (
+        <MatchRoute to="/readings">
+          {(match) => !match && (
+            <FormWrapper>
+              <h2>Nova Tiragem</h2>
+              <ReadingForm/>
+            </FormWrapper>
+          )}
+        </MatchRoute>
+      )}
       <Section>
         <ReadingTabs/>
         <div style={{ flex: 1, minHeight: 0, maxHeight: '100%', overflowY: 'auto' }}>

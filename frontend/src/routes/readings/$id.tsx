@@ -92,7 +92,6 @@ export default function ReadingDetails () {
 }
 
 const ReadingContainer = styled.div`
-  padding: 1rem;
   height: 100%;
   overflow: auto;
   font-family: "Varta", system-ui, sans-serif;
@@ -116,6 +115,10 @@ const MarkdownContainer = styled.div`
     font-size: 1.12rem;
     font-weight: 600;
     margin: 0.5rem 0;
+  }
+
+  ul, ol {
+    padding-left: 1rem;
   }
 `
 
