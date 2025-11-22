@@ -6,7 +6,7 @@
 //
 // Models are defined in ./models.ts and mirror the Rust types.
 
-import type { CreateReadingRequest, CreateReadingResponse, GetInterpretationResult, Stats, } from './models'
+import type { CreateReadingRequest, CreateReadingResponse, GetInterpretationResult, Stats, Interpretation, } from './models'
 import { getUserId } from './userId.ts'
 
 const JSON_HEADERS = {
@@ -92,4 +92,17 @@ export async function getStats (init?: RequestInit): Promise<Stats> {
     ...init,
   })
   return handleJsonResponse<Stats>(res)
+}
+
+/**
+ * Fetch interpretation history for the current user.
+ * GET /api/v1/interpretation/history
+ */
+export async function getHistory (init?: RequestInit): Promise<Interpretation[]> {
+  const res = await fetch(`${API_BASE}/interpretation/history`, {
+    method: 'GET',
+    headers: { ...getDefaultHeaders(), ...(init?.headers ?? {}) },
+    ...init,
+  })
+  return handleJsonResponse<Interpretation[]>(res)
 }

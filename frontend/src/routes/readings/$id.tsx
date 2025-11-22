@@ -4,7 +4,7 @@ import type { Card } from '../../backend/models'
 import { CardDisplay } from '../../components/CardDisplay.tsx'
 import { cardLabel } from '../../util/cards.ts'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { getSavedReadings, removeReading } from '../../backend/savedReadings.ts'
+import { addReading, getSavedReadings, removeReading } from '../../backend/savedReadings.ts'
 import Markdown from 'react-markdown'
 import remarkBreaks from 'remark-breaks'
 import styled from 'styled-components'
@@ -37,6 +37,10 @@ export default function ReadingDetails () {
   const query = useQuery({
     queryKey: ['readings', id],
     queryFn: async ({ queryKey }) => {
+      if (!getSavedReadings().includes(id)) {
+        addReading(id)
+        await queryClient.invalidateQueries({ queryKey: ['readings'] })
+      }
       const response = await getInterpretation(queryKey[1])
       // error handling de milhões!!!
       if (response.error === 'Not found') {
@@ -95,6 +99,7 @@ const ReadingContainer = styled.div`
   height: 100%;
   overflow: auto;
   font-family: "Varta", system-ui, sans-serif;
+  margin-top: 0.25rem;
 `
 
 const CardBadgeContainer = styled.div`

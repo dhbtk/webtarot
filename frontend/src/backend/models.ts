@@ -69,6 +69,7 @@ export interface Reading {
   question: string;
   shuffledTimes: number;
   cards: Card[];
+  userId: string;
 }
 
 // Mirrors Rust: CreateReadingRequest { question: String, cards: u8 }
@@ -109,4 +110,22 @@ export interface Stats {
   totalCardsDrawn: number;
   arcanaStats: ArcanaStats[];
   neverDrawn: Arcana[];
+}
+
+// Mirrors Rust enum Interpretation in backend/src/interpretation.rs
+// Serde externally-tagged enum with tuple variants serializes as:
+// - { "Pending": { ...Reading } }
+// - { "Done": [ { ...Reading }, "<text>" ] }
+// - { "Failed": [ { ...Reading }, "<error>" ] }
+export type Interpretation =
+  | { Pending: Reading }
+  | { Done: [Reading, string] }
+  | { Failed: [Reading, string] };
+
+export function interpretationReading (i: Interpretation): Reading {
+  if ((i as any).Pending) return (i as { Pending: Reading }).Pending
+  if ((i as any).Done) return (i as { Done: [Reading, string] }).Done[0]
+  if ((i as any).Failed) return (i as { Failed: [Reading, string] }).Failed[0]
+  // Fallback to a narrow type error; this should never happen at runtime
+  throw new Error('Unknown Interpretation variant')
 }

@@ -5,6 +5,8 @@ export function getSavedReadings (): string[] { return JSON.parse(localStorage.g
 
 export function saveReadings (readings: string[]) { localStorage.setItem(SAVED_READINGS_KEY, JSON.stringify(readings)) }
 
+export function addReading (reading: string) { saveReadings([reading, ...getSavedReadings()]) }
+
 export function removeReading (reading: string) { saveReadings(getSavedReadings().filter(r => r !== reading)) }
 
 export function getHistory (): string[] { return JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]') }

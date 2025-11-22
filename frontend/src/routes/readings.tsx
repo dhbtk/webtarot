@@ -45,7 +45,7 @@ const Section = styled.section`
   display: flex;
   flex-direction: column;
   background-color: rgba(82, 69, 150, 0.7);
-  padding: 1.5rem;
+  padding: 1rem;
   border-radius: 0.75rem;
 `
 
