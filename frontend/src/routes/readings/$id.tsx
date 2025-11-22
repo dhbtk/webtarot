@@ -13,7 +13,7 @@ export const Route = createFileRoute('/readings/$id')({
   component: ReadingDetails
 })
 
-export default function ReadingDetails() {
+export default function ReadingDetails () {
   const { id } = useParams({ from: '/readings/$id' }) as { id: string }
   const queryClient = useQueryClient()
   const navigate = useNavigate()
@@ -39,9 +39,9 @@ export default function ReadingDetails() {
     queryFn: async ({ queryKey }) => {
       const response = await getInterpretation(queryKey[1])
       // error handling de milhões!!!
-      if (response.error === "Not found") {
+      if (response.error === 'Not found') {
         removeMutation.mutate()
-        throw new Error("Reading not found")
+        throw new Error('Reading not found')
       }
       if (!response.done) {
         queryClient.setQueryData(['readings', id], response)
@@ -56,15 +56,10 @@ export default function ReadingDetails() {
   const reading = query.data?.reading ?? null
 
   return (
-    <div style={{ padding: '1rem', height: '100%', overflow: 'auto' }}>
+    <ReadingContainer>
       {reading && (
         <>
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.5rem', marginBottom: '0.5rem', justifyContent: 'space-between' }}>
-            <h2 style={{ margin: 0, fontSize: 18 }}>{reading.question}</h2>
-            <CloseButton onClick={() => removeMutation.mutate()}>
-              &times;
-            </CloseButton>
-          </div>
+          <ReadingTitle>{reading.question}</ReadingTitle>
           <MiniHeading style={{ display: 'flex', justifyContent: 'space-between' }}>
             <span>
               Embaralhado {reading.shuffledTimes} vez{reading.shuffledTimes === 1 ? '' : 'es'} · Pergunta feita em {new Date(reading.createdAt).toLocaleString()}
@@ -73,76 +68,77 @@ export default function ReadingDetails() {
           </MiniHeading>
 
           {reading && (
-            <section style={{ marginTop: '1rem', display: 'grid', gap: '0.75rem' }}>
+            <section style={{ display: 'grid', gap: '0.75rem' }}>
               <div>
-                <MiniHeading>Cards ({reading.cards.length})</MiniHeading>
-                <CardDisplay cards={reading.cards} uuid={reading.id} />
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginTop: '0.25rem' }}>
+                <CardDisplay cards={reading.cards} uuid={reading.id}/>
+                <CardBadgeContainer>
                   {reading.cards.map((c, i) => (
-                    <CardBadge key={i} card={c} />
+                    <CardBadge key={i} card={c}/>
                   ))}
-                </div>
+                </CardBadgeContainer>
               </div>
 
               <MarkdownContainer>
                 <Markdown remarkPlugins={[remarkBreaks]}>
-              {query.data?.done ? query.data?.interpretation : 'Aguardando interpretação...'}
+                  {query.data?.done ? query.data?.interpretation : 'Aguardando interpretação...'}
                 </Markdown>
               </MarkdownContainer>
             </section>
           )}
         </>
       )}
-    </div>
+    </ReadingContainer>
   )
 }
 
-// { fontSize: 12, padding: '0.25rem 0.5rem', background: '#eaeaea', color: '#6b7280', border: 0, borderRadius: 6 }
-const CloseButton = styled.button`
-  font-size: 12px;
-  padding: 0.25rem 0.5rem;
-  background: #eaeaea;
-  color: #6b7280;
-  border: 0;
-  border-radius: 6px;
-  
-  @media (prefers-color-scheme: dark) {
-    background: #374151;
-    color: #9ca3af;
-  }
+const ReadingContainer = styled.div`
+  padding: 1rem;
+  height: 100%;
+  overflow: auto;
+  font-family: "Varta", system-ui, sans-serif;
+`
+
+const CardBadgeContainer = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
 `
 
 const MiniHeading = styled.header`
-  font-size: 12px;
-  color: #6b7280;
-  
-  @media (prefers-color-scheme: dark) {
-    color: #9ca3af;
-  }
-  `
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.65);
+
+`
 const MarkdownContainer = styled.div`
   h1, h2, h3, h4, h5, h6 {
-    font-size: 110%;
-    font-weight: bold;
+    font-family: "Montserrat", sans-serif;
+    font-size: 1.12rem;
+    font-weight: 600;
     margin: 0.5rem 0;
   }
 `
 
-const BadgeSpan = styled.span`
-  display: inline-block;
-  padding: 0.25rem 0.5rem;
-  border: 1px solid #e5e7eb;
-  border-radius: 999px;
-  background: #fff;
-  font-size: 12px;
-  
-  @media (prefers-color-scheme: dark) {
-    background: #1f2937;
-    border-color: #374151;
-  }
+const ReadingTitle = styled.h2`
+  font-family: "Montserrat", sans-serif;
+  font-size: 1.12rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem;
 `
 
-function CardBadge({ card }: { card: Card }) {
+const BadgeSpan = styled.span`
+  padding: 0.12rem 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.1);
+  font-size: 0.75rem;
+  border-radius: 6px;
+  max-width: max(150px, 15vw);
+  display: flex;
+  align-items: center;
+  padding-top: 4px; // fix for weird vertical alignment
+`
+
+function CardBadge ({ card }: { card: Card }) {
   return (
     <BadgeSpan
       title={cardLabel(card)}

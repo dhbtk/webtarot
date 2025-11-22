@@ -41,6 +41,10 @@ body {
   max-height: 100vh;
 }
 
+code {
+  font-family: "Fira Code", monospace;
+}
+
 * {
   box-sizing: border-box;
 }
