@@ -1,4 +1,5 @@
 use crate::reading::Reading;
+use crate::user::User;
 use redis::AsyncCommands;
 use redis::aio::ConnectionManager;
 use serde::{Deserialize, Serialize};
@@ -30,6 +31,14 @@ impl Interpretation {
             Self::Failed(reading, _) => reading,
         }
     }
+
+    pub fn reading_mut(&mut self) -> &mut Reading {
+        match self {
+            Self::Pending(reading) => reading,
+            Self::Done(reading, _) => reading,
+            Self::Failed(reading, _) => reading,
+        }
+    }
 }
 
 #[derive(Serialize, Deserialize, Clone)]
@@ -39,14 +48,15 @@ pub struct CreateInterpretationRequest {
     pub cards: Vec<Card>,
 }
 
-impl From<CreateInterpretationRequest> for Reading {
-    fn from(value: CreateInterpretationRequest) -> Self {
+impl From<(CreateInterpretationRequest, &User)> for Reading {
+    fn from((value, user): (CreateInterpretationRequest, &User)) -> Self {
         Reading {
             id: Uuid::new_v4(),
             created_at: chrono::Utc::now(),
             question: value.question,
             shuffled_times: 0,
             cards: value.cards,
+            user_id: Some(user.id),
         }
     }
 }
@@ -131,6 +141,20 @@ impl InterpretationManager {
         Some(parsed)
     }
 
+    pub async fn assign_to_user(&self, uuid: Uuid, user_id: Uuid) -> Option<Interpretation> {
+        let mut interpretation = self.get_interpretation(uuid).await?;
+        interpretation.reading_mut().user_id = Some(user_id);
+        let mut manager = self.connection_manager.clone();
+        manager
+            .set::<String, String, String>(
+                self.key_for_uuid(uuid),
+                serde_json::to_string(&interpretation).unwrap(),
+            )
+            .await
+            .unwrap();
+        Some(interpretation)
+    }
+
     pub async fn get_all_interpretations(&self) -> Vec<Interpretation> {
         let mut manager = self.connection_manager.clone();
         let keys: Vec<String> = manager.keys("interpretation:*").await.unwrap();
@@ -146,6 +170,33 @@ impl InterpretationManager {
                 results.push(parsed);
             };
         }
+        results
+    }
+
+    pub async fn get_history_for_user(&self, user_id: Uuid) -> Vec<Interpretation> {
+        let mut manager = self.connection_manager.clone();
+        let keys: Vec<String> = manager.keys("interpretation:*").await.unwrap();
+        let mut results = Vec::new();
+        for key in keys {
+            let Ok(value) = manager.get::<String, String>(key).await else {
+                continue;
+            };
+            let Ok(parsed) = serde_json::from_str::<Interpretation>(&value) else {
+                continue;
+            };
+            let Some(reading_user_uuid) = parsed.reading().user_id else {
+                continue;
+            };
+            if reading_user_uuid == user_id {
+                results.push(parsed);
+            }
+        }
+        results.sort_by(|a, b| {
+            b.reading()
+                .created_at
+                .cmp(&a.reading().created_at)
+                .reverse()
+        });
         results
     }
 

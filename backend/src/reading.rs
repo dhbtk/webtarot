@@ -1,3 +1,4 @@
+use crate::user::User;
 use serde::{Deserialize, Serialize};
 use tracing::instrument;
 use webtarot_shared::model::{Card, Deck};
@@ -35,10 +36,11 @@ pub struct Reading {
     pub question: String,
     pub shuffled_times: usize,
     pub cards: Vec<Card>,
+    pub user_id: Option<uuid::Uuid>,
 }
 
 #[instrument]
-pub fn perform_reading(request: &CreateReadingRequest) -> Reading {
+pub fn perform_reading(request: &CreateReadingRequest, user: &User) -> Reading {
     let mut deck = Deck::build();
     let shuffles = deck.shuffle(&request.question);
     let cards = deck.draw(request.cards as usize);
@@ -48,5 +50,6 @@ pub fn perform_reading(request: &CreateReadingRequest) -> Reading {
         question: request.question.clone(),
         shuffled_times: shuffles,
         cards,
+        user_id: Some(user.id),
     }
 }
