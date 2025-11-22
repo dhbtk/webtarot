@@ -31,10 +31,10 @@ const StatLabel = styled.div`
 
 const NeverDrawnGallery = styled.div`
   display: flex;
-  max-width: min(65vw, 100vw - 320px);
+  max-width: 30vw;
   overflow-x: auto;
   gap: 0.5rem;
-  
+
   img {
     width: 100px;
   }
@@ -42,7 +42,7 @@ const NeverDrawnGallery = styled.div`
 
 export const ReadingStats: React.FC<{ stats: Stats }> = ({ stats }) => {
   return (
-    <div>
+    <>
       <WrapperDiv>
         <StatDiv>
           <BigStatValue>{stats.totalReadings}</BigStatValue>
@@ -58,8 +58,8 @@ export const ReadingStats: React.FC<{ stats: Stats }> = ({ stats }) => {
         </StatDiv>
       </WrapperDiv>
       <NeverDrawnGallery>
-        {stats.neverDrawn.map((arcana, i) => <img key={i} src={arcanaImage(arcana)} alt={arcanaLabel(arcana)} />)}
+        {stats.neverDrawn.map((arcana, i) => <img key={i} src={arcanaImage(arcana)} alt={arcanaLabel(arcana)}/>)}
       </NeverDrawnGallery>
-    </div>
+    </>
   )
 }

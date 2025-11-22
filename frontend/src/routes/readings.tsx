@@ -10,40 +10,57 @@ export const Route = createFileRoute('/readings')({
 const Wrapper = styled.div`
   display: flex;
   height: 100%;
-  min-height: calc(100vh - 57px);
   flex: 1;
   width: 100%;
-  
+  gap: 2rem;
+
   @media (max-width: 768px) {
     flex-direction: column;
   }
 `
 
 const FormWrapper = styled.div`
+  background-color: rgba(82, 69, 150, 0.7);
+  padding: 1.5rem;
+  border-radius: 0.75rem;
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  padding: 1rem;
-  
+
   @media (min-width: 768px) {
     width: 320px;
     max-width: 40vw;
   }
+
+  h2 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 500;
+  }
 `
 
-function RouteComponent() {
+const Section = styled.section`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: rgba(82, 69, 150, 0.7);
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+`
+
+function RouteComponent () {
   return (
     <Wrapper>
       <FormWrapper>
-        <h2 style={{ margin: 0, fontSize: 16 }}>Nova Tiragem</h2>
-        <ReadingForm />
+        <h2>Nova Tiragem</h2>
+        <ReadingForm/>
       </FormWrapper>
-      <section style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
+      <Section>
         <ReadingTabs/>
-        <div style={{ flex: 1, minHeight: 0 }}>
-          <Outlet />
+        <div style={{ flex: 1, minHeight: 0, maxHeight: '100%', overflowY: 'auto' }}>
+          <Outlet/>
         </div>
-      </section>
+      </Section>
     </Wrapper>
   )
 }

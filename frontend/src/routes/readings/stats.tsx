@@ -2,7 +2,13 @@ import { createFileRoute } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
 import { getStats } from '../../backend/api.ts'
 import type { ArcanaStats } from '../../backend/models.ts'
-import { createColumnHelper, flexRender, getCoreRowModel, getSortedRowModel, useReactTable } from '@tanstack/react-table'
+import {
+  createColumnHelper,
+  flexRender,
+  getCoreRowModel,
+  getSortedRowModel,
+  useReactTable
+} from '@tanstack/react-table'
 import { arcanaLabel } from '../../util/cards.ts'
 import styled from 'styled-components'
 import { ReadingStats } from '../../components/ReadingStats.tsx'
@@ -17,25 +23,26 @@ const StyledTable = styled.table`
   width: 100%;
   border-collapse: collapse;
   margin-top: 1rem;
-  
+  font-size: 75%;
+
   thead, tbody {
     border-bottom: 2px solid #ddd;
   }
-  
+
   .sortable {
     cursor: pointer;
     user-select: none;
   }
-  
+
   th, td {
     padding: 0.5rem;
     text-align: right;
   }
-  
+
   th:first-child, td:first-child {
     text-align: left;
   }
-  
+
   th:not(:first-child), td:not(:first-child) {
     width: 1rem;
     white-space: nowrap;
@@ -85,8 +92,8 @@ function RouteComponent () {
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
   })
-  return <div style={{ padding: '1rem', height: '100%', overflow: 'auto' }}>
-    {query.data && <ReadingStats stats={query.data} />}
+  return <div style={{ padding: '1rem', height: '100%', overflow: 'auto', minWidth: 0 }}>
+    {query.data && <ReadingStats stats={query.data}/>}
     <StyledTable>
       <thead>
       {table.getHeaderGroups().map(headerGroup => (

@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use tracing::instrument;
 use webtarot_shared::model::{Card, Deck};
 
 #[derive(Deserialize, Debug)]
@@ -36,7 +37,7 @@ pub struct Reading {
     pub cards: Vec<Card>,
 }
 
-#[tracing::instrument]
+#[instrument]
 pub fn perform_reading(request: &CreateReadingRequest) -> Reading {
     let mut deck = Deck::build();
     let shuffles = deck.shuffle(&request.question);

@@ -6,23 +6,19 @@ import styled from 'styled-components'
 const Wrapper = styled.div`
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
-  padding: 0.25rem 0.25rem 0;
-  border-bottom: 1px solid #e5e7eb;
-  background: #fafafa;
-  
-  @media (prefers-color-scheme: dark) {
-    background: #1f2937;
-    border-color: #374151;
-  }
+  gap: 0.25rem;
+  padding-bottom: 0.25rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.35);
 `
 
-export default function ReadingTabs() {
+export default function ReadingTabs () {
   const result = useQuery(useReadingIds())
   return (
     <Wrapper>
-      {result.data?.map(id => <ReadingTab key={id} id={id} />)}
-      <TabLink to="/readings/stats" style={{ marginLeft: 'auto' }}>Stats</TabLink>
+      {result.data?.map(id => <ReadingTab key={id} id={id}/>)}
+      <TabLink to="/readings/stats" style={{ marginLeft: 'auto' }}>
+        <span>Stats</span>
+      </TabLink>
     </Wrapper>
   )
 }
