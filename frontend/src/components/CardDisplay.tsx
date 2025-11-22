@@ -4,17 +4,18 @@ import styled from 'styled-components'
 import { arcanaImage } from '../util/cards.ts'
 import cardBackUrl from '../assets/cardimages/CardBacks.jpg'
 
-const CARD_WIDTH = 300 / 3
-const CARD_HEIGHT = 527 / 3
-const GAP = 25
+const CARD_WIDTH = 300 / 3.3
+const CARD_HEIGHT = 527 / 3.3
+const GAP = 12
 const ANIMATION_DURATION_PER_CARD = 0.4
 
 const PlayMat = styled.div<{ cards: Card[] }>`
   position: relative;
   flex: 1;
-  height: ${({cards}) => cards.length > 5 ? CARD_HEIGHT * 2 + GAP * 4 : CARD_HEIGHT + 2 * GAP}px;
+  height: ${({ cards }) => cards.length > 5 ? CARD_HEIGHT * 2 + GAP * 4 : CARD_HEIGHT + 2 * GAP}px;
   container-type: size;
   margin-left: ${-CARD_WIDTH - 2 * GAP}px;
+  overflow-x: auto;
 `
 
 const CardDiv = styled.div`
@@ -77,7 +78,7 @@ const CardImage = styled.div`
   height: 100%;
   backface-visibility: hidden;
   position: absolute;
-  `
+`
 
 const CardBack = styled.div`
   background-image: url(${cardBackUrl});
@@ -91,7 +92,7 @@ const CardBack = styled.div`
   position: absolute;
 `
 
-function calculateCardPosition(index: number, total: number): string {
+function calculateCardPosition (index: number, total: number): string {
   console.log(`animating ${index}/${total}`)
   if (total < 6) {
     const x = (CARD_WIDTH + GAP * 2) + (index * (CARD_WIDTH + GAP))
@@ -111,7 +112,7 @@ function calculateCardPosition(index: number, total: number): string {
 }
 
 const CardWidget: React.FC<{ card: Card, index: number, total: number }> = ({ card, index, total }) => {
-  const [className, setClassName] = useState(`anchored${ card.flipped ? ' flipped' : ''}`)
+  const [className, setClassName] = useState(`anchored${card.flipped ? ' flipped' : ''}`)
   useEffect(() => {
     setTimeout(() => {
       setClassName(card.flipped ? ' flipped' : '')
@@ -122,13 +123,13 @@ const CardWidget: React.FC<{ card: Card, index: number, total: number }> = ({ ca
   }, [setClassName])
   return (
     <CardDiv className={className} style={{ translate: calculateCardPosition(index, total) }}>
-      <CardImage style={{backgroundImage: `url(${arcanaImage(card.arcana)})`}}/>
+      <CardImage style={{ backgroundImage: `url(${arcanaImage(card.arcana)})` }}/>
       <CardBack/>
     </CardDiv>
   )
 }
 
-export const CardDisplay: React.FC<{cards: Card[], uuid: string }> = ({cards, uuid}) => {
+export const CardDisplay: React.FC<{ cards: Card[], uuid: string }> = ({ cards, uuid }) => {
   return (
     <PlayMat cards={cards}>
       {cards.map((card, index) => {
