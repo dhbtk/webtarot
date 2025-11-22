@@ -8,6 +8,7 @@ import { addReading, getSavedReadings, removeReading } from '../../backend/saved
 import Markdown from 'react-markdown'
 import remarkBreaks from 'remark-breaks'
 import styled from 'styled-components'
+import { useEffect } from 'react'
 
 export const Route = createFileRoute('/readings/$id')({
   component: ReadingDetails
@@ -34,13 +35,16 @@ export default function ReadingDetails () {
     }
   })
 
+  useEffect(() => {
+    if (!getSavedReadings().includes(id)) {
+      addReading(id)
+      queryClient.invalidateQueries({ queryKey: ['readings'] })
+    }
+  }, [id])
+
   const query = useQuery({
     queryKey: ['readings', id],
     queryFn: async ({ queryKey }) => {
-      if (!getSavedReadings().includes(id)) {
-        addReading(id)
-        await queryClient.invalidateQueries({ queryKey: ['readings'] })
-      }
       const response = await getInterpretation(queryKey[1])
       // error handling de milhões!!!
       if (response.error === 'Not found') {
