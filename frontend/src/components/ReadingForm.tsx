@@ -99,6 +99,10 @@ const Textarea = styled.textarea`
   box-shadow: 0 0 2px 2px transparent;
   transition: box-shadow 0.25s ease-in-out;
 
+  &:hover {
+    box-shadow: 0 0 2px 2px rgba(248, 55, 216, 0.5);
+  }
+
   &:focus {
     outline: none;
     box-shadow: 0 0 2px 2px rgb(248, 55, 216);
@@ -118,6 +122,11 @@ const RoundButton = styled.button`
   transition: all 0.25s ease-in-out;
 
   background: rgba(255, 255, 255, 0.1);
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 0 2px 2px rgba(255, 255, 255, 0.3);
+  }
 
   &:active {
     background: rgba(255, 255, 255, 0.2);
