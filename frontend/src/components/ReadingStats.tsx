@@ -16,7 +16,7 @@ const StatDiv = styled.div`
   flex-direction: column;
   box-shadow: 0.5rem 0.5rem 0.75rem 0 rgba(0, 0, 0, 0.25);
   border-radius: 0.75rem;
-  background-color: rgba(251, 131, 207, 0.6);
+  background-color: rgb(var(--soft-pink-rgb) / 0.6);
   opacity: 0;
   animation: slide-from-top var(--anim-duration) var(--anim-function) forwards;
   animation-delay: calc(var(--anim-duration));
@@ -27,15 +27,15 @@ const BigStatValue = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 2rem;
+  font-size: var(--fs-xxl);
 `
 
 const StatLabel = styled.div`
   padding-top: 1rem;
   padding-bottom: 0.25rem;
-  font-size: 1rem;
+  font-size: var(--fs-base);
   text-align: center;
-  font-family: "Varta", system-ui, sans-serif;
+  font-family: var(--font-sans-alt);
 `
 
 const NeverDrawnGallery = styled.div`

@@ -109,7 +109,7 @@ export default function ReadingDetails () {
 const ReadingContainer = styled.div`
   height: 100%;
   overflow: auto;
-  font-family: "Varta", system-ui, sans-serif;
+  font-family: var(--font-sans-alt);
   margin-top: 0.25rem;
 `
 
@@ -121,35 +121,37 @@ const CardBadgeContainer = styled.div`
 `
 
 const MiniHeading = styled.header`
-  font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.65);
+  font-size: var(--fs-xs);
+  color: rgb(var(--white-rgb) / 0.65);
 
 `
 const MarkdownContainer = styled.div`
   h1, h2, h3, h4, h5, h6 {
-    font-family: "Montserrat", sans-serif;
-    font-size: 1.12rem;
+    font-family: var(--font-sans);
+    font-size: var(--fs-md);
     font-weight: 600;
     margin: 0.5rem 0;
   }
 
-  ul, ol {
-    padding-left: 1rem;
+  @media (min-width: 768px) {
+    ul, ol {
+      padding-left: 1rem;
+    }
   }
 `
 
 const ReadingTitle = styled.h2`
-  font-family: "Montserrat", sans-serif;
-  font-size: 1.12rem;
+  font-family: var(--font-sans);
+  font-size: var(--fs-md);
   font-weight: 600;
   margin: 0 0 0.5rem;
 `
 
 const BadgeSpan = styled.span`
   padding: 0.12rem 0.5rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(255, 255, 255, 0.1);
-  font-size: 0.75rem;
+  border: 1px solid rgb(var(--white-rgb) / 0.1);
+  background: rgb(var(--white-rgb) / 0.1);
+  font-size: var(--fs-xs);
   border-radius: 6px;
   max-width: max(150px, 15vw);
   display: flex;

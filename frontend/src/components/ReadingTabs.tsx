@@ -8,7 +8,7 @@ const Wrapper = styled.div`
   flex-wrap: wrap;
   gap: 0.25rem;
   padding-bottom: calc(0.5rem - 2px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.35);
+  border-bottom: 1px solid rgb(var(--white-rgb) / 0.35);
 `
 
 export default function ReadingTabs () {

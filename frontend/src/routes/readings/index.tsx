@@ -10,7 +10,7 @@ const Heading = styled.h2`
   margin: 0;
   text-align: center;
   font-weight: 400;
-  font-size: 1.75rem;
+  font-size: var(--fs-xl);
   opacity: 0;
   animation: fade-in var(--anim-duration) var(--anim-function) forwards;
   animation-delay: calc(var(--anim-duration) / 2);
@@ -26,7 +26,7 @@ const Heading = styled.h2`
 `
 
 const FormWrapper = styled.div`
-  background-color: rgba(251, 131, 207, 0.4);
+  background-color: rgb(var(--soft-pink-rgb) / 0.4);
   padding: 1.5rem;
   border-radius: 0.75rem;
   display: flex;

@@ -20,7 +20,7 @@ const Wrapper = styled.div`
 `
 
 const FormWrapper = styled.div`
-  background-color: rgba(82, 69, 150, 0.7);
+  background-color: rgb(var(--panel-purple-rgb) / 0.7);
   padding: 1.5rem;
   border-radius: 0.75rem;
   display: flex;
@@ -36,7 +36,7 @@ const FormWrapper = styled.div`
 
   h2 {
     margin: 0;
-    font-size: 1.25rem;
+    font-size: var(--fs-lg);
     font-weight: 500;
   }
 `

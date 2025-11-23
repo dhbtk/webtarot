@@ -57,12 +57,12 @@ const CardDiv = styled.div`
     align-items: center;
     justify-content: flex-end;
     height: 100%;
-    color: #fff;
+    color: var(--color-white);
     border-radius: 6px;
-    border: 3px solid #fff;
+    border: 3px solid var(--color-white);
 
     div {
-      border-top: 2px solid #fff;
+      border-top: 2px solid var(--color-white);
       padding: 0.12rem 0.25rem;
       width: 100%;
       text-align: center;

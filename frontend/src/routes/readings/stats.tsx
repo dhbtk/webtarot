@@ -25,10 +25,10 @@ const StyledTable = styled.table`
   border-collapse: collapse;
   margin-top: 1rem;
   font-size: 85%;
-  font-family: "Varta", system-ui, sans-serif;
+  font-family: var(--font-sans-alt);
 
   thead, tbody {
-    border-bottom: 2px solid #ddd;
+    border-bottom: 2px solid var(--border-light);
   }
 
   .sortable {

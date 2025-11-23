@@ -67,7 +67,7 @@ export default function ReadingForm () {
       >
         {submitting ? 'Embaralhando…' : 'Perguntar'}
       </SubmitButton>
-      {error && <div style={{ color: '#b91c1c', fontSize: 12 }}>{error}</div>}
+      {error && <div style={{ color: 'var(--color-error)', fontSize: 'var(--fs-xs)' }}>{error}</div>}
     </Form>
   )
 }
@@ -75,7 +75,7 @@ export default function ReadingForm () {
 const Form = styled.form`
   display: grid;
   gap: 0.5rem;
-  font-family: "Varta", system-ui, sans-serif;;
+  font-family: var(--font-sans-alt);
 `
 
 const Label = styled.div`
@@ -83,16 +83,16 @@ const Label = styled.div`
   gap: 0.12rem;
 
   span {
-    font-size: 0.75rem;
-    color: rgba(255, 255, 255, 0.65);
+    font-size: var(--fs-xs);
+    color: rgb(var(--white-rgb) / 0.65);
   }
 `
 
 const Textarea = styled.textarea`
-  font-family: "Varta", system-ui, sans-serif;
-  font-size: 0.85rem;
-  background: rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(248, 55, 216, 0.5);
+  font-family: var(--font-sans-alt);
+  font-size: var(--fs-sm);
+  background: rgb(var(--black-rgb) / 0.2);
+  border: 1px solid rgb(var(--accent-rgb) / 0.5);
   border-radius: 6px;
   resize: none;
   padding: 0.5rem;
@@ -100,17 +100,17 @@ const Textarea = styled.textarea`
   transition: box-shadow 0.25s ease-in-out;
 
   &:hover {
-    box-shadow: 0 0 2px 2px rgba(248, 55, 216, 0.5);
+    box-shadow: 0 0 2px 2px rgb(var(--accent-rgb) / 0.5);
   }
 
   &:focus {
     outline: none;
-    box-shadow: 0 0 2px 2px rgb(248, 55, 216);
+    box-shadow: 0 0 2px 2px rgb(var(--accent-rgb));
   }
 `
 
 const RoundButton = styled.button`
-  font-family: "Montserrat", sans-serif;
+  font-family: var(--font-sans);
   padding: 0.12rem;
   border-radius: 50%;
   text-align: center;
@@ -121,38 +121,38 @@ const RoundButton = styled.button`
   box-shadow: 0 0 2px 2px transparent;
   transition: all 0.25s ease-in-out;
 
-  background: rgba(255, 255, 255, 0.1);
+  background: rgb(var(--white-rgb) / 0.1);
 
   &:hover {
-    background: rgba(255, 255, 255, 0.15);
-    box-shadow: 0 0 2px 2px rgba(255, 255, 255, 0.3);
+    background: rgb(var(--white-rgb) / 0.15);
+    box-shadow: 0 0 2px 2px rgb(var(--white-rgb) / 0.3);
   }
 
   &:active {
-    background: rgba(255, 255, 255, 0.2);
-    box-shadow: 0 0 2px 2px rgba(255, 255, 255, 0.5);
+    background: rgb(var(--white-rgb) / 0.2);
+    box-shadow: 0 0 2px 2px rgb(var(--white-rgb) / 0.5);
   }
 `
 
 const SubmitButton = styled.button`
   margin-top: 0.5rem;
-  color: rgba(255, 255, 255, 0.75);
-  font-family: "Montserrat", sans-serif;
-  font-size: 0.85rem;
+  color: rgb(var(--white-rgb) / 0.75);
+  font-family: var(--font-sans);
+  font-size: var(--fs-sm);
   font-weight: 600;
   background: linear-gradient(135deg, rgba(174, 146, 248, 0.5), rgba(246, 113, 225, 0.5) 50%, rgba(174, 146, 248, 0.5));
   padding: 0.5rem 1rem;
   border-radius: 0.5rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgb(var(--white-rgb) / 0.1);
   transition: all 0.15s ease-in-out;
 
   &:hover {
     background-position: 100px;
-    box-shadow: 0 0 2px 2px rgba(248, 55, 216, 0.5);
+    box-shadow: 0 0 2px 2px rgb(var(--accent-rgb) / 0.5);
   }
 
   &:active {
     background-position: 150px;
-    box-shadow: 0 0 2px 2px rgba(248, 55, 216, 1);
+    box-shadow: 0 0 2px 2px rgb(var(--accent-rgb) / 1);
   }
 `

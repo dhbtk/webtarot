@@ -1,11 +1,42 @@
 :root {
-  font-family: "Montserrat", system-ui, Avenir, Helvetica, Arial, sans-serif;
+  /* Fonts */
+  --font-sans: "Montserrat", system-ui, Avenir, Helvetica, Arial, sans-serif;
+  --font-sans-alt: "Varta", system-ui, sans-serif;
+  --font-mono: "Fira Code", monospace;
+
+  /* Font sizes */
+  --fs-h1: 3.2em;
+  --fs-xxl: 2rem;
+  --fs-xl: 1.75rem;
+  --fs-lg: 1.25rem;
+  --fs-md: 1.12rem;
+  --fs-base: 1rem;
+  --fs-sm: 0.85rem;
+  --fs-xs: 0.75rem;
+
+  /* Colors */
+  --white-rgb: 255 255 255;
+  --black-rgb: 0 0 0;
+  --color-white: #ffffff;
+  --accent-rgb: 248 55 216; /* pink accent */
+  --brand-purple: #7e50f8;
+  --border-light: #ddd;
+  --panel-purple-rgb: 82 69 150;
+  --soft-pink-rgb: 251 131 207;
+  --link: #646cff;
+  --link-hover: #535bf2;
+  --color-bg: #170F49;
+  --color-text: rgb(var(--white-rgb) / 0.87);
+  --color-error: #b91c1c;
+
+  /* Global typography and rendering */
+  font-family: var(--font-sans);
   line-height: 1.5;
   font-weight: 400;
 
   color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #170F49;
+  color: var(--color-text);
+  background-color: var(--color-bg);
 
   background-image: url(./assets/background.png);
   background-size: cover;
@@ -26,12 +57,12 @@
 
 a {
   font-weight: 500;
-  color: #646cff;
+  color: var(--link);
   text-decoration: inherit;
 }
 
 a:hover {
-  color: #535bf2;
+  color: var(--link-hover);
 }
 
 body {
@@ -52,7 +83,7 @@ body {
 }
 
 code {
-  font-family: "Fira Code", monospace;
+  font-family: var(--font-mono);
 }
 
 * {
@@ -60,7 +91,7 @@ code {
 }
 
 h1 {
-  font-size: 3.2em;
+  font-size: var(--fs-h1);
   line-height: 1.1;
 }
 

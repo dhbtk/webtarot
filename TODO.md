@@ -1,3 +1,4 @@
+- [ ] tornar Header responsivo
 - [ ] Substituir polling por websocket: subscribe no id da tiragem -> recebe atualização do backend
 - [ ] Notificação quando interpretação fica pronta
 - [ ] Formulário para interpretar tiragem já feita

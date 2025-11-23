@@ -22,7 +22,7 @@ use tower_http::trace::DefaultMakeSpan;
 use tower_http::trace::DefaultOnResponse;
 use tower_http::trace::TraceLayer;
 use tracing::Level;
-use tracing_subscriber::{fmt, prelude::*};
+use tracing_subscriber::fmt;
 use uuid::Uuid;
 
 #[tokio::main]

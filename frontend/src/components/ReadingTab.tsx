@@ -6,28 +6,28 @@ import styled from 'styled-components'
 import { getSavedReadings, removeReading } from '../backend/savedReadings.ts'
 
 export const TabLink = styled(Link)`
-  font-family: "Varta", system-ui, sans-serif;
+  font-family: var(--font-sans-alt);
   font-weight: 500;
   padding: 0.12rem 0.5rem;
   border: 1px solid transparent;
-  color: rgba(255, 255, 255, 0.75);
-  font-size: 0.75rem;
+  color: rgb(var(--white-rgb) / 0.75);
+  font-size: var(--fs-xs);
   border-radius: 6px;
   max-width: max(150px, 15vw);
   display: flex;
   align-items: center;
 
   &.active {
-    border: 1px solid #7e50f8;
-    background: rgba(120, 55, 248, 0.3);
+    border: 1px solid var(--brand-purple);
+    background: rgb(120 55 248 / 0.3);
   }
 
   &:hover {
     color: inherit;
 
     &:not(.active) {
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgb(var(--white-rgb) / 0.1);
+      background: rgb(var(--white-rgb) / 0.1);
     }
 
     button {
@@ -44,19 +44,19 @@ export const TabLink = styled(Link)`
   }
 
   button {
-    font-family: "Montserrat", sans-serif;
+    font-family: var(--font-sans);
     border: none;
     outline: none;
     margin: 0 0 0 0.12rem;
     padding: 0 0.25rem;
     background: none;
     color: inherit;
-    font-size: 1rem;
+    font-size: var(--fs-base);
     visibility: hidden;
     line-height: 1;
 
     &:hover {
-      background: rgba(255, 255, 255, 0.1);
+      background: rgb(var(--white-rgb) / 0.1);
     }
 
     @media (max-width: 768px) {

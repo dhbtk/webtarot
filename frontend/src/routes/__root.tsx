@@ -3,7 +3,7 @@ import React from 'react'
 import styled from 'styled-components'
 
 const Header = styled.header`
-  background-color: rgba(82, 69, 150, 0.7);
+  background-color: rgb(82 69 150 / 0.7);
   padding: 1.5rem;
   border-radius: 0.75rem;
   width: 100%;
@@ -16,7 +16,7 @@ const Header = styled.header`
   h1 {
     margin: 0;
     padding: 0;
-    font-size: 2rem;
+    font-size: var(--fs-xxl);
     font-weight: 500;
   }
 `
@@ -38,19 +38,19 @@ const Wrapper = styled.div`
 
 const HeaderLink = styled(Link)`
   font-weight: 500;
-  font-size: 1rem;
+  font-size: var(--fs-base);
   padding: 0.12rem 0.5rem;
   border: 1px solid transparent;
-  color: rgba(255, 255, 255, 0.75);
+  color: rgb(var(--white-rgb) / 0.75);
   border-radius: 6px;
 
   &:hover {
-    color: rgba(255, 255, 255, 0.75);
+    color: rgb(var(--white-rgb) / 0.75);
     text-decoration: underline;
   }
 
   &.active {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgb(var(--white-rgb) / 0.1);
   }
 `
 

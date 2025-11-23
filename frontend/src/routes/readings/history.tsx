@@ -24,10 +24,10 @@ const StyledTable = styled.table`
   border-collapse: collapse;
   margin-top: 1rem;
   font-size: 85%;
-  font-family: "Varta", system-ui, sans-serif;
+  font-family: var(--font-sans-alt);
 
   thead, tbody {
-    border-bottom: 2px solid #ddd;
+    border-bottom: 2px solid var(--border-light);
   }
 
   .sortable {
@@ -182,10 +182,10 @@ function DeleteButton ({ id, onDeleted }: { id: string, onDeleted: (id: string) 
       disabled={mutation.isPending}
       title={mutation.isPending ? 'Deleting...' : 'Delete this interpretation'}
       style={{
-        fontSize: '0.75rem',
+        fontSize: 'var(--fs-xs)',
         padding: '0.25rem 0.5rem',
         background: 'transparent',
-        border: '1px solid rgba(255,255,255,0.3)',
+        border: '1px solid rgb(255 255 255 / 0.3)',
         color: 'inherit',
         borderRadius: 4,
         cursor: mutation.isPending ? 'default' : 'pointer',
