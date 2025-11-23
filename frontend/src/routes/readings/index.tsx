@@ -42,7 +42,7 @@ const FormWrapper = styled.div`
 function ReadingIndexForm () {
   return (
     <>
-      <Heading>tire seu webtarot para descobrir seu webdestino</Heading>
+      <Heading>tire seu webtarot descubra seu webdestino</Heading>
       <FormWrapper>
         <ReadingForm/>
       </FormWrapper>

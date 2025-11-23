@@ -24,8 +24,11 @@ export const TabLink = styled(Link)`
 
   &:hover {
     color: inherit;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    background: rgba(255, 255, 255, 0.1);
+
+    &:not(.active) {
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.1);
+    }
 
     button {
       visibility: visible;
