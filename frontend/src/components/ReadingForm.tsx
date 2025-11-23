@@ -30,7 +30,9 @@ export default function ReadingForm () {
     try {
       const payload: CreateReadingRequest = { question: question.trim(), cards }
       const res = await submitMutation.mutateAsync(payload)
-      // Navigate to /readings/:id using the returned interpretationId
+      // reset
+      setQuestion('')
+      setCards(3)
       await router.navigate({ to: '/readings/$id', params: { id: res.interpretationId } })
     } catch (err: any) {
       setError(err?.message ?? 'Failed to create reading')
