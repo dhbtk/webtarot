@@ -1,7 +1,7 @@
 import styled from 'styled-components'
-import type { Stats } from '../backend/models.ts'
+import type { Stats } from '../../backend/models.ts'
 import React from 'react'
-import { arcanaImage, arcanaLabel } from '../util/cards.ts'
+import { arcanaImage, arcanaLabel } from '../../util/cards.ts'
 
 const WrapperDiv = styled.div`
   display: flex;

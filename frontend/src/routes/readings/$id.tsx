@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate, useParams } from '@tanstack/react-router'
 import { getInterpretation } from '../../backend/api'
 import type { Card } from '../../backend/models'
-import { CardDisplay } from '../../components/CardDisplay.tsx'
+import { CardDisplay } from '../../components/reading/CardDisplay.tsx'
 import { cardLabel } from '../../util/cards.ts'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { addReading, getSavedReadings, removeReading } from '../../backend/savedReadings.ts'
@@ -9,7 +9,7 @@ import Markdown from 'react-markdown'
 import remarkBreaks from 'remark-breaks'
 import styled from 'styled-components'
 import { useEffect } from 'react'
-import { ReadingSubLayout } from '../../components/ReadingSubLayout.tsx'
+import { ReadingSubLayout } from '../../components/reading/layout/ReadingSubLayout.tsx'
 
 export const Route = createFileRoute('/readings/$id')({
   component: ReadingDetails

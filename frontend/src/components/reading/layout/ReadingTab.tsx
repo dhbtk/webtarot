@@ -1,9 +1,9 @@
 import { Link, useNavigate } from '@tanstack/react-router'
 import React from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { useReadingById } from '../backend/queries.ts'
+import { useReadingById } from '../../../backend/queries.ts'
 import styled from 'styled-components'
-import { getSavedReadings, removeReading } from '../backend/savedReadings.ts'
+import { getSavedReadings, removeReading } from '../../../backend/savedReadings.ts'
 
 export const TabLink = styled(Link)`
   font-family: var(--font-sans-alt);

@@ -1,10 +1,10 @@
 import React, { useState } from 'react'
-import { createReading } from '../backend/api'
-import type { CreateReadingRequest } from '../backend/models'
+import { createReading } from '../../../backend/api.ts'
+import type { CreateReadingRequest } from '../../../backend/models.ts'
 import { useRouter } from '@tanstack/react-router'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { addToHistory, getSavedReadings, saveReadings } from '../backend/savedReadings.ts'
-import styled from 'styled-components'
+import { addToHistory, getSavedReadings, saveReadings } from '../../../backend/savedReadings.ts'
+import { Form, Label, RoundButton, SubmitButton, Textarea } from './form.tsx'
 
 export default function ReadingForm () {
   const router = useRouter()
@@ -71,88 +71,3 @@ export default function ReadingForm () {
     </Form>
   )
 }
-
-const Form = styled.form`
-  display: grid;
-  gap: 0.5rem;
-  font-family: var(--font-sans-alt);
-`
-
-const Label = styled.div`
-  display: grid;
-  gap: 0.12rem;
-
-  span {
-    font-size: var(--fs-xs);
-    color: rgb(var(--white-rgb) / 0.65);
-  }
-`
-
-const Textarea = styled.textarea`
-  font-family: var(--font-sans-alt);
-  font-size: var(--fs-sm);
-  background: rgb(var(--black-rgb) / 0.2);
-  border: 1px solid rgb(var(--accent-rgb) / 0.5);
-  border-radius: 6px;
-  resize: none;
-  padding: 0.5rem;
-  box-shadow: 0 0 2px 2px transparent;
-  transition: box-shadow 0.25s ease-in-out;
-
-  &:hover {
-    box-shadow: 0 0 2px 2px rgb(var(--accent-rgb) / 0.5);
-  }
-
-  &:focus {
-    outline: none;
-    box-shadow: 0 0 2px 2px rgb(var(--accent-rgb));
-  }
-`
-
-const RoundButton = styled.button`
-  font-family: var(--font-sans);
-  padding: 0.12rem;
-  border-radius: 50%;
-  text-align: center;
-  width: 1.5rem;
-  height: 1.5rem;
-  outline: none;
-  border: none;
-  box-shadow: 0 0 2px 2px transparent;
-  transition: all 0.25s ease-in-out;
-
-  background: rgb(var(--white-rgb) / 0.1);
-
-  &:hover {
-    background: rgb(var(--white-rgb) / 0.15);
-    box-shadow: 0 0 2px 2px rgb(var(--white-rgb) / 0.3);
-  }
-
-  &:active {
-    background: rgb(var(--white-rgb) / 0.2);
-    box-shadow: 0 0 2px 2px rgb(var(--white-rgb) / 0.5);
-  }
-`
-
-const SubmitButton = styled.button`
-  margin-top: 0.5rem;
-  color: rgb(var(--white-rgb) / 0.75);
-  font-family: var(--font-sans);
-  font-size: var(--fs-sm);
-  font-weight: 600;
-  background: linear-gradient(135deg, rgba(174, 146, 248, 0.5), rgba(246, 113, 225, 0.5) 50%, rgba(174, 146, 248, 0.5));
-  padding: 0.5rem 1rem;
-  border-radius: 0.5rem;
-  border: 1px solid rgb(var(--white-rgb) / 0.1);
-  transition: all 0.15s ease-in-out;
-
-  &:hover {
-    background-position: 100px;
-    box-shadow: 0 0 2px 2px rgb(var(--accent-rgb) / 0.5);
-  }
-
-  &:active {
-    background-position: 150px;
-    box-shadow: 0 0 2px 2px rgb(var(--accent-rgb) / 1);
-  }
-`

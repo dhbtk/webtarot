@@ -1,5 +1,5 @@
 import { createFileRoute, MatchRoute, Outlet } from '@tanstack/react-router'
-import ReadingForm from '../components/ReadingForm.tsx'
+import ReadingForm from '../components/reading/form/ReadingForm.tsx'
 import styled from 'styled-components'
 import useWindowDimensions from '../util/useWindowDimensions.ts'
 

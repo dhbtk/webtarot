@@ -1,8 +1,8 @@
-import type { Card } from '../backend/models.ts'
+import type { Card } from '../../backend/models.ts'
 import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
-import { arcanaImage } from '../util/cards.ts'
-import cardBackUrl from '../assets/cardimages/CardBacks.jpg'
+import { arcanaImage } from '../../util/cards.ts'
+import cardBackUrl from '../../assets/cardimages/CardBacks.jpg'
 
 const CARD_WIDTH = 300 / 3.3
 const CARD_HEIGHT = 527 / 3.3

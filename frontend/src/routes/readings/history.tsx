@@ -13,7 +13,7 @@ import type { Reading } from '../../backend/models.ts'
 import { interpretationReading } from '../../backend/models.ts'
 import { removeReading } from '../../backend/savedReadings.ts'
 import { cardLabel } from '../../util/cards.ts'
-import { ReadingSubLayout } from '../../components/ReadingSubLayout.tsx'
+import { ReadingSubLayout } from '../../components/reading/layout/ReadingSubLayout.tsx'
 
 export const Route = createFileRoute('/readings/history')({
   component: RouteComponent,

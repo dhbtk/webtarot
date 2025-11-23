@@ -11,8 +11,8 @@ import {
 } from '@tanstack/react-table'
 import { arcanaLabel } from '../../util/cards.ts'
 import styled from 'styled-components'
-import { ReadingStats } from '../../components/ReadingStats.tsx'
-import { ReadingSubLayout } from '../../components/ReadingSubLayout.tsx'
+import { ReadingStats } from '../../components/reading/ReadingStats.tsx'
+import { ReadingSubLayout } from '../../components/reading/layout/ReadingSubLayout.tsx'
 
 export const Route = createFileRoute('/readings/stats')({
   component: RouteComponent,
