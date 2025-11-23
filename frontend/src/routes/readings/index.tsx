@@ -9,8 +9,20 @@ import { useReadingIds } from '../../backend/queries.ts'
 const Heading = styled.h2`
   margin: 0;
   text-align: center;
-  font-weight: 500;
-  font-size: 1.25rem;
+  font-weight: 400;
+  font-size: 1.75rem;
+  opacity: 0;
+  animation: fade-in var(--anim-duration) var(--anim-function) forwards;
+  animation-delay: calc(var(--anim-duration) / 2);
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
 `
 
 const FormWrapper = styled.div`
@@ -21,6 +33,7 @@ const FormWrapper = styled.div`
   flex-direction: column;
   gap: 1rem;
   max-width: 500px;
+  width: 100%;
   margin: 0 auto;
   box-shadow: 0.5rem 0.5rem 0.75rem 0 rgba(0, 0, 0, 0.25);
   animation: slide-from-bottom var(--anim-duration) var(--anim-function) forwards;
@@ -28,10 +41,12 @@ const FormWrapper = styled.div`
 
 function ReadingIndexForm () {
   return (
-    <FormWrapper>
-      <Heading>tire seu webtarot para saber seu webdestino</Heading>
-      <ReadingForm/>
-    </FormWrapper>
+    <>
+      <Heading>tire seu webtarot para descobrir seu webdestino</Heading>
+      <FormWrapper>
+        <ReadingForm/>
+      </FormWrapper>
+    </>
   )
 }
 

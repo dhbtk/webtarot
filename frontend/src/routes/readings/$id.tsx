@@ -59,7 +59,9 @@ export default function ReadingDetails () {
       return response
     },
     retry: (_retries, error) => error as unknown as string === 'not done',
-    retryDelay: 1000
+    retryDelay: 1000,
+    refetchInterval: 10000,
+    refetchIntervalInBackground: true,
   })
 
   const reading = query.data?.reading ?? null
@@ -72,9 +74,11 @@ export default function ReadingDetails () {
             <ReadingTitle>{reading.question}</ReadingTitle>
             <MiniHeading style={{ display: 'flex', justifyContent: 'space-between' }}>
             <span>
-              Embaralhado {reading.shuffledTimes} vez{reading.shuffledTimes === 1 ? '' : 'es'} · Pergunta feita em {new Date(reading.createdAt).toLocaleString()}
+              Pergunta feita em {new Date(reading.createdAt).toLocaleString()}
             </span>
-              <code>{id}</code>
+              <span>
+                Embaralhado {reading.shuffledTimes} vez{reading.shuffledTimes === 1 ? '' : 'es'}
+              </span>
             </MiniHeading>
 
             {reading && (
