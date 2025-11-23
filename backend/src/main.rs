@@ -13,8 +13,8 @@ use crate::user::User;
 use axum::extract::{Path, State};
 use axum::http::StatusCode;
 use axum::middleware::from_extractor;
-use axum::routing::get;
 use axum::routing::post;
+use axum::routing::{delete, get};
 use axum::{Json, Router};
 use reading::{CreateReadingRequest, CreateReadingResponse};
 use tower_http::services::{ServeDir, ServeFile};
@@ -23,6 +23,7 @@ use tower_http::trace::DefaultOnResponse;
 use tower_http::trace::TraceLayer;
 use tracing::Level;
 use tracing_subscriber::{fmt, prelude::*};
+use uuid::Uuid;
 
 #[tokio::main]
 async fn main() {
@@ -36,6 +37,7 @@ async fn main() {
             get(get_interpretation_history),
         )
         .route("/api/v1/interpretation/{id}", get(interpretation_result))
+        .route("/api/v1/interpretation/{id}", delete(delete_interpretation))
         .route("/api/v1/interpretation", post(create_interpretation))
         .route("/api/v1/stats", get(stats))
         .with_state(interpretation_manager)
@@ -95,6 +97,23 @@ async fn interpretation_result(
     (StatusCode::OK, Json(interpretation.into()))
 }
 
+async fn delete_interpretation(
+    State(interpretation_manager): State<InterpretationManager>,
+    user: User,
+    Path(interpretation_id): Path<String>,
+) -> StatusCode {
+    let Ok(interpretation_id) = interpretation_id.parse::<Uuid>() else {
+        return StatusCode::BAD_REQUEST;
+    };
+    let Some(_) = interpretation_manager
+        .delete_interpretation(interpretation_id, user.id)
+        .await
+    else {
+        return StatusCode::BAD_REQUEST;
+    };
+    StatusCode::NO_CONTENT
+}
+
 async fn get_interpretation_history(
     State(interpretation_manager): State<InterpretationManager>,
     user: User,
@@ -116,7 +135,7 @@ async fn stats(State(interpretation_manager): State<InterpretationManager>) -> J
     let interpretations = interpretation_manager.get_all_interpretations().await;
     let readings = interpretations
         .into_iter()
-        .map(|r| r.reading().clone())
+        .map(|r| r.into_reading())
         .collect::<Vec<_>>();
     let stats = calculate_stats(&readings);
     Json(stats)

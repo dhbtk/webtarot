@@ -5,6 +5,8 @@ import { arcanaImage, arcanaLabel } from '../util/cards.ts'
 
 const WrapperDiv = styled.div`
   display: flex;
+  gap: 2rem;
+  margin-bottom: 2rem;
 `
 
 const StatDiv = styled.div`
@@ -12,6 +14,9 @@ const StatDiv = styled.div`
   padding: 0.5rem;
   display: flex;
   flex-direction: column;
+  box-shadow: 0.5rem 0.5rem 0.75rem 0 rgba(0, 0, 0, 0.25);
+  border-radius: 0.75rem;
+  background-color: rgba(251, 131, 207, 0.6);
 `
 
 const BigStatValue = styled.div`
@@ -25,8 +30,9 @@ const BigStatValue = styled.div`
 const StatLabel = styled.div`
   padding-top: 1rem;
   padding-bottom: 0.25rem;
-  font-size: 0.8rem;
+  font-size: 1rem;
   text-align: center;
+  font-family: "Varta", system-ui, sans-serif;
 `
 
 const NeverDrawnGallery = styled.div`

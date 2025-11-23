@@ -1,6 +1,5 @@
 import { createFileRoute, MatchRoute, Outlet } from '@tanstack/react-router'
 import ReadingForm from '../components/ReadingForm.tsx'
-import ReadingTabs from '../components/ReadingTabs.tsx'
 import styled from 'styled-components'
 import useWindowDimensions from '../util/useWindowDimensions.ts'
 
@@ -27,6 +26,8 @@ const FormWrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  box-shadow: 0.5rem 0.5rem 0.75rem 0 rgba(0, 0, 0, 0.25);
+  animation: slide-from-left 0.5s ease-out forwards;
 
   @media (min-width: 768px) {
     width: 320px;
@@ -38,15 +39,6 @@ const FormWrapper = styled.div`
     font-size: 1.25rem;
     font-weight: 500;
   }
-`
-
-const Section = styled.section`
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  background-color: rgba(82, 69, 150, 0.7);
-  padding: 1rem;
-  border-radius: 0.75rem;
 `
 
 function RouteComponent () {
@@ -64,12 +56,7 @@ function RouteComponent () {
           )}
         </MatchRoute>
       )}
-      <Section>
-        <ReadingTabs/>
-        <div style={{ flex: 1, minHeight: 0, maxHeight: '100%', overflowY: 'auto' }}>
-          <Outlet/>
-        </div>
-      </Section>
+      <Outlet/>
     </Wrapper>
   )
 }

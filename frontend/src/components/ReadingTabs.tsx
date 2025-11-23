@@ -14,7 +14,7 @@ const Wrapper = styled.div`
 export default function ReadingTabs () {
   const result = useQuery(useReadingIds())
   return (
-    <Wrapper>
+    <Wrapper style={{ display: result.data?.length ? 'flex' : 'none' }}>
       {result.data?.map(id => <ReadingTab key={id} id={id}/>)}
     </Wrapper>
   )

@@ -32,6 +32,14 @@ impl Interpretation {
         }
     }
 
+    pub fn into_reading(self) -> Reading {
+        match self {
+            Self::Pending(reading) => reading,
+            Self::Done(reading, _) => reading,
+            Self::Failed(reading, _) => reading,
+        }
+    }
+
     pub fn reading_mut(&mut self) -> &mut Reading {
         match self {
             Self::Pending(reading) => reading,
@@ -198,6 +206,20 @@ impl InterpretationManager {
                 .reverse()
         });
         results
+    }
+
+    pub async fn delete_interpretation(&self, uuid: Uuid, user_id: Uuid) -> Option<()> {
+        let mut manager = self.connection_manager.clone();
+        let interpretation = self.get_interpretation(uuid).await?;
+        let reading_user_uuid = interpretation.reading().user_id?;
+        if reading_user_uuid == user_id {
+            manager
+                .del::<String, String>(self.key_for_uuid(uuid))
+                .await
+                .unwrap();
+            return Some(());
+        }
+        None
     }
 
     fn key_for_uuid(&self, uuid: Uuid) -> String {

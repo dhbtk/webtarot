@@ -7,5 +7,5 @@ for i in backend shared cmdline; do
 done
 
 pushd frontend
-npm ci
+npm run lint
 popd

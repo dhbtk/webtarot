@@ -3,6 +3,7 @@
 //  - POST /api/v1/reading → createReading
 //  - GET  /api/v1/interpretation/{id} → getInterpretation
 //  - GET  /api/v1/stats → getStats
+//  - DELETE /api/v1/interpretation/{id} → deleteInterpretation
 //
 // Models are defined in ./models.ts and mirror the Rust types.
 
@@ -105,4 +106,21 @@ export async function getHistory (init?: RequestInit): Promise<Interpretation[]>
     ...init,
   })
   return handleJsonResponse<Interpretation[]>(res)
+}
+
+/**
+ * Delete an interpretation by ID.
+ * DELETE /api/v1/interpretation/{id}
+ */
+export async function deleteInterpretation (
+  interpretationId: string,
+  init?: RequestInit,
+): Promise<void> {
+  const res = await fetch(`${API_BASE}/interpretation/${encodeURIComponent(interpretationId)}`, {
+    method: 'DELETE',
+    headers: { ...getDefaultHeaders(), ...(init?.headers ?? {}) },
+    ...init,
+  })
+  // For 204 No Content, handleJsonResponse returns undefined
+  await handleJsonResponse<void>(res)
 }

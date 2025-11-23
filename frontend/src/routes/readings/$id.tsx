@@ -9,6 +9,7 @@ import Markdown from 'react-markdown'
 import remarkBreaks from 'remark-breaks'
 import styled from 'styled-components'
 import { useEffect } from 'react'
+import { ReadingSubLayout } from '../../components/ReadingSubLayout.tsx'
 
 export const Route = createFileRoute('/readings/$id')({
   component: ReadingDetails
@@ -64,38 +65,40 @@ export default function ReadingDetails () {
   const reading = query.data?.reading ?? null
 
   return (
-    <ReadingContainer>
-      {reading && (
-        <>
-          <ReadingTitle>{reading.question}</ReadingTitle>
-          <MiniHeading style={{ display: 'flex', justifyContent: 'space-between' }}>
+    <ReadingSubLayout>
+      <ReadingContainer>
+        {reading && (
+          <>
+            <ReadingTitle>{reading.question}</ReadingTitle>
+            <MiniHeading style={{ display: 'flex', justifyContent: 'space-between' }}>
             <span>
               Embaralhado {reading.shuffledTimes} vez{reading.shuffledTimes === 1 ? '' : 'es'} · Pergunta feita em {new Date(reading.createdAt).toLocaleString()}
             </span>
-            <code>{id}</code>
-          </MiniHeading>
+              <code>{id}</code>
+            </MiniHeading>
 
-          {reading && (
-            <section style={{ display: 'grid', gap: '0.75rem' }}>
-              <div>
-                <CardDisplay cards={reading.cards} uuid={reading.id}/>
-                <CardBadgeContainer>
-                  {reading.cards.map((c, i) => (
-                    <CardBadge key={i} card={c}/>
-                  ))}
-                </CardBadgeContainer>
-              </div>
+            {reading && (
+              <section style={{ display: 'grid', gap: '0.75rem' }}>
+                <div>
+                  <CardDisplay cards={reading.cards} uuid={reading.id}/>
+                  <CardBadgeContainer>
+                    {reading.cards.map((c, i) => (
+                      <CardBadge key={i} card={c}/>
+                    ))}
+                  </CardBadgeContainer>
+                </div>
 
-              <MarkdownContainer>
-                <Markdown remarkPlugins={[remarkBreaks]}>
-                  {query.data?.done ? query.data?.interpretation : 'Aguardando interpretação...'}
-                </Markdown>
-              </MarkdownContainer>
-            </section>
-          )}
-        </>
-      )}
-    </ReadingContainer>
+                <MarkdownContainer>
+                  <Markdown remarkPlugins={[remarkBreaks]}>
+                    {query.data?.done ? query.data?.interpretation : 'Aguardando interpretação...'}
+                  </Markdown>
+                </MarkdownContainer>
+              </section>
+            )}
+          </>
+        )}
+      </ReadingContainer>
+    </ReadingSubLayout>
   )
 }
 

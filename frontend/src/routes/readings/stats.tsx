@@ -12,6 +12,7 @@ import {
 import { arcanaLabel } from '../../util/cards.ts'
 import styled from 'styled-components'
 import { ReadingStats } from '../../components/ReadingStats.tsx'
+import { ReadingSubLayout } from '../../components/ReadingSubLayout.tsx'
 
 export const Route = createFileRoute('/readings/stats')({
   component: RouteComponent,
@@ -23,7 +24,8 @@ const StyledTable = styled.table`
   width: 100%;
   border-collapse: collapse;
   margin-top: 1rem;
-  font-size: 75%;
+  font-size: 85%;
+  font-family: "Varta", system-ui, sans-serif;
 
   thead, tbody {
     border-bottom: 2px solid #ddd;
@@ -92,74 +94,78 @@ function RouteComponent () {
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
   })
-  return <div style={{ padding: '1rem', height: '100%', overflow: 'auto', minWidth: 0 }}>
-    {query.data && <ReadingStats stats={query.data}/>}
-    <StyledTable>
-      <thead>
-      {table.getHeaderGroups().map(headerGroup => (
-        <tr key={headerGroup.id}>
-          {headerGroup.headers.map(header => (
-            <th key={header.id}>
-              {header.isPlaceholder ? null : (
-                <div
-                  className={
-                    header.column.getCanSort()
-                      ? 'sortable'
-                      : ''
-                  }
-                  onClick={header.column.getToggleSortingHandler()}
-                  title={
-                    header.column.getCanSort()
-                      ? header.column.getNextSortingOrder() === 'asc'
-                        ? 'Sort ascending'
-                        : header.column.getNextSortingOrder() === 'desc'
-                          ? 'Sort descending'
-                          : 'Clear sort'
-                      : undefined
-                  }
-                >
-                  {flexRender(
-                    header.column.columnDef.header,
-                    header.getContext()
+  return (
+    <ReadingSubLayout>
+      <div style={{ padding: '1rem', height: '100%', overflow: 'auto', minWidth: 0 }}>
+        {query.data && <ReadingStats stats={query.data}/>}
+        <StyledTable>
+          <thead>
+          {table.getHeaderGroups().map(headerGroup => (
+            <tr key={headerGroup.id}>
+              {headerGroup.headers.map(header => (
+                <th key={header.id}>
+                  {header.isPlaceholder ? null : (
+                    <div
+                      className={
+                        header.column.getCanSort()
+                          ? 'sortable'
+                          : ''
+                      }
+                      onClick={header.column.getToggleSortingHandler()}
+                      title={
+                        header.column.getCanSort()
+                          ? header.column.getNextSortingOrder() === 'asc'
+                            ? 'Sort ascending'
+                            : header.column.getNextSortingOrder() === 'desc'
+                              ? 'Sort descending'
+                              : 'Clear sort'
+                          : undefined
+                      }
+                    >
+                      {flexRender(
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
+                      {{
+                        asc: ' 🔼',
+                        desc: ' 🔽',
+                      }[header.column.getIsSorted() as string] ?? null}
+                    </div>
                   )}
-                  {{
-                    asc: ' 🔼',
-                    desc: ' 🔽',
-                  }[header.column.getIsSorted() as string] ?? null}
-                </div>
-              )}
-            </th>
+                </th>
+              ))}
+            </tr>
           ))}
-        </tr>
-      ))}
-      </thead>
-      <tbody>
-      {table.getRowModel().rows.map(row => (
-        <tr key={row.id}>
-          {row.getVisibleCells().map(cell => (
-            <td key={cell.id}>
-              {flexRender(cell.column.columnDef.cell, cell.getContext())}
-            </td>
+          </thead>
+          <tbody>
+          {table.getRowModel().rows.map(row => (
+            <tr key={row.id}>
+              {row.getVisibleCells().map(cell => (
+                <td key={cell.id}>
+                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                </td>
+              ))}
+            </tr>
           ))}
-        </tr>
-      ))}
-      </tbody>
-      <tfoot>
-      {table.getFooterGroups().map(footerGroup => (
-        <tr key={footerGroup.id}>
-          {footerGroup.headers.map(header => (
-            <th key={header.id}>
-              {header.isPlaceholder
-                ? null
-                : flexRender(
-                  header.column.columnDef.footer,
-                  header.getContext()
-                )}
-            </th>
+          </tbody>
+          <tfoot>
+          {table.getFooterGroups().map(footerGroup => (
+            <tr key={footerGroup.id}>
+              {footerGroup.headers.map(header => (
+                <th key={header.id}>
+                  {header.isPlaceholder
+                    ? null
+                    : flexRender(
+                      header.column.columnDef.footer,
+                      header.getContext()
+                    )}
+                </th>
+              ))}
+            </tr>
           ))}
-        </tr>
-      ))}
-      </tfoot>
-    </StyledTable>
-  </div>
+          </tfoot>
+        </StyledTable>
+      </div>
+    </ReadingSubLayout>
+  )
 }
