@@ -17,6 +17,9 @@ const StatDiv = styled.div`
   box-shadow: 0.5rem 0.5rem 0.75rem 0 rgba(0, 0, 0, 0.25);
   border-radius: 0.75rem;
   background-color: rgba(251, 131, 207, 0.6);
+  opacity: 0;
+  animation: slide-from-top var(--anim-duration) var(--anim-function) forwards;
+  animation-delay: calc(var(--anim-duration));
 `
 
 const BigStatValue = styled.div`
@@ -54,11 +57,11 @@ export const ReadingStats: React.FC<{ stats: Stats }> = ({ stats }) => {
           <BigStatValue>{stats.totalReadings}</BigStatValue>
           <StatLabel>Tiragens</StatLabel>
         </StatDiv>
-        <StatDiv>
+        <StatDiv style={{ animationDelay: 'calc(var(--anim-duration) + 0.25s)' }}>
           <BigStatValue>{stats.totalCardsDrawn}</BigStatValue>
           <StatLabel>Total de cartas</StatLabel>
         </StatDiv>
-        <StatDiv>
+        <StatDiv style={{ animationDelay: 'calc(var(--anim-duration) + 0.5s)' }}>
           <BigStatValue>{stats.neverDrawn.length}</BigStatValue>
           <StatLabel>Arcanos que nunca saíram</StatLabel>
         </StatDiv>

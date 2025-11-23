@@ -27,7 +27,7 @@ const FormWrapper = styled.div`
   flex-direction: column;
   gap: 1rem;
   box-shadow: 0.5rem 0.5rem 0.75rem 0 rgba(0, 0, 0, 0.25);
-  animation: slide-from-left 0.5s ease-out forwards;
+  animation: slide-from-left var(--anim-duration) var(--anim-function) forwards;
 
   @media (min-width: 768px) {
     width: 320px;

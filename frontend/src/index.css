@@ -15,6 +15,9 @@
   font-optical-sizing: auto;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  --anim-duration: 0.65s;
+  --anim-function: cubic-bezier(0.65, 0, 0.35, 1);
 }
 
 #root {

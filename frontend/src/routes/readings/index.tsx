@@ -23,7 +23,7 @@ const FormWrapper = styled.div`
   max-width: 500px;
   margin: 0 auto;
   box-shadow: 0.5rem 0.5rem 0.75rem 0 rgba(0, 0, 0, 0.25);
-  animation: slide-from-bottom 0.5s ease-out forwards;
+  animation: slide-from-bottom var(--anim-duration) var(--anim-function) forwards;
 `
 
 function ReadingIndexForm () {

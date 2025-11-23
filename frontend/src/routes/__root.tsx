@@ -11,7 +11,7 @@ const Header = styled.header`
   align-items: center;
   gap: 0.5rem;
   box-shadow: 0.5rem 0.5rem 0.75rem 0 rgba(0, 0, 0, 0.25);
-  animation: slide-from-top 0.5s ease-out forwards;
+  animation: slide-from-top var(--anim-duration) var(--anim-function) forwards;
 
   h1 {
     margin: 0;
