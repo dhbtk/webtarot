@@ -24,6 +24,7 @@ export const Textarea = styled.textarea`
   padding: 0.5rem;
   box-shadow: 0 0 2px 2px transparent;
   transition: box-shadow 0.25s ease-in-out;
+  color: rgb(var(--white-rgb) / 0.75);
 
   &:hover {
     box-shadow: 0 0 2px 2px rgb(var(--accent-rgb) / 0.5);
