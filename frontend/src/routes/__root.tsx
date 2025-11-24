@@ -19,6 +19,11 @@ const Header = styled.header`
     font-size: var(--fs-xxl);
     font-weight: 500;
   }
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-end;
+  }
 `
 
 const Wrapper = styled.div`
@@ -29,11 +34,14 @@ const Wrapper = styled.div`
   height: 100vh;
   min-height: 100vh;
   width: 100%;
-  max-width: 1200px;
+  max-width: min(100vw, 1200px);
   margin: 0 auto;
   padding-top: 1rem;
   padding-bottom: 1rem;
   gap: 1rem;
+  @media (max-width: 768px) {
+    padding: 0.5rem;
+  }
 `
 
 const HeaderLink = styled(Link)`
@@ -61,6 +69,7 @@ export const AppShell: React.FC<React.PropsWithChildren> = ({ children }) => {
         <Link to="/readings" style={{ color: 'inherit', textDecoration: 'none', marginRight: 'auto' }}>
           <h1>webtarot</h1>
         </Link>
+        <HeaderLink to="/interpretations/new">Interpretar</HeaderLink>
         <HeaderLink to="/readings/history">Histórico</HeaderLink>
         <HeaderLink to="/readings/stats">Stats</HeaderLink>
       </Header>

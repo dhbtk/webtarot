@@ -69,6 +69,7 @@ export const SubmitButton = styled.button`
   border-radius: 0.5rem;
   border: 1px solid rgb(var(--white-rgb) / 0.1);
   transition: all 0.15s ease-in-out;
+  text-shadow: 1px 2px 2px rgb(var(--black-rgb) / 0.8);
 
   &:hover {
     background-position: 100px;
@@ -88,6 +89,7 @@ export const Heading = styled.h2`
   opacity: 0;
   animation: fade-in var(--anim-duration) var(--anim-function) forwards;
   animation-delay: calc(var(--anim-duration) / 2);
+  text-shadow: 1px 2px 2px rgb(var(--black-rgb) / 0.8);
 
   @keyframes fade-in {
     from {
@@ -105,9 +107,19 @@ export const FormWrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  max-width: 500px;
+  max-width: min(100%, 500px);
   width: 100%;
   margin: 0 auto;
   box-shadow: 0.5rem 0.5rem 0.75rem 0 rgba(0, 0, 0, 0.25);
   animation: slide-from-bottom var(--anim-duration) var(--anim-function) forwards;
+
+  &.wide {
+    max-width: min(100%, 700px);
+  }
+
+  h2 {
+    margin: 0;
+    font-size: var(--fs-lg);
+    font-weight: 500;
+  }
 `

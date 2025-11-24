@@ -7,7 +7,7 @@
 //
 // Models are defined in ./models.ts and mirror the Rust types.
 
-import type { CreateReadingRequest, CreateReadingResponse, GetInterpretationResult, Stats, Interpretation, } from './models'
+import type { CreateReadingRequest, CreateReadingResponse, GetInterpretationResult, Stats, Interpretation, CreateInterpretationRequest, CreateInterpretationResponse } from './models'
 import { getUserId } from './userId.ts'
 
 const JSON_HEADERS = {
@@ -106,6 +106,23 @@ export async function getHistory (init?: RequestInit): Promise<Interpretation[]>
     ...init,
   })
   return handleJsonResponse<Interpretation[]>(res)
+}
+
+/**
+ * Create a new interpretation from a manually provided question and cards.
+ * POST /api/v1/interpretation
+ */
+export async function createInterpretation (
+  payload: CreateInterpretationRequest,
+  init?: RequestInit,
+): Promise<CreateInterpretationResponse> {
+  const res = await fetch(`${API_BASE}/interpretation`, {
+    method: 'POST',
+    headers: { ...getDefaultHeaders(), ...JSON_HEADERS, ...(init?.headers ?? {}) },
+    body: JSON.stringify(payload),
+    ...init,
+  })
+  return handleJsonResponse<CreateInterpretationResponse>(res)
 }
 
 /**

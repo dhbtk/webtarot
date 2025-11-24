@@ -1,52 +1,57 @@
 // Auto-generated TypeScript interfaces to mirror Rust structs and shared models.
 // Source Rust types:
 // - backend/src/reading.rs: CreateReadingRequest, CreateReadingResponse
-// - backend/src/interpretation.rs: GetInterpretationResult
+// - backend/src/interpretation.rs: CreateInterpretationRequest, CreateInterpretationResponse, GetInterpretationResult
 // - shared/src/model.rs: Card, Arcana, MajorArcana, Rank, Suit
 
 // Enums serialized with serde(rename_all = "camelCase") are represented as lowercase-camelCase string unions here.
 
-export type MajorArcana =
-  | 'fool'
-  | 'magician'
-  | 'highPriestess'
-  | 'empress'
-  | 'emperor'
-  | 'hierophant'
-  | 'lovers'
-  | 'chariot'
-  | 'strength'
-  | 'hermit'
-  | 'wheelOfFortune'
-  | 'justice'
-  | 'hangedMan'
-  | 'death'
-  | 'temperance'
-  | 'devil'
-  | 'tower'
-  | 'star'
-  | 'moon'
-  | 'sun'
-  | 'judgement'
-  | 'world';
+export const MajorArcanaValues = [
+  'fool',
+  'magician',
+  'highPriestess',
+  'empress',
+  'emperor',
+  'hierophant',
+  'lovers',
+  'chariot',
+  'strength',
+  'hermit',
+  'wheelOfFortune',
+  'justice',
+  'hangedMan',
+  'death',
+  'temperance',
+  'devil',
+  'tower',
+  'star',
+  'moon',
+  'sun',
+  'judgement',
+  'world',
+] as const
+export type MajorArcana = typeof MajorArcanaValues[number];
 
-export type Rank =
-  | 'ace'
-  | 'two'
-  | 'three'
-  | 'four'
-  | 'five'
-  | 'six'
-  | 'seven'
-  | 'eight'
-  | 'nine'
-  | 'ten'
-  | 'page'
-  | 'knight'
-  | 'queen'
-  | 'king';
+export const RankValues = [
+  'ace',
+  'two',
+  'three',
+  'four',
+  'five',
+  'six',
+  'seven',
+  'eight',
+  'nine',
+  'ten',
+  'page',
+  'knight',
+  'queen',
+  'king',
+] as const
+export type Rank = typeof RankValues[number];
 
-export type Suit = 'cups' | 'pentacles' | 'swords' | 'wands';
+export const SuitValues = ['cups', 'pentacles', 'swords', 'wands'] as const
+export type Suit = typeof SuitValues[number];
 
 // Arcana is an externally-tagged enum serialized by Serde with camelCase variant names.
 // Example JSON shapes:
@@ -55,6 +60,19 @@ export type Suit = 'cups' | 'pentacles' | 'swords' | 'wands';
 export type Arcana =
   | { major: { name: MajorArcana } }
   | { minor: { rank: Rank; suit: Suit } };
+
+export const getAllArcana = (): Arcana[] => {
+  const list = []
+  for (const name of MajorArcanaValues) {
+    list.push({ major: { name } })
+  }
+  for (const suit of SuitValues) {
+    for (const rank of RankValues) {
+      list.push({ minor: { rank, suit } })
+    }
+  }
+  return list
+}
 
 export interface Card {
   arcana: Arcana;
@@ -91,6 +109,17 @@ export interface GetInterpretationResult {
   error: string;
   interpretation: string;
   reading: Reading | null;
+}
+
+// Mirrors Rust: CreateInterpretationRequest { question: String, cards: Vec<Card> }
+export interface CreateInterpretationRequest {
+  question: string;
+  cards: Card[];
+}
+
+// Mirrors Rust: CreateInterpretationResponse { interpretationId: Uuid }
+export interface CreateInterpretationResponse {
+  interpretationId: string;
 }
 
 // Mirrors Rust: stats::ArcanaStats with serde(rename_all = "camelCase")
