@@ -17,20 +17,7 @@ RUN npm run build
 FROM rust:1.91 AS backend-builder
 WORKDIR /app
 
-# Pre-copy workspace and member manifests to leverage cargo caching
 COPY Cargo.toml Cargo.toml
-COPY backend/Cargo.toml backend/Cargo.toml
-COPY shared/Cargo.toml shared/Cargo.toml
-COPY cmdline/Cargo.toml cmdline/Cargo.toml
-
-# Create minimal dummy sources to warm up dependency cache
-RUN mkdir -p shared/src backend/src cmdline/src \
-    && echo "pub fn dummy() {}" > shared/src/lib.rs \
-    && echo "fn main() { println!(\"dummy\"); }" > backend/src/main.rs \
-    && echo "fn main() { println!(\"dummy\"); }" > cmdline/src/main.rs \
-    && cargo build -p webtarot-backend --release || true
-
-# Now copy the real sources and build release binary
 COPY shared/ shared/
 COPY backend/ backend/
 COPY cmdline/ cmdline/
