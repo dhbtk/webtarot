@@ -7,6 +7,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { createInterpretation } from '../../../backend/api.ts'
 import { useRouter } from '@tanstack/react-router'
 import { addToHistory, getSavedReadings, saveReadings } from '../../../backend/savedReadings.ts'
+import { CloseOutlined, RedoOutlined } from '@ant-design/icons'
 
 const allArcana = getAllArcana()
 const mappedArcana = allArcana.map((arc, index) => ({ name: arcanaLabel(arc), id: index }))
@@ -83,11 +84,11 @@ export default function InterpretationForm () {
                 <CardLabel style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flex: 1 }}>
                   <span style={{ flex: 1 }}>{cardLabel(card)}</span>
                   <RoundPurpleButton type="button" onClick={() => invertCard(index)}>
-                    🔃
+                    <RedoOutlined/>
                   </RoundPurpleButton>
                   <RoundPurpleButton type="button"
                                      onClick={() => setCards(cards.filter((_, i) => i !== index))}>
-                    Ⓧ
+                    <CloseOutlined/>
                   </RoundPurpleButton>
                 </CardLabel>
               </CardContainer>
@@ -157,6 +158,9 @@ const RoundPurpleButton = styled.button`
   border: 1px solid rgb(var(--white-rgb) / 0.1);
   box-shadow: 0 0 2px 2px transparent;
   transition: all 0.25s ease-in-out;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   &:hover {
     background-color: rgb(var(--panel-purple-rgb) / 0.8);
@@ -166,6 +170,10 @@ const RoundPurpleButton = styled.button`
   &:active {
     background-color: rgb(var(--panel-purple-rgb) / 0.9);
     box-shadow: 0 0 2px 2px rgb(var(--white-rgb) / 0.5);
+  }
+
+  svg {
+    width: 0.75rem;
   }
 `
 

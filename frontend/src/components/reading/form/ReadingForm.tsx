@@ -5,6 +5,7 @@ import { useRouter } from '@tanstack/react-router'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { addToHistory, getSavedReadings, saveReadings } from '../../../backend/savedReadings.ts'
 import { Form, Label, RoundButton, SubmitButton, Textarea } from './form.tsx'
+import { MinusOutlined, PlusOutlined } from '@ant-design/icons'
 
 export default function ReadingForm () {
   const router = useRouter()
@@ -56,9 +57,13 @@ export default function ReadingForm () {
       <Label>
         <span>Cartas</span>
         <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', fontSize: '0.85rem' }}>
-          <RoundButton type="button" onClick={() => setCards(Math.max(1, cards - 1))}>-</RoundButton>
-          <span style={{ width: '1rem', textAlign: 'right', fontSize: '0.85rem' }}>{cards}</span>
-          <RoundButton type="button" onClick={() => setCards(Math.min(13, cards + 1))}>+</RoundButton>
+          <RoundButton type="button" onClick={() => setCards(Math.max(1, cards - 1))}>
+            <MinusOutlined/>
+          </RoundButton>
+          <span style={{ width: '1rem', textAlign: 'center', fontSize: '0.85rem' }}>{cards}</span>
+          <RoundButton type="button" onClick={() => setCards(Math.min(13, cards + 1))}>
+            <PlusOutlined/>
+          </RoundButton>
         </div>
       </Label>
       <SubmitButton

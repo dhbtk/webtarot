@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useReadingById } from '../../../backend/queries.ts'
 import styled from 'styled-components'
 import { getSavedReadings, removeReading } from '../../../backend/savedReadings.ts'
+import { CloseOutlined } from '@ant-design/icons'
 
 export const TabLink = styled(Link)`
   font-family: var(--font-sans-alt);
@@ -48,12 +49,16 @@ export const TabLink = styled(Link)`
     border: none;
     outline: none;
     margin: 0 0 0 0.12rem;
-    padding: 0 0.25rem;
+    padding: 0.25rem;
+    border-radius: 0.25rem;
     background: none;
     color: inherit;
-    font-size: var(--fs-base);
+    font-size: 0.5rem;
     visibility: hidden;
     line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
     &:hover {
       background: rgb(var(--white-rgb) / 0.1);
@@ -61,6 +66,10 @@ export const TabLink = styled(Link)`
 
     @media (max-width: 768px) {
       visibility: visible;
+    }
+
+    svg {
+      margin-top: -1px;
     }
   }
 `
@@ -104,7 +113,7 @@ export const ReadingTab: React.FC<{ id: string }> = ({ id }: { id: string }) => 
           removeMutation.mutate()
         }
       }}>
-        &times;
+        <CloseOutlined/>
       </button>
     </TabLink>
   )

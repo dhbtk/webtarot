@@ -1,6 +1,7 @@
 import { createRootRoute, Link, Outlet } from '@tanstack/react-router'
-import React from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
+import { MenuOutlined } from '@ant-design/icons'
 
 const Header = styled.header`
   background-color: rgb(82 69 150 / 0.7);
@@ -20,10 +21,37 @@ const Header = styled.header`
     font-weight: 500;
   }
 
+  button {
+    display: none;
+  }
+
   @media (max-width: 768px) {
     flex-direction: column;
-    align-items: flex-end;
+    align-items: flex-start;
+
+    a:not(:first-of-type) {
+      display: none;
+    }
+
+    &.open {
+      a:not(:first-of-type) {
+        display: initial;
+      }
+    }
+
+    button {
+      display: initial;
+    }
   }
+`
+
+const HamburgerButton = styled.button`
+  background: none;
+  border: none;
+  outline: none;
+  color: inherit;
+  font-size: var(--fs-xxl);
+  cursor: pointer;
 `
 
 const Wrapper = styled.div`
@@ -40,8 +68,7 @@ const Wrapper = styled.div`
   padding-bottom: 1rem;
   gap: 1rem;
   @media (max-width: 768px) {
-    padding: 0.5rem;
-    padding-bottom: env(safe-area-inset-bottom);
+    padding: 0.5rem 0.5rem env(safe-area-inset-bottom);
   }
 `
 
@@ -64,10 +91,25 @@ const HeaderLink = styled(Link)`
 `
 
 export const AppShell: React.FC<React.PropsWithChildren> = ({ children }) => {
+  const [open, setOpen] = useState(false)
+  const toggleOpen = () => setOpen(!open)
+
   return (
     <Wrapper>
-      <Header>
-        <Link to="/readings" style={{ color: 'inherit', textDecoration: 'none', marginRight: 'auto' }}>
+      <Header className={open ? 'open' : ''}>
+        <Link to="/readings"
+              style={{
+                color: 'inherit',
+                textDecoration: 'none',
+                marginRight: 'auto',
+                display: 'flex',
+                gap: '0.5rem',
+                alignItems: 'center'
+              }}>
+          <HamburgerButton type="button" onClick={toggleOpen} aria-label="Abrir Menu" aria-expanded={open}
+                           aria-controls="menu" title="Abrir Menu">
+            <MenuOutlined/>
+          </HamburgerButton>
           <h1>webtarot</h1>
         </Link>
         <HeaderLink to="/interpretations/new">Interpretar</HeaderLink>
