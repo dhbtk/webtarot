@@ -199,12 +199,7 @@ impl InterpretationManager {
                 results.push(parsed);
             }
         }
-        results.sort_by(|a, b| {
-            b.reading()
-                .created_at
-                .cmp(&a.reading().created_at)
-                .reverse()
-        });
+        results.sort_by(|a, b| b.reading().created_at.cmp(&a.reading().created_at));
         results
     }
 

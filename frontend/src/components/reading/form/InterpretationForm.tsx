@@ -8,6 +8,8 @@ import { createInterpretation } from '../../../backend/api.ts'
 import { useRouter } from '@tanstack/react-router'
 import { addToHistory, getSavedReadings, saveReadings } from '../../../backend/savedReadings.ts'
 import { CloseOutlined, RedoOutlined } from '@ant-design/icons'
+import { Combobox } from '@headlessui/react'
+import Fuse from 'fuse.js'
 
 const allArcana = getAllArcana()
 const mappedArcana = allArcana.map((arc, index) => ({ name: arcanaLabel(arc), id: index }))
@@ -23,6 +25,20 @@ export default function InterpretationForm () {
   const filteredArcana = useMemo(() => {
     return mappedArcana.filter(arc => !cards.some(card => arcanaLabel(card.arcana) === arc.name))
   }, [cards])
+
+  const [query, setQuery] = useState('')
+
+  const fuse = useMemo(() => new Fuse(filteredArcana, {
+    keys: ['name'],
+    threshold: 0.4,
+    ignoreLocation: true,
+  }), [filteredArcana])
+
+  const searchedArcana = useMemo(() => {
+    const q = query.trim()
+    if (!q) return filteredArcana
+    return fuse.search(q).map(r => r.item)
+  }, [filteredArcana, fuse, query])
 
   const submitMutation = useMutation({
     mutationFn: (payload: CreateInterpretationRequest) => createInterpretation(payload),
@@ -94,15 +110,34 @@ export default function InterpretationForm () {
               </CardContainer>
             ))}
           </div>
-          <Select
-            value={''}
-            onChange={e => {
-              setCards([...cards, { arcana: allArcana[Number(e.target.value)], flipped: false }])
-            }}
-          >
-            <option value="">Selecione uma carta</option>
-            {filteredArcana.map(arc => (<option key={arc.id} value={arc.id}>{arc.name}</option>))}
-          </Select>
+          <ComboWrapper>
+            <Combobox
+              value={null as any}
+              onChange={(arc: { id: number, name: string } | null) => {
+                if (arc) {
+                  setCards([...cards, { arcana: allArcana[arc.id], flipped: false }])
+                  setQuery('')
+                }
+              }}
+            >
+              <Combobox.Input
+                as={ComboInput as any}
+                placeholder="Selecione uma carta…"
+                displayValue={() => ''}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setQuery(e.target.value)}
+              />
+              <Combobox.Options as={Options as any}>
+                {searchedArcana.length === 0 && (
+                  <EmptyOption>Nenhum resultado</EmptyOption>
+                )}
+                {searchedArcana.map(arc => (
+                  <Combobox.Option key={arc.id} value={arc} as={Option as any}>
+                    {arc.name}
+                  </Combobox.Option>
+                ))}
+              </Combobox.Options>
+            </Combobox>
+          </ComboWrapper>
         </div>
       </Label>
       <SubmitButton
@@ -177,17 +212,23 @@ const RoundPurpleButton = styled.button`
   }
 `
 
-const Select = styled.select`
+// Old Select styles removed after migrating to Combobox
+
+// Headless UI Combobox styles
+const ComboWrapper = styled.div`
+  position: relative;
+`
+
+const ComboInput = styled.input`
+  width: 100%;
   font-family: var(--font-sans-alt);
   font-size: var(--fs-sm);
   background: rgb(var(--black-rgb) / 0.2);
   border: 1px solid rgb(var(--accent-rgb) / 0.5);
   border-radius: 6px;
-  resize: none;
   padding: 0.5rem;
   box-shadow: 0 0 2px 2px transparent;
   transition: box-shadow 0.25s ease-in-out;
-  width: 100%;
 
   &:hover {
     box-shadow: 0 0 2px 2px rgb(var(--accent-rgb) / 0.5);
@@ -197,4 +238,38 @@ const Select = styled.select`
     outline: none;
     box-shadow: 0 0 2px 2px rgb(var(--accent-rgb));
   }
+`
+
+const Options = styled.ul`
+  position: absolute;
+  margin-top: 0.25rem;
+  z-index: 20;
+  max-height: 14rem;
+  overflow: auto;
+  width: 100%;
+  list-style: none;
+  padding: 0.25rem;
+  margin: 0.25rem 0 0 0;
+  background: rgb(var(--black-rgb) / 0.6);
+  backdrop-filter: blur(4px);
+  border: 1px solid rgb(var(--accent-rgb) / 0.5);
+  border-radius: 6px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+`
+
+const Option = styled.li`
+  padding: 0.4rem 0.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: var(--fs-sm);
+
+  &[data-headlessui-state~='active'] {
+    background: rgb(var(--panel-purple-rgb) / 0.6);
+  }
+`
+
+const EmptyOption = styled.div`
+  padding: 0.4rem 0.5rem;
+  font-size: var(--fs-sm);
+  color: rgb(var(--white-rgb) / 0.7);
 `
