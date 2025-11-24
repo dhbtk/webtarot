@@ -41,6 +41,7 @@ const Wrapper = styled.div`
   gap: 1rem;
   @media (max-width: 768px) {
     padding: 0.5rem;
+    padding-bottom: env(safe-area-inset-bottom);
   }
 `
 
