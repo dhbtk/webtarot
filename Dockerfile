@@ -17,20 +17,24 @@ RUN npm run build
 FROM rust:1.91 AS backend-builder
 WORKDIR /app
 
-# Pre-copy manifests to leverage cargo caching (path dep: shared)
-COPY shared/Cargo.toml shared/Cargo.toml
+# Pre-copy workspace and member manifests to leverage cargo caching
+COPY Cargo.toml Cargo.toml
 COPY backend/Cargo.toml backend/Cargo.toml
+COPY shared/Cargo.toml shared/Cargo.toml
+COPY cmdline/Cargo.toml cmdline/Cargo.toml
 
 # Create minimal dummy sources to warm up dependency cache
-RUN mkdir -p shared/src backend/src \
+RUN mkdir -p shared/src backend/src cmdline/src \
     && echo "pub fn dummy() {}" > shared/src/lib.rs \
     && echo "fn main() { println!(\"dummy\"); }" > backend/src/main.rs \
-    && cd backend && cargo build -p webtarot-backend --release || true
+    && echo "fn main() { println!(\"dummy\"); }" > cmdline/src/main.rs \
+    && cargo build -p webtarot-backend --release || true
 
 # Now copy the real sources and build release binary
 COPY shared/ shared/
 COPY backend/ backend/
-RUN cd backend && cargo build -p webtarot-backend --release
+COPY cmdline/ cmdline/
+RUN cargo build -p webtarot-backend --release
 
 
 # ---------- Runtime image ----------
@@ -42,8 +46,8 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/* \
     && mkdir -p /app /static
 
-# Copy backend binary
-COPY --from=backend-builder /app/backend/target/release/webtarot-backend /app/webtarot-backend
+# Copy backend binary (workspace target dir is at /app/target)
+COPY --from=backend-builder /app/target/release/webtarot-backend /app/webtarot-backend
 
 # Copy built frontend to /static as requested
 COPY --from=frontend-builder /app/frontend/dist/ /static/
