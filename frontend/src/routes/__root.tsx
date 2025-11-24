@@ -92,7 +92,10 @@ const HeaderLink = styled(Link)`
 
 export const AppShell: React.FC<React.PropsWithChildren> = ({ children }) => {
   const [open, setOpen] = useState(false)
-  const toggleOpen = () => setOpen(!open)
+  const toggleOpen = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault()
+    setOpen(!open)
+  }
 
   return (
     <Wrapper>
