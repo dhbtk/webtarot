@@ -11,6 +11,10 @@ export const Section = styled.section`
   border-radius: 0.75rem;
   box-shadow: 0.5rem 0.5rem 0.75rem 0 rgba(0, 0, 0, 0.25);
   animation: slide-from-right var(--anim-duration) var(--anim-function) forwards;
+
+  &:last-child {
+    height: 100%;
+  }
 `
 
 export const ReadingSubLayout: React.FC<React.PropsWithChildren<{}>> = ({ children }) => (
