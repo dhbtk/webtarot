@@ -1,5 +1,5 @@
-import { createRootRoute, Link, Outlet } from '@tanstack/react-router'
-import React, { useState } from 'react'
+import { createRootRoute, Link, Outlet, useLocation } from '@tanstack/react-router'
+import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { MenuOutlined } from '@ant-design/icons'
 
@@ -25,18 +25,25 @@ const Header = styled.header`
     display: none;
   }
 
-  @media (max-width: 768px) {
-    flex-direction: column;
-    align-items: flex-start;
+  nav {
+    display: flex;
+    gap: 1rem;
+  }
 
-    a:not(:first-of-type) {
-      display: none;
+  @media (max-width: 768px) {
+    transition: grid-template-rows var(--anim-duration) var(--anim-function);
+    display: grid;
+    grid-template-rows: min-content 0fr;
+    align-items: unset;
+
+    nav {
+      flex-direction: column;
+      gap: 0.5rem;
+      overflow: hidden;
     }
 
     &.open {
-      a:not(:first-of-type) {
-        display: initial;
-      }
+      grid-template-rows: min-content 1fr;
     }
 
     button {
@@ -68,7 +75,7 @@ const Wrapper = styled.div`
   padding-bottom: 1rem;
   gap: 1rem;
   @media (max-width: 768px) {
-    padding: 0.5rem 0.5rem env(safe-area-inset-bottom);
+    padding: calc(0.5rem + env(safe-area-inset-top)) 0.5rem calc(0.5rem + env(safe-area-inset-bottom));
   }
 `
 
@@ -92,6 +99,10 @@ const HeaderLink = styled(Link)`
 
 export const AppShell: React.FC<React.PropsWithChildren> = ({ children }) => {
   const [open, setOpen] = useState(false)
+  const currentLocation = useLocation()
+  useEffect(() => {
+    setOpen(false)
+  }, [currentLocation.pathname])
   const toggleOpen = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault()
     setOpen(!open)
@@ -115,9 +126,11 @@ export const AppShell: React.FC<React.PropsWithChildren> = ({ children }) => {
           </HamburgerButton>
           <h1>webtarot</h1>
         </Link>
-        <HeaderLink to="/interpretations/new">Interpretar</HeaderLink>
-        <HeaderLink to="/readings/history">Histórico</HeaderLink>
-        <HeaderLink to="/readings/stats">Stats</HeaderLink>
+        <nav>
+          <HeaderLink to="/interpretations/new">Interpretar</HeaderLink>
+          <HeaderLink to="/readings/history">Histórico</HeaderLink>
+          <HeaderLink to="/readings/stats">Stats</HeaderLink>
+        </nav>
       </Header>
       <main style={{ flex: 1, minHeight: 0, display: 'flex', width: '100%' }}>{children}</main>
     </Wrapper>

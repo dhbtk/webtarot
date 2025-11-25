@@ -1,4 +1,4 @@
-import { Link, useNavigate } from '@tanstack/react-router'
+import { Link, useLocation, useNavigate } from '@tanstack/react-router'
 import React from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useReadingById } from '../../../backend/queries.ts'
@@ -77,6 +77,7 @@ export const TabLink = styled(Link)`
 export const ReadingTab: React.FC<{ id: string }> = ({ id }: { id: string }) => {
   const result = useQuery(useReadingById(id))
   const title = result.data?.reading?.question ?? ''
+  const currentLocation = useLocation()
 
   const queryClient = useQueryClient()
   const navigate = useNavigate()
@@ -94,12 +95,14 @@ export const ReadingTab: React.FC<{ id: string }> = ({ id }: { id: string }) => 
       }
       return Promise.resolve(null)
     },
-    onSuccess: async (id) => {
+    onSuccess: async (nextId) => {
       await queryClient.invalidateQueries({ queryKey: ['readings'] })
-      if (id !== null) {
-        await navigate({ to: `/readings/${id}` })
-      } else {
-        await navigate({ to: '/readings' })
+      if (currentLocation.pathname === `/readings/${id}`) {
+        if (nextId !== null) {
+          await navigate({ to: `/readings/${nextId}` })
+        } else {
+          await navigate({ to: '/readings' })
+        }
       }
     }
   })

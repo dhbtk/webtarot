@@ -1,3 +1,6 @@
-- [ ] Substituir polling por websocket: subscribe no id da tiragem -> recebe atualização do backend
+- [ ] Substituir polling por websocket: subscribe no id da tiragem → recebe atualização do backend
 - [ ] Notificação quando interpretação fica pronta
 - [ ] Botão de compartilhar na tiragem
+- [ ] Cadastro de usuário?
+- [ ] pequena bio para incluir como contexto para a pergunta
+- [ ] campo de contexto para interpretar
