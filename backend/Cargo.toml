@@ -17,3 +17,5 @@ chrono = { version = "0.4.42", features = ["serde"] }
 redis = { version = "0.32.7", features = ["connection-manager", "tokio-comp"] }
 serde_json = "1.0.145"
 futures-util = "0.3.31"
+rust-i18n = "3.1.5"
+async-trait = "0.1.83"

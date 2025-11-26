@@ -2,10 +2,12 @@ use crate::reading::Reading;
 use crate::user::User;
 use redis::AsyncCommands;
 use redis::aio::ConnectionManager;
+use rust_i18n::t;
 use serde::{Deserialize, Serialize};
 use std::env;
 use std::fmt::{Debug, Formatter};
 use uuid::Uuid;
+use webtarot_shared::explain::ExplainError;
 use webtarot_shared::model::Card;
 
 #[derive(Clone)]
@@ -138,7 +140,7 @@ impl InterpretationManager {
         let uuid = reading.id;
         let result = match result {
             Ok(result) => Interpretation::Done(reading, result),
-            Err(e) => Interpretation::Failed(reading, e.to_string()),
+            Err(e) => Interpretation::Failed(reading, localize_explain_error(&e)),
         };
         let mut manager = self.connection_manager.clone();
         manager
@@ -277,9 +279,31 @@ impl From<Option<Interpretation>> for GetInterpretationResult {
         }
         Self {
             done: false,
-            error: "Not found".to_string(),
+            error: t!("errors.not_found").to_string(),
             interpretation: "".to_string(),
             reading: None,
         }
+    }
+}
+
+fn localize_explain_error(e: &ExplainError) -> String {
+    match e {
+        ExplainError::MissingApiKey => t!("errors.missing_openai_key").to_string(),
+        ExplainError::HttpClientBuild(err) => {
+            t!("errors.http_client_build", error = err.to_string()).to_string()
+        }
+        ExplainError::Request(err) => {
+            t!("errors.request_failed", error = err.to_string()).to_string()
+        }
+        ExplainError::ApiError { status, body } => t!(
+            "errors.api_error",
+            status = status.as_u16().to_string(),
+            body = body
+        )
+        .to_string(),
+        ExplainError::ParseResponse(err) => {
+            t!("errors.parse_response", error = err.to_string()).to_string()
+        }
+        ExplainError::EmptyResponse => t!("errors.empty_response").to_string(),
     }
 }

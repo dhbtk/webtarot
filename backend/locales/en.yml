@@ -1,0 +1,8 @@
+errors:
+  not_found: "Not found"
+  missing_openai_key: "Environment variable OPENAI_KEY is missing. Set it with your OpenAI API key."
+  http_client_build: "Error creating HTTP client: %{error}"
+  request_failed: "Failed to call the OpenAI API: %{error}"
+  api_error: "The OpenAI API returned an error (%{status}): %{body}"
+  parse_response: "Failed to read the response from OpenAI: %{error}"
+  empty_response: "Could not obtain the card interpretation at this time."

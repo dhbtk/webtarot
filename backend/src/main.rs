@@ -1,6 +1,7 @@
 use futures_util::stream::StreamExt;
 use std::sync::{Arc, RwLock};
 mod interpretation;
+mod locale;
 mod reading;
 mod stats;
 mod user;
@@ -30,10 +31,14 @@ use tower_http::trace::TraceLayer;
 use tracing::Level;
 use tracing_subscriber::fmt;
 use uuid::Uuid;
+// Initialize rust-i18n. This looks for YAML files under backend/locales
+rust_i18n::i18n!("locales");
 
 #[tokio::main]
 async fn main() {
     fmt().with_env_filter("info,webtarot=trace").init();
+    // Set default locale (Portuguese as the project currently uses PT as baseline)
+    rust_i18n::set_locale("pt");
     let interpretation_manager = InterpretationManager::new().await;
 
     let app = Router::new()
@@ -51,6 +56,8 @@ async fn main() {
         .route("/api/v1/interpretation", post(create_interpretation))
         .route("/api/v1/stats", get(stats))
         .with_state(interpretation_manager)
+        // Set locale and user for each request
+        .route_layer(from_extractor::<locale::Locale>())
         .route_layer(from_extractor::<User>())
         .fallback_service(
             ServeDir::new("/static").not_found_service(ServeFile::new("/static/index.html")),
