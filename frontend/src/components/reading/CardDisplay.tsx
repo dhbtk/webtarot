@@ -93,7 +93,6 @@ export const CardBack = styled.div`
 `
 
 function calculateCardPosition (index: number, total: number): string {
-  console.log(`animating ${index}/${total}`)
   if (total < 6) {
     const x = (CARD_WIDTH + GAP * 2) + (index * (CARD_WIDTH + GAP))
     return `${x}px calc(50cqh - ${CARD_HEIGHT / 2}px)`
@@ -105,7 +104,6 @@ function calculateCardPosition (index: number, total: number): string {
     } else {
       const x = (CARD_WIDTH + GAP * 2) + ((index % half) * (CARD_WIDTH + GAP))
       const y = index < half ? `${GAP}` : `${CARD_HEIGHT + 3 * GAP}`
-      console.log(`index: ${index}, total: ${total}, x: ${x}, y: ${y}`)
       return `${x}px ${y}px`
     }
   }

@@ -158,3 +158,25 @@ export function interpretationReading (i: Interpretation): Reading {
   // Fallback to a narrow type error; this should never happen at runtime
   throw new Error('Unknown Interpretation variant')
 }
+
+// Mirrors Rust enum InterpretationsWebsocketMessage in backend/src/main.rs
+// #[serde(rename_all = "camelCase")] with externally-tagged enum variants:
+// - Subscribe { uuid: Uuid }  => { "subscribe": { "uuid": "<uuid>" } }
+// - Done { uuid: Uuid }       => { "done": { "uuid": "<uuid>" } }
+export type InterpretationsWebsocketMessage =
+  | { subscribe: { uuid: string } }
+  | { done: { uuid: string } };
+
+export const isInterpretationsWebsocketMessage = (
+  value: unknown
+): value is InterpretationsWebsocketMessage => {
+  if (typeof value !== 'object' || value === null) return false
+  const v = value as Record<string, any>
+  if (v.subscribe && typeof v.subscribe === 'object') {
+    return typeof v.subscribe.uuid === 'string'
+  }
+  if (v.done && typeof v.done === 'object') {
+    return typeof v.done.uuid === 'string'
+  }
+  return false
+}

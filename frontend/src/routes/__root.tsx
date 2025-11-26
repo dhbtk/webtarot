@@ -31,7 +31,7 @@ const Header = styled.header`
   }
 
   @media (max-width: 768px) {
-    transition: grid-template-rows var(--anim-duration) var(--anim-function);
+    transition: grid-template-rows calc(var(--anim-duration) / 2) var(--anim-function);
     display: grid;
     grid-template-rows: min-content 0fr;
     align-items: unset;

@@ -11,6 +11,7 @@ use webtarot_shared::model::Card;
 #[derive(Clone)]
 pub struct InterpretationManager {
     connection_manager: ConnectionManager,
+    broadcast: tokio::sync::broadcast::Sender<Interpretation>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -49,7 +50,7 @@ impl Interpretation {
     }
 }
 
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct CreateInterpretationRequest {
     pub question: String,
@@ -94,9 +95,20 @@ impl InterpretationManager {
         let client =
             redis::Client::open(env::var("REDIS_URL").expect("REDIS_URL not set")).unwrap();
         let manager = ConnectionManager::new(client).await.unwrap();
+        let (broadcast, _) = tokio::sync::broadcast::channel(100);
         Self {
             connection_manager: manager,
+            broadcast,
         }
+    }
+
+    pub fn subscribe(&self) -> tokio::sync::broadcast::Receiver<Interpretation> {
+        self.broadcast.subscribe()
+    }
+
+    pub async fn renotify(&self, uuid: Uuid) {
+        let interpretation = self.get_interpretation(uuid).await.unwrap();
+        self.broadcast.send(interpretation).unwrap();
     }
 
     pub fn request_interpretation(&self, reading: Reading) {
@@ -136,6 +148,7 @@ impl InterpretationManager {
             )
             .await
             .unwrap();
+        self.broadcast.send(result).unwrap();
     }
 
     pub async fn get_interpretation(&self, uuid: Uuid) -> Option<Interpretation> {

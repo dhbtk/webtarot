@@ -11,6 +11,9 @@ import styled from 'styled-components'
 import { useEffect } from 'react'
 import { ReadingSubLayout } from '../../components/reading/layout/ReadingSubLayout.tsx'
 import { CardSpinner } from '../../components/reading/CardSpinner.tsx'
+import { getUserId } from '../../backend/userId.ts'
+import type { InterpretationsWebsocketMessage } from '../../backend/models.ts'
+import { isInterpretationsWebsocketMessage } from '../../backend/models.ts'
 
 export const Route = createFileRoute('/readings/$id')({
   component: ReadingDetails
@@ -44,6 +47,31 @@ export default function ReadingDetails () {
     }
   }, [id])
 
+  useEffect(() => {
+    const url = new URL('/api/v1/interpretation/notify', window.location.href)
+    url.protocol = url.protocol.replace('http', 'ws')
+    const websocket = new WebSocket(url.href, [getUserId()])
+
+    websocket.onopen = () => {
+      console.log('ws connected')
+      const msg: InterpretationsWebsocketMessage = { subscribe: { uuid: id } }
+      websocket.send(JSON.stringify(msg))
+    }
+
+    websocket.onmessage = (event) => {
+      const data = JSON.parse(event.data)
+      console.log('ws data', data)
+      if (isInterpretationsWebsocketMessage(data) && 'done' in data) {
+        if (data.done.uuid === id) {
+          queryClient.invalidateQueries({ queryKey: ['readings', id] })
+          websocket.close()
+        }
+      }
+    }
+
+    return () => websocket.close()
+  }, [id])
+
   const query = useQuery({
     queryKey: ['readings', id],
     queryFn: async ({ queryKey }) => {
@@ -53,16 +81,8 @@ export default function ReadingDetails () {
         removeMutation.mutate()
         throw new Error('Reading not found')
       }
-      if (!response.done) {
-        queryClient.setQueryData(['readings', id], response)
-        throw 'not done'
-      }
       return response
     },
-    retry: (_retries, error) => error as unknown as string === 'not done',
-    retryDelay: 1000,
-    refetchInterval: 10000,
-    refetchIntervalInBackground: true,
   })
 
   const reading = query.data?.reading ?? null

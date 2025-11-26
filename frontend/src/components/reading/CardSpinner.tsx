@@ -1,7 +1,7 @@
 import styled from 'styled-components'
 import { CARD_HEIGHT, CARD_WIDTH, CardBack, CardDiv, CardImage } from './CardDisplay.tsx'
 import { getAllArcana } from '../../backend/models.ts'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { arcanaImage } from '../../util/cards.ts'
 
 const CardSpinnerContainer = styled.div`
@@ -9,6 +9,7 @@ const CardSpinnerContainer = styled.div`
   padding: 1rem;
   perspective: 1000px;
   container-type: inline-size;
+  animation: slide-from-bottom var(--anim-duration) var(--anim-function) forwards;
 `
 
 const SmallerCardDiv = styled(CardDiv)`
@@ -16,8 +17,9 @@ const SmallerCardDiv = styled(CardDiv)`
   height: ${CARD_HEIGHT / 1.5}px;
   position: unset;
   transform-origin: center;
-  animation: card-rotate calc((var(--anim-duration) / 2) * 5) infinite var(--anim-function),
-  slide calc((var(--anim-duration) / 2) * 4) infinite alternate var(--anim-function);
+  animation: card-rotate calc(var(--anim-duration) * 2) infinite var(--anim-function),
+  slide calc(var(--anim-duration) * 2) infinite alternate var(--anim-function);
+  animation-delay: var(--anim-duration);
 
   @keyframes card-rotate {
     0% {
@@ -41,7 +43,16 @@ const SmallerCardDiv = styled(CardDiv)`
 const allArcana = getAllArcana()
 
 export const CardSpinner = () => {
-  const [arcana, _setArcana] = useState(allArcana[Math.floor(Math.random() * allArcana.length)])
+  const [index, setIndex] = useState(Math.floor(Math.random() * allArcana.length))
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIndex(Math.floor(Math.random() * allArcana.length))
+    }, 650)
+    return () => clearInterval(interval)
+  })
+
+  const arcana = allArcana[index]
 
   return (
     <CardSpinnerContainer>

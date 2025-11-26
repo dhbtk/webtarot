@@ -18,9 +18,9 @@ where
         let user_id = parts
             .headers
             .get("x-user-uuid")
+            .or_else(|| parts.headers.get("sec-websocket-protocol"))
             .and_then(|v| v.to_str().ok())
             .and_then(|v| v.parse::<Uuid>().ok())
-            .inspect(|v| tracing::debug!("User ID: {:?}", v))
             .ok_or(StatusCode::UNAUTHORIZED)?;
         Ok(Self { id: user_id })
     }
