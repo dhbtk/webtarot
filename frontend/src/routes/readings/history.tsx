@@ -78,7 +78,8 @@ function RouteComponent () {
   const columns = [
     columnHelper.accessor('question', {
       header: 'Pergunta',
-      cell: props => <Link to={`/readings/${props.row.original.id}`}>{props.row.original.question}</Link>
+      cell: props => <Link to="/readings/$id"
+                           params={{ id: props.row.original.id }}>{props.row.original.question}</Link>
     }),
     columnHelper.accessor(row => row.cards.map(cardLabel).join(', '), {
       id: 'cardsList',
