@@ -10,6 +10,7 @@ import { addToHistory, getSavedReadings, saveReadings } from '../../../backend/s
 import { CloseOutlined, RedoOutlined } from '@ant-design/icons'
 import { Combobox } from '@headlessui/react'
 import Fuse from 'fuse.js'
+import { useTranslation } from 'react-i18next'
 
 const allArcana = getAllArcana()
 const mappedArcana = allArcana.map((arc, index) => ({ name: arcanaLabel(arc), id: index }))
@@ -17,6 +18,7 @@ const mappedArcana = allArcana.map((arc, index) => ({ name: arcanaLabel(arc), id
 export default function InterpretationForm () {
   const router = useRouter()
   const queryClient = useQueryClient()
+  const { t } = useTranslation()
   const [question, setQuestion] = useState('')
   const [cards, setCards] = useState<Card[]>([])
   const [submitting, setSubmitting] = useState(false)
@@ -65,7 +67,7 @@ export default function InterpretationForm () {
       setCards([])
       await router.navigate({ to: '/readings/$id', params: { id: res.interpretationId } })
     } catch (err: any) {
-      setError(err?.message ?? 'Failed to create interpretation')
+      setError(err?.message ?? t('errors.createInterpretation'))
     } finally {
       setSubmitting(false)
     }
@@ -80,17 +82,17 @@ export default function InterpretationForm () {
   return (
     <Form onSubmit={onSubmit}>
       <Label>
-        <span>Pergunta</span>
+        <span>{t('reading.form.questionLabel')}</span>
         <Textarea
           required
           value={question}
           onChange={(e) => setQuestion(e.target.value)}
-          placeholder="O que você está buscando saber?"
+          placeholder={t('reading.form.questionPlaceholder')}
           rows={4}
         />
       </Label>
       <Label>
-        <span>Cartas</span>
+        <span>{t('reading.form.cardsLabel')}</span>
         <div>
           <div style={{ display: 'grid', gap: '0.5rem', marginBottom: '0.5rem' }}>
             {cards.map((card, index) => (
@@ -122,13 +124,13 @@ export default function InterpretationForm () {
             >
               <Combobox.Input
                 as={ComboInput as any}
-                placeholder="Selecione uma carta…"
+                placeholder={t('common.combobox.selectCard')}
                 displayValue={() => ''}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setQuery(e.target.value)}
               />
               <Combobox.Options as={Options as any}>
                 {searchedArcana.length === 0 && (
-                  <EmptyOption>Nenhum resultado</EmptyOption>
+                  <EmptyOption>{t('common.combobox.noResults')}</EmptyOption>
                 )}
                 {searchedArcana.map(arc => (
                   <Combobox.Option key={arc.id} value={arc} as={Option as any}>
@@ -144,7 +146,7 @@ export default function InterpretationForm () {
         type="submit"
         disabled={submitting || !question.trim() || cards.length === 0}
       >
-        {submitting ? 'Interpretando…' : 'Interpretar'}
+        {submitting ? t('reading.interpretation.submitting') : t('reading.interpretation.submit')}
       </SubmitButton>
       {error && <div style={{ color: 'var(--color-error)', fontSize: 'var(--fs-xs)' }}>{error}</div>}
     </Form>

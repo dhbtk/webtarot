@@ -5,6 +5,7 @@ import { useReadingById } from '../../../backend/queries.ts'
 import styled from 'styled-components'
 import { getSavedReadings, removeReading } from '../../../backend/savedReadings.ts'
 import { CloseOutlined } from '@ant-design/icons'
+import { useTranslation } from 'react-i18next'
 
 export const TabLink = styled(Link)`
   font-family: var(--font-sans-alt);
@@ -75,6 +76,7 @@ export const TabLink = styled(Link)`
 `
 
 export const ReadingTab: React.FC<{ id: string }> = ({ id }: { id: string }) => {
+  const { t } = useTranslation()
   const result = useQuery(useReadingById(id))
   const title = result.data?.reading?.question ?? ''
   const currentLocation = useLocation()
@@ -112,7 +114,7 @@ export const ReadingTab: React.FC<{ id: string }> = ({ id }: { id: string }) => 
       <span>{title}</span>
       <button type="button" onClick={(e) => {
         e.preventDefault()
-        if (confirm('Tem certeza que deseja excluir esta tiragem?')) {
+        if (confirm(t('history.delete.confirm'))) {
           removeMutation.mutate()
         }
       }}>

@@ -13,6 +13,7 @@ import { arcanaLabel } from '../../util/cards.ts'
 import styled from 'styled-components'
 import { ReadingStats } from '../../components/reading/ReadingStats.tsx'
 import { ReadingSubLayout } from '../../components/reading/layout/ReadingSubLayout.tsx'
+import { useTranslation } from 'react-i18next'
 
 export const Route = createFileRoute('/readings/stats')({
   component: RouteComponent,
@@ -52,6 +53,7 @@ const StyledTable = styled.table`
 `
 
 function RouteComponent () {
+  const { t } = useTranslation()
   const query = useQuery({
     queryKey: ['stats'],
     queryFn: getStats,
@@ -61,31 +63,31 @@ function RouteComponent () {
   const columns = [
     columnHelper.accessor(row => arcanaLabel(row.arcana), {
       cell: (info) => info.getValue(),
-      header: 'Arcana',
+      header: t('stats.table.arcana'),
       id: 'arcanaName',
-      footer: () => `Tiragens: ${query.data?.totalReadings}`,
+      footer: () => t('stats.footer.totalReadings', { count: query.data?.totalReadings ?? 0 }),
     }),
     columnHelper.accessor('totalCount', {
-      header: 'Total',
+      header: t('stats.table.total'),
       footer: () => query.data?.totalCardsDrawn
     }),
     columnHelper.accessor('drawnCount', {
-      header: 'Total direita',
+      header: t('stats.table.uprightTotal'),
     }),
     columnHelper.accessor('drawnFlippedCount', {
-      header: 'Total invertida',
+      header: t('stats.table.reversedTotal'),
     }),
     columnHelper.accessor('percentTotal', {
       cell: (info) => `${(100 * info.getValue()).toFixed(2)}%`,
-      header: 'Percentual',
+      header: t('stats.table.percent'),
     }),
     columnHelper.accessor('percentDrawn', {
       cell: (info) => `${(100 * info.getValue()).toFixed(2)}%`,
-      header: 'Percentual direita',
+      header: t('stats.table.percentUpright'),
     }),
     columnHelper.accessor('percentFlipped', {
       cell: (info) => `${(100 * info.getValue()).toFixed(2)}%`,
-      header: 'Percentual invertida',
+      header: t('stats.table.percentReversed'),
     }),
   ]
   const table = useReactTable({
@@ -115,10 +117,10 @@ function RouteComponent () {
                       title={
                         header.column.getCanSort()
                           ? header.column.getNextSortingOrder() === 'asc'
-                            ? 'Sort ascending'
+                            ? t('table.sort.asc')
                             : header.column.getNextSortingOrder() === 'desc'
-                              ? 'Sort descending'
-                              : 'Clear sort'
+                              ? t('table.sort.desc')
+                              : t('table.sort.clear')
                           : undefined
                       }
                     >
@@ -127,8 +129,8 @@ function RouteComponent () {
                         header.getContext()
                       )}
                       {{
-                        asc: ' 🔼',
-                        desc: ' 🔽',
+                        asc: t('table.ascending'),
+                        desc: t('table.descending'),
                       }[header.column.getIsSorted() as string] ?? null}
                     </div>
                   )}

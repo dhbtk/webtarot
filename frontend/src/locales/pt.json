@@ -1,0 +1,85 @@
+{
+  "reading": {
+    "form": {
+      "questionLabel": "Pergunta",
+      "questionPlaceholder": "O que você está buscando saber?",
+      "cardsLabel": "Cartas",
+      "submit": "Perguntar",
+      "submitting": "Embaralhando…"
+    },
+    "details": {
+      "askedAt": "Pergunta feita em {{date}}",
+      "shuffledTimes_one": "Embaralhado {{count}} vez",
+      "shuffledTimes_other": "Embaralhado {{count}} vezes",
+      "waiting": "Aguardando interpretação..."
+    }
+  },
+  "stats": {
+    "readings": "Tiragens",
+    "totalCards": "Total de cartas",
+    "neverDrawn": "Arcanos que nunca saíram",
+    "table": {
+      "arcana": "Arcano",
+      "total": "Total",
+      "uprightTotal": "Total na posição direita",
+      "reversedTotal": "Total invertida",
+      "percent": "Percentual",
+      "percentUpright": "Percentual na direita",
+      "percentReversed": "Percentual invertida"
+    },
+    "footer": {
+      "totalReadings": "Tiragens: {{count}}"
+    }
+  },
+  "history": {
+    "headers": {
+      "question": "Pergunta",
+      "cards": "Cartas",
+      "date": "Data",
+      "actions": "Ações"
+    },
+    "delete": {
+      "confirm": "Tem certeza que deseja excluir esta tiragem?",
+      "deleting": "Excluindo…",
+      "delete": "Excluir"
+    }
+  },
+  "common": {
+    "combobox": {
+      "selectCard": "Selecione uma carta…",
+      "noResults": "Nenhum resultado"
+    }
+  },
+  "table": {
+    "sort": {
+      "asc": "Ordenar ascendente",
+      "desc": "Ordenar descendente",
+      "clear": "Limpar ordenação"
+    },
+    "ascending": " 🔼",
+    "descending": " 🔽"
+  },
+  "errors": {
+    "createReading": "Falha ao criar tiragem",
+    "createInterpretation": "Falha ao criar interpretação"
+  },
+  "reading": {
+    "form": {
+      "questionLabel": "Pergunta",
+      "questionPlaceholder": "O que você está buscando saber?",
+      "cardsLabel": "Cartas",
+      "submit": "Perguntar",
+      "submitting": "Embaralhando…"
+    },
+    "details": {
+      "askedAt": "Pergunta feita em {{date}}",
+      "shuffledTimes_one": "Embaralhado {{count}} vez",
+      "shuffledTimes_other": "Embaralhado {{count}} vezes",
+      "waiting": "Aguardando interpretação..."
+    },
+    "interpretation": {
+      "submit": "Interpretar",
+      "submitting": "Interpretando…"
+    }
+  }
+}

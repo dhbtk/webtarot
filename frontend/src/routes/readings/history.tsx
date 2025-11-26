@@ -14,6 +14,7 @@ import { interpretationReading } from '../../backend/models.ts'
 import { removeReading } from '../../backend/savedReadings.ts'
 import { cardLabel } from '../../util/cards.ts'
 import { ReadingSubLayout } from '../../components/reading/layout/ReadingSubLayout.tsx'
+import { useTranslation } from 'react-i18next'
 
 export const Route = createFileRoute('/readings/history')({
   component: RouteComponent,
@@ -66,6 +67,7 @@ const defaultArray: Reading[] = []
 
 function RouteComponent () {
   const queryClient = useQueryClient()
+  const { t } = useTranslation()
 
   const query = useQuery({
     queryKey: ['history'],
@@ -77,22 +79,22 @@ function RouteComponent () {
   const columnHelper = createColumnHelper<Reading>()
   const columns = [
     columnHelper.accessor('question', {
-      header: 'Pergunta',
+      header: t('history.headers.question'),
       cell: props => <Link to="/readings/$id"
                            params={{ id: props.row.original.id }}>{props.row.original.question}</Link>
     }),
     columnHelper.accessor(row => row.cards.map(cardLabel).join(', '), {
       id: 'cardsList',
-      header: 'Cartas',
+      header: t('history.headers.cards'),
       cell: info => info.getValue(),
     }),
     columnHelper.accessor('createdAt', {
-      header: 'Data',
+      header: t('history.headers.date'),
       cell: info => formatDate(info.getValue()),
     }),
     columnHelper.display({
       id: 'actions',
-      header: 'Ações',
+      header: t('history.headers.actions'),
       cell: (props) => <DeleteButton id={props.row.original.id} onDeleted={async (id) => {
         removeReading(id)
         await Promise.all([
@@ -127,17 +129,17 @@ function RouteComponent () {
                       title={
                         header.column.getCanSort()
                           ? header.column.getNextSortingOrder() === 'asc'
-                            ? 'Sort ascending'
+                            ? t('table.sort.asc')
                             : header.column.getNextSortingOrder() === 'desc'
-                              ? 'Sort descending'
-                              : 'Clear sort'
+                              ? t('table.sort.desc')
+                              : t('table.sort.clear')
                           : undefined
                       }
                     >
                       {flexRender(header.column.columnDef.header, header.getContext())}
                       {{
-                        asc: ' 🔼',
-                        desc: ' 🔽',
+                        asc: t('table.ascending'),
+                        desc: t('table.descending'),
                       }[header.column.getIsSorted() as string] ?? null}
                     </div>
                   )}
@@ -164,6 +166,7 @@ function RouteComponent () {
 }
 
 function DeleteButton ({ id, onDeleted }: { id: string, onDeleted: (id: string) => Promise<void> | void }) {
+  const { t } = useTranslation()
   const mutation = useMutation({
     mutationFn: async () => {
       await deleteInterpretation(id)
@@ -176,12 +179,12 @@ function DeleteButton ({ id, onDeleted }: { id: string, onDeleted: (id: string) 
   return (
     <button
       onClick={() => {
-        if (confirm('Tem certeza que deseja excluir esta tiragem?')) {
+        if (confirm(t('history.delete.confirm'))) {
           mutation.mutate()
         }
       }}
       disabled={mutation.isPending}
-      title={mutation.isPending ? 'Deleting...' : 'Delete this interpretation'}
+      title={mutation.isPending ? t('history.delete.deleting') : t('history.delete.delete')}
       style={{
         fontSize: 'var(--fs-xs)',
         padding: '0.25rem 0.5rem',
@@ -192,7 +195,7 @@ function DeleteButton ({ id, onDeleted }: { id: string, onDeleted: (id: string) 
         cursor: mutation.isPending ? 'default' : 'pointer',
       }}
     >
-      {mutation.isPending ? 'Excluindo…' : 'Excluir'}
+      {mutation.isPending ? t('history.delete.deleting') : t('history.delete.delete')}
     </button>
   )
 }

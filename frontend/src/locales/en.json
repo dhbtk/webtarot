@@ -1,0 +1,97 @@
+{
+  "reading": {
+    "form": {
+      "questionLabel": "Question",
+      "questionPlaceholder": "What do you seek to know?",
+      "cardsLabel": "Cards",
+      "submit": "Ask",
+      "submitting": "Shuffling…"
+    },
+    "details": {
+      "askedAt": "Question asked on {{date}}",
+      "shuffledTimes_one": "Shuffled {{count}} time",
+      "shuffledTimes_other": "Shuffled {{count}} times",
+      "waiting": "Waiting for interpretation..."
+    }
+  },
+  "stats": {
+    "readings": "Readings",
+    "totalCards": "Total cards",
+    "neverDrawn": "Arcana never drawn",
+    "table": {
+      "arcana": "Arcana",
+      "total": "Total",
+      "uprightTotal": "Upright total",
+      "reversedTotal": "Reversed total",
+      "percent": "Percent",
+      "percentUpright": "Percent upright",
+      "percentReversed": "Percent reversed"
+    },
+    "footer": {
+      "totalReadings": "Readings: {{count}}"
+    }
+  },
+  "history": {
+    "headers": {
+      "question": "Question",
+      "cards": "Cards",
+      "date": "Date",
+      "actions": "Actions"
+    },
+    "delete": {
+      "confirm": "Are you sure you want to delete this reading?",
+      "deleting": "Deleting...",
+      "delete": "Delete"
+    }
+  },
+  "common": {
+    "combobox": {
+      "selectCard": "Select a card…",
+      "noResults": "No results"
+    }
+  },
+  "nav": {
+    "interpret": "Interpret",
+    "history": "History",
+    "stats": "Stats"
+  },
+  "aria": {
+    "openMenu": "Open menu"
+  },
+  "table": {
+    "sort": {
+      "asc": "Sort ascending",
+      "desc": "Sort descending",
+      "clear": "Clear sort"
+    },
+    "ascending": " 🔼",
+    "descending": " 🔽"
+  },
+  "errors": {
+    "createReading": "Failed to create reading",
+    "createInterpretation": "Failed to create interpretation"
+  },
+  "reading": {
+    "form": {
+      "questionLabel": "Question",
+      "questionPlaceholder": "What do you seek to know?",
+      "cardsLabel": "Cards",
+      "submit": "Ask",
+      "submitting": "Shuffling…"
+    },
+    "details": {
+      "askedAt": "Question asked on {{date}}",
+      "shuffledTimes_one": "Shuffled {{count}} time",
+      "shuffledTimes_other": "Shuffled {{count}} times",
+      "waiting": "Waiting for interpretation..."
+    },
+    "interpretation": {
+      "title": "Interpret Reading",
+      "submit": "Interpret",
+      "submitting": "Interpreting…"
+    },
+    "new": {
+      "title": "New Reading"
+    }
+  }
+}

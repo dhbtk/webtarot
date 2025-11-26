@@ -2,6 +2,7 @@ import styled from 'styled-components'
 import type { Stats } from '../../backend/models.ts'
 import React from 'react'
 import { arcanaImage, arcanaLabel } from '../../util/cards.ts'
+import { useTranslation } from 'react-i18next'
 
 const WrapperDiv = styled.div`
   display: flex;
@@ -50,20 +51,21 @@ const NeverDrawnGallery = styled.div`
 `
 
 export const ReadingStats: React.FC<{ stats: Stats }> = ({ stats }) => {
+  const { t } = useTranslation()
   return (
     <>
       <WrapperDiv>
         <StatDiv>
           <BigStatValue>{stats.totalReadings}</BigStatValue>
-          <StatLabel>Tiragens</StatLabel>
+          <StatLabel>{t('stats.readings')}</StatLabel>
         </StatDiv>
         <StatDiv style={{ animationDelay: 'calc(var(--anim-duration) + 0.25s)' }}>
           <BigStatValue>{stats.totalCardsDrawn}</BigStatValue>
-          <StatLabel>Total de cartas</StatLabel>
+          <StatLabel>{t('stats.totalCards')}</StatLabel>
         </StatDiv>
         <StatDiv style={{ animationDelay: 'calc(var(--anim-duration) + 0.5s)' }}>
           <BigStatValue>{stats.neverDrawn.length}</BigStatValue>
-          <StatLabel>Arcanos que nunca saíram</StatLabel>
+          <StatLabel>{t('stats.neverDrawn')}</StatLabel>
         </StatDiv>
       </WrapperDiv>
       <NeverDrawnGallery>

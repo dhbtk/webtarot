@@ -14,6 +14,7 @@ import { CardSpinner } from '../../components/reading/CardSpinner.tsx'
 import { getUserId } from '../../backend/userId.ts'
 import type { InterpretationsWebsocketMessage } from '../../backend/models.ts'
 import { isInterpretationsWebsocketMessage } from '../../backend/models.ts'
+import { useTranslation } from 'react-i18next'
 
 export const Route = createFileRoute('/readings/$id')({
   component: ReadingDetails
@@ -23,6 +24,7 @@ export default function ReadingDetails () {
   const { id } = useParams({ from: '/readings/$id' }) as { id: string }
   const queryClient = useQueryClient()
   const navigate = useNavigate()
+  const { t } = useTranslation()
   const removeMutation = useMutation({
     mutationFn: () => {
       const currentIndex = getSavedReadings().indexOf(id)
@@ -95,10 +97,10 @@ export default function ReadingDetails () {
             <ReadingTitle>{reading.question}</ReadingTitle>
             <MiniHeading style={{ display: 'flex', justifyContent: 'space-between' }}>
             <span>
-              Pergunta feita em {new Date(reading.createdAt).toLocaleString()}
+              {t('reading.details.askedAt', { date: new Date(reading.createdAt).toLocaleString() })}
             </span>
               <span>
-                Embaralhado {reading.shuffledTimes} vez{reading.shuffledTimes === 1 ? '' : 'es'}
+                {t('reading.details.shuffledTimes', { count: reading.shuffledTimes })}
               </span>
             </MiniHeading>
 
@@ -121,7 +123,7 @@ export default function ReadingDetails () {
                   ) : (
                     <>
                       <CardSpinner/>
-                      <h3 style={{ textAlign: 'center' }}>Aguardando interpretação...</h3>
+                      <h3 style={{ textAlign: 'center' }}>{t('reading.details.waiting')}</h3>
                     </>
                   )}
 

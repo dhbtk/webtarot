@@ -2,6 +2,7 @@ import { createRootRoute, Link, Outlet, useLocation } from '@tanstack/react-rout
 import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { MenuOutlined } from '@ant-design/icons'
+import { useTranslation } from 'react-i18next'
 
 const Header = styled.header`
   background-color: rgb(82 69 150 / 0.7);
@@ -100,6 +101,7 @@ const HeaderLink = styled(Link)`
 export const AppShell: React.FC<React.PropsWithChildren> = ({ children }) => {
   const [open, setOpen] = useState(false)
   const currentLocation = useLocation()
+  const { t } = useTranslation()
   useEffect(() => {
     setOpen(false)
   }, [currentLocation.pathname])
@@ -120,16 +122,16 @@ export const AppShell: React.FC<React.PropsWithChildren> = ({ children }) => {
                 gap: '0.5rem',
                 alignItems: 'center'
               }}>
-          <HamburgerButton type="button" onClick={toggleOpen} aria-label="Abrir Menu" aria-expanded={open}
-                           aria-controls="menu" title="Abrir Menu">
+          <HamburgerButton type="button" onClick={toggleOpen} aria-label={t('aria.openMenu')} aria-expanded={open}
+                           aria-controls="menu" title={t('aria.openMenu')}>
             <MenuOutlined/>
           </HamburgerButton>
           <h1>webtarot</h1>
         </Link>
         <nav>
-          <HeaderLink to="/interpretations/new">Interpretar</HeaderLink>
-          <HeaderLink to="/readings/history">Histórico</HeaderLink>
-          <HeaderLink to="/readings/stats">Stats</HeaderLink>
+          <HeaderLink to="/interpretations/new">{t('nav.interpret')}</HeaderLink>
+          <HeaderLink to="/readings/history">{t('nav.history')}</HeaderLink>
+          <HeaderLink to="/readings/stats">{t('nav.stats')}</HeaderLink>
         </nav>
       </Header>
       <main style={{ flex: 1, minHeight: 0, display: 'flex', width: '100%' }}>{children}</main>

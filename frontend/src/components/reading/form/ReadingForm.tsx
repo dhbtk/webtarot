@@ -6,10 +6,12 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { addToHistory, getSavedReadings, saveReadings } from '../../../backend/savedReadings.ts'
 import { Form, Label, RoundButton, SubmitButton, Textarea } from './form.tsx'
 import { MinusOutlined, PlusOutlined } from '@ant-design/icons'
+import { useTranslation } from 'react-i18next'
 
 export default function ReadingForm () {
   const router = useRouter()
   const queryClient = useQueryClient()
+  const { t } = useTranslation()
   const [question, setQuestion] = useState('')
   const [cards, setCards] = useState(3)
   const [submitting, setSubmitting] = useState(false)
@@ -36,7 +38,7 @@ export default function ReadingForm () {
       setCards(3)
       await router.navigate({ to: '/readings/$id', params: { id: res.interpretationId } })
     } catch (err: any) {
-      setError(err?.message ?? 'Failed to create reading')
+      setError(err?.message ?? t('errors.createReading'))
     } finally {
       setSubmitting(false)
     }
@@ -45,17 +47,17 @@ export default function ReadingForm () {
   return (
     <Form onSubmit={onSubmit}>
       <Label>
-        <span>Pergunta</span>
+        <span>{t('reading.form.questionLabel')}</span>
         <Textarea
           required
           value={question}
           onChange={(e) => setQuestion(e.target.value)}
-          placeholder="O que você está buscando saber?"
+          placeholder={t('reading.form.questionPlaceholder')}
           rows={4}
         />
       </Label>
       <Label>
-        <span>Cartas</span>
+        <span>{t('reading.form.cardsLabel')}</span>
         <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', fontSize: '0.85rem' }}>
           <RoundButton type="button" onClick={() => setCards(Math.max(1, cards - 1))}>
             <MinusOutlined/>
@@ -70,7 +72,7 @@ export default function ReadingForm () {
         type="submit"
         disabled={submitting}
       >
-        {submitting ? 'Embaralhando…' : 'Perguntar'}
+        {submitting ? t('reading.form.submitting') : t('reading.form.submit')}
       </SubmitButton>
       {error && <div style={{ color: 'var(--color-error)', fontSize: 'var(--fs-xs)' }}>{error}</div>}
     </Form>
