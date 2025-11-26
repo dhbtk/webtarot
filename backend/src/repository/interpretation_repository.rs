@@ -1,98 +1,25 @@
-use crate::reading::Reading;
-use crate::user::User;
+use crate::entity::interpretation;
+use crate::entity::interpretation::Interpretation;
+use crate::entity::reading::Reading;
 use redis::AsyncCommands;
 use redis::aio::ConnectionManager;
-use rust_i18n::t;
-use serde::{Deserialize, Serialize};
 use std::env;
 use std::fmt::{Debug, Formatter};
 use uuid::Uuid;
-use webtarot_shared::explain::ExplainError;
-use webtarot_shared::model::Card;
 
 #[derive(Clone)]
-pub struct InterpretationManager {
+pub struct InterpretationRepository {
     connection_manager: ConnectionManager,
     broadcast: tokio::sync::broadcast::Sender<Interpretation>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub enum Interpretation {
-    Pending(Reading),
-    Done(Reading, String),
-    Failed(Reading, String),
-}
-
-impl Interpretation {
-    pub fn is_done(&self) -> bool {
-        matches!(self, Self::Done(..))
-    }
-    pub fn reading(&self) -> &Reading {
-        match self {
-            Self::Pending(reading) => reading,
-            Self::Done(reading, _) => reading,
-            Self::Failed(reading, _) => reading,
-        }
-    }
-
-    pub fn into_reading(self) -> Reading {
-        match self {
-            Self::Pending(reading) => reading,
-            Self::Done(reading, _) => reading,
-            Self::Failed(reading, _) => reading,
-        }
-    }
-
-    pub fn reading_mut(&mut self) -> &mut Reading {
-        match self {
-            Self::Pending(reading) => reading,
-            Self::Done(reading, _) => reading,
-            Self::Failed(reading, _) => reading,
-        }
-    }
-}
-
-#[derive(Serialize, Deserialize, Clone, Debug)]
-#[serde(rename_all = "camelCase")]
-pub struct CreateInterpretationRequest {
-    pub question: String,
-    pub cards: Vec<Card>,
-}
-
-impl From<(CreateInterpretationRequest, &User)> for Reading {
-    fn from((value, user): (CreateInterpretationRequest, &User)) -> Self {
-        Reading {
-            id: Uuid::new_v4(),
-            created_at: chrono::Utc::now(),
-            question: value.question,
-            shuffled_times: 0,
-            cards: value.cards,
-            user_id: Some(user.id),
-        }
-    }
-}
-
-#[derive(Serialize, Deserialize, Clone)]
-#[serde(rename_all = "camelCase")]
-pub struct CreateInterpretationResponse {
-    pub interpretation_id: Uuid,
-}
-
-impl From<Uuid> for CreateInterpretationResponse {
-    fn from(value: Uuid) -> Self {
-        Self {
-            interpretation_id: value,
-        }
-    }
-}
-
-impl Debug for InterpretationManager {
+impl Debug for InterpretationRepository {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         write!(f, "InterpretationManager {{ }}")
     }
 }
 
-impl InterpretationManager {
+impl InterpretationRepository {
     pub async fn new() -> Self {
         let client =
             redis::Client::open(env::var("REDIS_URL").expect("REDIS_URL not set")).unwrap();
@@ -140,7 +67,7 @@ impl InterpretationManager {
         let uuid = reading.id;
         let result = match result {
             Ok(result) => Interpretation::Done(reading, result),
-            Err(e) => Interpretation::Failed(reading, localize_explain_error(&e)),
+            Err(e) => Interpretation::Failed(reading, interpretation::localize_explain_error(&e)),
         };
         let mut manager = self.connection_manager.clone();
         manager
@@ -234,76 +161,5 @@ impl InterpretationManager {
 
     fn key_for_uuid(&self, uuid: Uuid) -> String {
         format!("interpretation:{}", uuid)
-    }
-}
-
-#[derive(Debug, Serialize, Deserialize, Clone, Default)]
-#[serde(rename_all = "camelCase")]
-pub struct GetInterpretationResult {
-    pub done: bool,
-    pub error: String,
-    pub interpretation: String,
-    pub reading: Option<Reading>,
-}
-
-impl From<Interpretation> for GetInterpretationResult {
-    fn from(value: Interpretation) -> Self {
-        match value {
-            Interpretation::Pending(reading) => Self {
-                done: false,
-                error: "".to_string(),
-                interpretation: reading.question.clone(),
-                reading: Some(reading),
-            },
-            Interpretation::Done(reading, result) => Self {
-                done: true,
-                error: Default::default(),
-                interpretation: result,
-                reading: Some(reading),
-            },
-
-            Interpretation::Failed(reading, err) => Self {
-                done: true,
-                error: err,
-                interpretation: Default::default(),
-                reading: Some(reading),
-            },
-        }
-    }
-}
-
-impl From<Option<Interpretation>> for GetInterpretationResult {
-    fn from(value: Option<Interpretation>) -> Self {
-        if let Some(value) = value {
-            return value.into();
-        }
-        Self {
-            done: false,
-            error: t!("errors.not_found").to_string(),
-            interpretation: "".to_string(),
-            reading: None,
-        }
-    }
-}
-
-fn localize_explain_error(e: &ExplainError) -> String {
-    match e {
-        ExplainError::MissingApiKey => t!("errors.missing_openai_key").to_string(),
-        ExplainError::HttpClientBuild(err) => {
-            t!("errors.http_client_build", error = err.to_string()).to_string()
-        }
-        ExplainError::Request(err) => {
-            t!("errors.request_failed", error = err.to_string()).to_string()
-        }
-        ExplainError::ApiError { status, body } => t!(
-            "errors.api_error",
-            status = status.as_u16().to_string(),
-            body = body
-        )
-        .to_string(),
-        ExplainError::ParseResponse(err) => {
-            t!("errors.parse_response", error = err.to_string()).to_string()
-        }
-        ExplainError::EmptyResponse => t!("errors.empty_response").to_string(),
     }
 }

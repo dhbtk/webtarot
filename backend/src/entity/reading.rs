@@ -1,4 +1,4 @@
-use crate::user::User;
+use crate::middleware::user::User;
 use serde::{Deserialize, Serialize};
 use tracing::instrument;
 use webtarot_shared::model::{Card, Deck};

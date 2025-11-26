@@ -1,0 +1,18 @@
+use crate::entity;
+use crate::entity::reading::{CreateReadingRequest, CreateReadingResponse};
+use crate::middleware::user::User;
+use crate::repository::interpretation_repository::InterpretationRepository;
+use axum::Json;
+use axum::extract::State;
+use axum::http::StatusCode;
+
+#[tracing::instrument(skip(user), fields(user_id = %user.id.to_string()))]
+pub async fn create_reading(
+    State(interpretation_manager): State<InterpretationRepository>,
+    user: User,
+    Json(create_reading_request): Json<CreateReadingRequest>,
+) -> (StatusCode, Json<CreateReadingResponse>) {
+    let reading = entity::reading::perform_reading(&create_reading_request, &user);
+    interpretation_manager.request_interpretation(reading.clone());
+    (StatusCode::OK, Json(CreateReadingResponse::from(reading)))
+}
