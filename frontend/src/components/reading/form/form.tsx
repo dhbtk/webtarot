@@ -89,7 +89,7 @@ export const Heading = styled.h2`
   font-size: var(--fs-xl);
   opacity: 0;
   animation: fade-in var(--anim-duration) var(--anim-function) forwards;
-  animation-delay: calc(var(--anim-duration) / 2);
+  animation-delay: calc(var(--anim-duration));
   text-shadow: 1px 2px 2px rgb(var(--black-rgb) / 0.8);
 
   @keyframes fade-in {
@@ -99,6 +99,10 @@ export const Heading = styled.h2`
     to {
       opacity: 1;
     }
+  }
+
+  &:nth-of-type(2) {
+    animation-delay: calc(var(--anim-duration) * 1.75);
   }
 `
 export const FormWrapper = styled.div`

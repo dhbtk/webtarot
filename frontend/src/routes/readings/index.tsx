@@ -10,7 +10,8 @@ import { FormWrapper, Heading } from '../../components/reading/form/form.tsx'
 function ReadingIndexForm () {
   return (
     <>
-      <Heading>tire seu webtarot descubra seu webdestino</Heading>
+      <Heading>tire seu webtarot</Heading>
+      <Heading>descubra seu webdestino</Heading>
       <FormWrapper>
         <ReadingForm/>
       </FormWrapper>

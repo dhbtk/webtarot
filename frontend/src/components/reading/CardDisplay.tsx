@@ -4,8 +4,8 @@ import styled from 'styled-components'
 import { arcanaImage } from '../../util/cards.ts'
 import cardBackUrl from '../../assets/cardimages/CardBacks.jpg'
 
-const CARD_WIDTH = 300 / 3.3
-const CARD_HEIGHT = 527 / 3.3
+export const CARD_WIDTH = 300 / 3.3
+export const CARD_HEIGHT = 527 / 3.3
 const GAP = 12
 const ANIMATION_DURATION_PER_CARD = 0.4
 
@@ -18,7 +18,7 @@ const PlayMat = styled.div<{ cards: Card[] }>`
   overflow-x: auto;
 `
 
-const CardDiv = styled.div`
+export const CardDiv = styled.div`
   position: absolute;
   width: ${CARD_WIDTH}px;
   height: ${CARD_HEIGHT}px;
@@ -70,7 +70,7 @@ const CardDiv = styled.div`
   }
 `
 
-const CardImage = styled.div`
+export const CardImage = styled.div`
   background-size: cover;
   top: 0;
   left: 0;
@@ -80,7 +80,7 @@ const CardImage = styled.div`
   position: absolute;
 `
 
-const CardBack = styled.div`
+export const CardBack = styled.div`
   background-image: url(${cardBackUrl});
   background-size: cover;
   top: 0;

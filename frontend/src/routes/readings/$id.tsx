@@ -10,6 +10,7 @@ import remarkBreaks from 'remark-breaks'
 import styled from 'styled-components'
 import { useEffect } from 'react'
 import { ReadingSubLayout } from '../../components/reading/layout/ReadingSubLayout.tsx'
+import { CardSpinner } from '../../components/reading/CardSpinner.tsx'
 
 export const Route = createFileRoute('/readings/$id')({
   component: ReadingDetails
@@ -93,9 +94,17 @@ export default function ReadingDetails () {
                 </div>
 
                 <MarkdownContainer>
-                  <Markdown remarkPlugins={[remarkBreaks]}>
-                    {query.data?.done ? query.data?.interpretation : 'Aguardando interpretação...'}
-                  </Markdown>
+                  {query.data?.done ? (
+                    <Markdown remarkPlugins={[remarkBreaks]}>
+                      {query.data?.interpretation}
+                    </Markdown>
+                  ) : (
+                    <>
+                      <CardSpinner/>
+                      <h3 style={{ textAlign: 'center' }}>Aguardando interpretação...</h3>
+                    </>
+                  )}
+
                 </MarkdownContainer>
               </section>
             )}
