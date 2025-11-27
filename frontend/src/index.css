@@ -50,6 +50,10 @@
 
   --anim-duration: 0.65s;
   --anim-function: cubic-bezier(0.65, 0, 0.35, 1);
+
+  @media (max-aspect-ratio: 1/1) {
+    background-image: url(./assets/background_portrait.png);
+  }
 }
 
 #root {
