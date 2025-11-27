@@ -39,9 +39,6 @@
   color: var(--color-text);
   background-color: var(--color-bg);
 
-  background-image: url(./assets/background.png);
-  background-size: cover;
-  background-attachment: fixed;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   font-optical-sizing: auto;
@@ -51,13 +48,11 @@
   --anim-duration: 0.65s;
   --anim-function: cubic-bezier(0.65, 0, 0.35, 1);
 
-  @media (max-aspect-ratio: 1/1) {
-    background-image: url(./assets/background_portrait.png);
-  }
 }
 
 #root {
   flex: 1;
+  background-image: linear-gradient(to bottom right, rgba(23, 15, 73, 0.0), rgba(0, 0, 0, 0.75));
 }
 
 a {
@@ -79,8 +74,13 @@ body {
   min-height: 100vh;
   max-height: 100vh;
   overflow: hidden;
-  background-image: linear-gradient(to bottom right, rgba(23, 15, 73, 0.0), rgba(0, 0, 0, 0.75));
+  background-size: cover;
   background-attachment: fixed;
+  background-image: url(./assets/background.png);
+
+  @media (max-aspect-ratio: 1/1) {
+    background-image: url(./assets/background_portrait.png);
+  }
 }
 
 code {
