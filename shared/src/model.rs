@@ -1,7 +1,9 @@
+use crate::t;
 use rand::distr::uniform::SampleRange;
 use rand::seq::SliceRandom;
 use rand::{random, random_range, rng};
 use serde::{Deserialize, Serialize};
+use std::borrow::Cow;
 use std::fmt::{Display, Formatter};
 use std::hash::{DefaultHasher, Hash, Hasher};
 use strum::IntoEnumIterator;
@@ -97,8 +99,12 @@ pub struct Card {
 
 impl Display for Card {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        let flipped = if self.flipped { " (invertido)" } else { "" };
-        write!(f, "{}{}", self.arcana, flipped)
+        let flipped_suffix: Cow<'static, str> = if self.flipped {
+            t!("card.flipped_suffix")
+        } else {
+            Cow::Borrowed("")
+        };
+        write!(f, "{}{}", self.arcana, flipped_suffix)
     }
 }
 
@@ -113,7 +119,9 @@ impl Display for Arcana {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         match self {
             Arcana::Major { name, .. } => write!(f, "{}", name),
-            Arcana::Minor { rank, suit } => write!(f, "{} de {}", rank, suit),
+            Arcana::Minor { rank, suit } => {
+                write!(f, "{}", t!("card.minor_format", rank = rank, suit = suit))
+            }
         }
     }
 }
@@ -147,29 +155,29 @@ pub enum MajorArcana {
 
 impl Display for MajorArcana {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        let label: &str = match self {
-            MajorArcana::Fool => "O Louco",
-            MajorArcana::Magician => "O Mago",
-            MajorArcana::HighPriestess => "A Suma Sacerdotisa",
-            MajorArcana::Empress => "A Imperatriz",
-            MajorArcana::Emperor => "O Imperador",
-            MajorArcana::Hierophant => "O Hierofante",
-            MajorArcana::Lovers => "Os Enamorados",
-            MajorArcana::Chariot => "O Carro",
-            MajorArcana::Strength => "A Força",
-            MajorArcana::Hermit => "O Eremita",
-            MajorArcana::WheelOfFortune => "A Roda da Fortuna",
-            MajorArcana::Justice => "A Justiça",
-            MajorArcana::HangedMan => "O Enforcado",
-            MajorArcana::Death => "A Morte",
-            MajorArcana::Temperance => "A Temperança",
-            MajorArcana::Devil => "O Diabo",
-            MajorArcana::Tower => "A Torre",
-            MajorArcana::Star => "A Estrela",
-            MajorArcana::Moon => "A Lua",
-            MajorArcana::Sun => "O Sol",
-            MajorArcana::Judgement => "O Julgamento",
-            MajorArcana::World => "O Mundo",
+        let label = match self {
+            MajorArcana::Fool => t!("card.major.Fool"),
+            MajorArcana::Magician => t!("card.major.Magician"),
+            MajorArcana::HighPriestess => t!("card.major.HighPriestess"),
+            MajorArcana::Empress => t!("card.major.Empress"),
+            MajorArcana::Emperor => t!("card.major.Emperor"),
+            MajorArcana::Hierophant => t!("card.major.Hierophant"),
+            MajorArcana::Lovers => t!("card.major.Lovers"),
+            MajorArcana::Chariot => t!("card.major.Chariot"),
+            MajorArcana::Strength => t!("card.major.Strength"),
+            MajorArcana::Hermit => t!("card.major.Hermit"),
+            MajorArcana::WheelOfFortune => t!("card.major.WheelOfFortune"),
+            MajorArcana::Justice => t!("card.major.Justice"),
+            MajorArcana::HangedMan => t!("card.major.HangedMan"),
+            MajorArcana::Death => t!("card.major.Death"),
+            MajorArcana::Temperance => t!("card.major.Temperance"),
+            MajorArcana::Devil => t!("card.major.Devil"),
+            MajorArcana::Tower => t!("card.major.Tower"),
+            MajorArcana::Star => t!("card.major.Star"),
+            MajorArcana::Moon => t!("card.major.Moon"),
+            MajorArcana::Sun => t!("card.major.Sun"),
+            MajorArcana::Judgement => t!("card.major.Judgement"),
+            MajorArcana::World => t!("card.major.World"),
         };
         write!(f, "{}", label)
     }
@@ -196,21 +204,21 @@ pub enum Rank {
 
 impl Display for Rank {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        let label: &str = match self {
-            Rank::Ace => "Ás",
-            Rank::Two => "Dois",
-            Rank::Three => "Três",
-            Rank::Four => "Quatro",
-            Rank::Five => "Cinco",
-            Rank::Six => "Seis",
-            Rank::Seven => "Sete",
-            Rank::Eight => "Oito",
-            Rank::Nine => "Nove",
-            Rank::Ten => "Dez",
-            Rank::Page => "Valete",
-            Rank::Knight => "Cavaleiro",
-            Rank::Queen => "Rainha",
-            Rank::King => "Rei",
+        let label = match self {
+            Rank::Ace => t!("card.rank.Ace"),
+            Rank::Two => t!("card.rank.Two"),
+            Rank::Three => t!("card.rank.Three"),
+            Rank::Four => t!("card.rank.Four"),
+            Rank::Five => t!("card.rank.Five"),
+            Rank::Six => t!("card.rank.Six"),
+            Rank::Seven => t!("card.rank.Seven"),
+            Rank::Eight => t!("card.rank.Eight"),
+            Rank::Nine => t!("card.rank.Nine"),
+            Rank::Ten => t!("card.rank.Ten"),
+            Rank::Page => t!("card.rank.Page"),
+            Rank::Knight => t!("card.rank.Knight"),
+            Rank::Queen => t!("card.rank.Queen"),
+            Rank::King => t!("card.rank.King"),
         };
         write!(f, "{}", label)
     }
@@ -227,11 +235,11 @@ pub enum Suit {
 
 impl Display for Suit {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        let label: &str = match self {
-            Suit::Cups => "Copas",
-            Suit::Pentacles => "Ouros",
-            Suit::Swords => "Espadas",
-            Suit::Wands => "Paus",
+        let label = match self {
+            Suit::Cups => t!("card.suit.Cups"),
+            Suit::Pentacles => t!("card.suit.Pentacles"),
+            Suit::Swords => t!("card.suit.Swords"),
+            Suit::Wands => t!("card.suit.Wands"),
         };
         write!(f, "{}", label)
     }

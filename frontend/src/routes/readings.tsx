@@ -2,7 +2,7 @@ import { createFileRoute, MatchRoute, Outlet } from '@tanstack/react-router'
 import ReadingForm from '../components/reading/form/ReadingForm.tsx'
 import styled from 'styled-components'
 import useWindowDimensions from '../util/useWindowDimensions.ts'
-import { t } from 'i18next'
+import { useTranslation } from 'react-i18next'
 
 export const Route = createFileRoute('/readings')({
   component: RouteComponent,
@@ -44,6 +44,7 @@ const FormWrapper = styled.div`
 
 function RouteComponent () {
   const { width } = useWindowDimensions()
+  const { t } = useTranslation()
   const showFormWrapper = width > 768
   return (
     <Wrapper>

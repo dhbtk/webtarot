@@ -1,5 +1,6 @@
 use crate::entity;
 use crate::entity::reading::{CreateReadingRequest, CreateReadingResponse};
+use crate::middleware::locale::Locale;
 use crate::middleware::user::User;
 use crate::repository::interpretation_repository::InterpretationRepository;
 use axum::Json;
@@ -10,9 +11,10 @@ use axum::http::StatusCode;
 pub async fn create_reading(
     State(interpretation_manager): State<InterpretationRepository>,
     user: User,
+    locale: Locale,
     Json(create_reading_request): Json<CreateReadingRequest>,
 ) -> (StatusCode, Json<CreateReadingResponse>) {
     let reading = entity::reading::perform_reading(&create_reading_request, &user);
-    interpretation_manager.request_interpretation(reading.clone());
+    interpretation_manager.request_interpretation(reading.clone(), locale);
     (StatusCode::OK, Json(CreateReadingResponse::from(reading)))
 }

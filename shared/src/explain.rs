@@ -1,4 +1,5 @@
 use crate::model::Card;
+use crate::t;
 use serde::Deserialize;
 use std::error::Error as StdError;
 use std::fmt;
@@ -68,7 +69,7 @@ impl StdError for ExplainError {
 }
 
 pub async fn explain(question: &str, cards: &[Card]) -> Result<String, ExplainError> {
-    // Prepare a concise, helpful prompt for the model
+    // Prepare a concise, helpful prompt for the model with localized card names
     let cards_list = cards
         .iter()
         .enumerate()
@@ -76,7 +77,17 @@ pub async fn explain(question: &str, cards: &[Card]) -> Result<String, ExplainEr
         .collect::<Vec<_>>()
         .join("\n");
 
-    let user = format!("Pergunta: {}\nCartas (na ordem):\n{}", question, cards_list);
+    // Include current local date/time to provide temporal context to the model
+    let now = chrono::Local::now().to_rfc3339();
+
+    let label_now = t!("labels.now");
+    let label_question = t!("labels.question");
+    let label_cards = t!("labels.cards_in_order");
+
+    let user = format!(
+        "{} {}\n{} {}\n{}\n{}",
+        label_now, now, label_question, question, label_cards, cards_list
+    );
 
     // Read API key from environment
     let key = match std::env::var("OPENAI_KEY") {
@@ -94,11 +105,13 @@ pub async fn explain(question: &str, cards: &[Card]) -> Result<String, ExplainEr
         Err(e) => return Err(ExplainError::HttpClientBuild(Arc::new(e))),
     };
 
-    // Compose request body for Chat Completions API
+    // Compose request body for Chat Completions API using i18n system prompt
+    let system_prompt = t!("system.prompt");
+
     let body = serde_json::json!({
         "model": "gpt-5.1",
         "messages": [
-            {"role": "system", "content": include_str!("system_prompt.txt")},
+            {"role": "system", "content": system_prompt},
             {"role": "user", "content": user}
         ]
     });
@@ -134,3 +147,4 @@ pub async fn explain(question: &str, cards: &[Card]) -> Result<String, ExplainEr
 
     Err(ExplainError::EmptyResponse)
 }
+// All locale-specific formatting now comes from the Display impls and i18n keys.

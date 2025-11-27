@@ -40,7 +40,6 @@
     "history": "Histórico",
     "stats": "Estatísticas"
   },
-  
   "aria": {
     "openMenu": "Abrir menu"
   },
@@ -133,7 +132,7 @@
   "hero": {
     "title": "webtarot",
     "tagline1": "tire seu webtarot",
-    "tagline2": "descubra seu webdestiny"
+    "tagline2": "descubra seu webdestino"
   },
   "layout": {
     "footer": {

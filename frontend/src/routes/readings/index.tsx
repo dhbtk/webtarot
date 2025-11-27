@@ -7,7 +7,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useReadingIds } from '../../backend/queries.ts'
 import { FormWrapper } from '../../components/reading/form/form.tsx'
 import { Footer } from '../../components/layout/Footer.tsx'
-import { t } from 'i18next'
+import { useTranslation } from 'react-i18next'
 
 const Wrapper = styled.div`
   display: flex;
@@ -41,6 +41,7 @@ export const Heading = styled.h2`
 `
 export default function ReadingsIndex () {
   const result = useQuery(useReadingIds())
+  const { t } = useTranslation()
 
   return (
     <Wrapper>

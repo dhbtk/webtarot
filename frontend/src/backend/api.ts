@@ -9,6 +9,7 @@
 
 import type { CreateReadingRequest, CreateReadingResponse, GetInterpretationResult, Stats, Interpretation, CreateInterpretationRequest, CreateInterpretationResponse } from './models'
 import { getUserId } from './userId.ts'
+import i18n from '../i18n.ts'
 
 const JSON_HEADERS = {
   'Content-Type': 'application/json',
@@ -43,9 +44,21 @@ async function handleJsonResponse<T> (res: Response): Promise<T> {
   return isJson ? res.json() : (undefined as unknown as T)
 }
 
+function getCurrentLocale (): string {
+  // Prefer resolvedLanguage, then language, falling back to configured fallbackLng
+  const raw = (i18n.resolvedLanguage || i18n.language || (
+    Array.isArray(i18n.options.fallbackLng)
+      ? i18n.options.fallbackLng[0]
+      : (typeof i18n.options.fallbackLng === 'string' ? i18n.options.fallbackLng : 'en')
+  )) || 'en'
+  // Normalize to just the language part expected by the backend (e.g., en, pt)
+  return raw.split(/[-_]/)[0]?.toLowerCase() || 'en'
+}
+
 function getDefaultHeaders () {
   return {
-    'x-user-uuid': getUserId()
+    'x-user-uuid': getUserId(),
+    'x-locale': getCurrentLocale(),
   }
 }
 

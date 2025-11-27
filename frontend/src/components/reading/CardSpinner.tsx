@@ -1,7 +1,7 @@
 import styled from 'styled-components'
 import { CARD_HEIGHT, CARD_WIDTH, CardBack, CardDiv, CardImage } from './CardDisplay.tsx'
 import { getAllArcana } from '../../backend/models.ts'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { arcanaImage } from '../../util/cards.ts'
 
 const CardSpinnerContainer = styled.div`
@@ -43,14 +43,9 @@ const SmallerCardDiv = styled(CardDiv)`
 const allArcana = getAllArcana()
 
 export const CardSpinner = () => {
-  const [index, setIndex] = useState(Math.floor(Math.random() * allArcana.length))
+  const [index, _setIndex] = useState(Math.floor(Math.random() * allArcana.length))
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setIndex(Math.floor(Math.random() * allArcana.length))
-    }, 650)
-    return () => clearInterval(interval)
-  })
+  // there used to be a setInterval here to shuffle the card shown
 
   const arcana = allArcana[index]
 

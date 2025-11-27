@@ -1,6 +1,7 @@
 use crate::entity::interpretation;
 use crate::entity::interpretation::Interpretation;
 use crate::entity::reading::Reading;
+use crate::middleware::locale::Locale;
 use redis::AsyncCommands;
 use redis::aio::ConnectionManager;
 use std::env;
@@ -40,11 +41,11 @@ impl InterpretationRepository {
         self.broadcast.send(interpretation).unwrap();
     }
 
-    pub fn request_interpretation(&self, reading: Reading) {
+    pub fn request_interpretation(&self, reading: Reading, locale: Locale) {
         let mut cloned = self.clone();
         tokio::spawn(async move {
             cloned.mark_started(reading.clone()).await;
-            cloned.start_interpretation_request(reading).await;
+            cloned.start_interpretation_request(reading, locale).await;
         });
     }
 
@@ -60,8 +61,9 @@ impl InterpretationRepository {
             .unwrap();
     }
 
-    async fn start_interpretation_request(&mut self, reading: Reading) {
+    async fn start_interpretation_request(&mut self, reading: Reading, locale: Locale) {
         tracing::debug!("start_interpretation_request");
+        rust_i18n::set_locale(&locale.0);
         let result = webtarot_shared::explain::explain(&reading.question, &reading.cards).await;
         tracing::debug!(result = ?result, "start_interpretation_request result");
         let uuid = reading.id;

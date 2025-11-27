@@ -19,6 +19,10 @@ const FooterWrapper = styled.footer`
   text-shadow: 1px 1px 2px rgb(var(--black-rgb) / 0.8);
 
   font-size: var(--fs-xs);
+
+  @media (max-width: 768px) {
+    font-size: var(--fs-xxs);
+  }
 `
 
 const LocaleSelect = styled.select`
@@ -39,6 +43,10 @@ const LocaleSelect = styled.select`
   &:focus {
     outline: none;
     box-shadow: 0 0 2px 2px rgb(var(--accent-rgb));
+  }
+ 
+  @media (max-width: 768px) {
+    font-size: var(--fs-xxs);
   }
 `
 
