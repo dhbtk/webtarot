@@ -87,7 +87,7 @@ pub async fn explain(question: &str, cards: &[Card]) -> Result<String, ExplainEr
     // Build HTTP client
     let client = match reqwest::Client::builder()
         .user_agent("webtarot/0.1")
-        .timeout(std::time::Duration::from_secs(60))
+        .timeout(std::time::Duration::from_secs(120))
         .build()
     {
         Ok(c) => c,
@@ -96,7 +96,7 @@ pub async fn explain(question: &str, cards: &[Card]) -> Result<String, ExplainEr
 
     // Compose request body for Chat Completions API
     let body = serde_json::json!({
-        "model": "gpt-5",
+        "model": "gpt-5.1",
         "messages": [
             {"role": "system", "content": include_str!("system_prompt.txt")},
             {"role": "user", "content": user}
