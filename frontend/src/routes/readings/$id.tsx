@@ -11,7 +11,7 @@ import styled from 'styled-components'
 import { useEffect } from 'react'
 import { ReadingSubLayout } from '../../components/reading/layout/ReadingSubLayout.tsx'
 import { CardSpinner } from '../../components/reading/CardSpinner.tsx'
-import { getUserId } from '../../backend/userId.ts'
+import { useUserId } from '../../context/UserContext'
 import type { InterpretationsWebsocketMessage } from '../../backend/models.ts'
 import { isInterpretationsWebsocketMessage } from '../../backend/models.ts'
 import { useTranslation } from 'react-i18next'
@@ -25,6 +25,7 @@ export default function ReadingDetails () {
   const queryClient = useQueryClient()
   const navigate = useNavigate()
   const { t } = useTranslation()
+  const { userId } = useUserId()
   const removeMutation = useMutation({
     mutationFn: () => {
       const currentIndex = getSavedReadings().indexOf(id)
@@ -52,7 +53,7 @@ export default function ReadingDetails () {
   useEffect(() => {
     const url = new URL('/api/v1/interpretation/notify', window.location.href)
     url.protocol = url.protocol.replace('http', 'ws')
-    const websocket = new WebSocket(url.href, [getUserId()])
+    const websocket = new WebSocket(url.href, [userId])
 
     websocket.onopen = () => {
       console.log('ws connected')
@@ -72,7 +73,7 @@ export default function ReadingDetails () {
     }
 
     return () => websocket.close()
-  }, [id])
+  }, [id, userId])
 
   const query = useQuery({
     queryKey: ['readings', id],

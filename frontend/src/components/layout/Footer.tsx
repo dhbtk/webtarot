@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { getUserId } from '../../backend/userId.ts'
+import { useUserId } from '../../context/UserContext'
 import { useTranslation } from 'react-i18next'
 
 const FooterWrapper = styled.footer`
@@ -31,10 +31,10 @@ const LocaleSelect = styled.select`
   background: rgb(var(--black-rgb) / 0.2);
   border: 1px solid rgb(var(--accent-rgb) / 0.4);
   border-radius: 6px;
-  padding: 0.12rem 0.25rem 0.12rem 0.5rem;
   box-shadow: 0 0 2px 2px transparent;
   transition: box-shadow 0.25s ease-in-out;
   color: rgb(var(--white-rgb) / 0.75);
+  padding: 0.12rem 0.25rem 0 0.5rem;
 
   &:hover {
     box-shadow: 0 0 2px 2px rgb(var(--accent-rgb) / 0.5);
@@ -44,7 +44,7 @@ const LocaleSelect = styled.select`
     outline: none;
     box-shadow: 0 0 2px 2px rgb(var(--accent-rgb));
   }
- 
+
   @media (max-width: 768px) {
     font-size: var(--fs-xxs);
   }
@@ -52,6 +52,7 @@ const LocaleSelect = styled.select`
 
 export const Footer = () => {
   const { i18n, t } = useTranslation()
+  const { userId } = useUserId()
 
   const onChangeLocale = (e: React.ChangeEvent<HTMLSelectElement>) => {
     void i18n.changeLanguage(e.target.value)
@@ -60,7 +61,7 @@ export const Footer = () => {
   return (
     <FooterWrapper>
       <span>{t('layout.footer.madeBy')} <a href="https://github.com/dhbtk" target="_blank">@dhbtk</a><br/>
-      <code>{getUserId()}</code>
+      <code>{userId}</code>
       </span>
       <LocaleSelect
         aria-label={t('layout.footer.languageAriaLabel')}
