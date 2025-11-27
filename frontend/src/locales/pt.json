@@ -1,19 +1,4 @@
 {
-  "reading": {
-    "form": {
-      "questionLabel": "Pergunta",
-      "questionPlaceholder": "O que você está buscando saber?",
-      "cardsLabel": "Cartas",
-      "submit": "Perguntar",
-      "submitting": "Embaralhando…"
-    },
-    "details": {
-      "askedAt": "Pergunta feita em {{date}}",
-      "shuffledTimes_one": "Embaralhado {{count}} vez",
-      "shuffledTimes_other": "Embaralhado {{count}} vezes",
-      "waiting": "Aguardando interpretação..."
-    }
-  },
   "stats": {
     "readings": "Tiragens",
     "totalCards": "Total de cartas",
@@ -50,6 +35,15 @@
       "noResults": "Nenhum resultado"
     }
   },
+  "nav": {
+    "interpret": "Interpretar",
+    "history": "Histórico",
+    "stats": "Estatísticas"
+  },
+  
+  "aria": {
+    "openMenu": "Abrir menu"
+  },
   "table": {
     "sort": {
       "asc": "Ordenar ascendente",
@@ -62,6 +56,56 @@
   "errors": {
     "createReading": "Falha ao criar tiragem",
     "createInterpretation": "Falha ao criar interpretação"
+  },
+  "tarot": {
+    "minorPattern": "{{rank}} de {{suit}}",
+    "reversed": "(invertido)",
+    "rank": {
+      "ace": "Ás",
+      "two": "Dois",
+      "three": "Três",
+      "four": "Quatro",
+      "five": "Cinco",
+      "six": "Seis",
+      "seven": "Sete",
+      "eight": "Oito",
+      "nine": "Nove",
+      "ten": "Dez",
+      "page": "Valete",
+      "knight": "Cavaleiro",
+      "queen": "Rainha",
+      "king": "Rei"
+    },
+    "suit": {
+      "cups": "Copas",
+      "pentacles": "Ouros",
+      "swords": "Espadas",
+      "wands": "Paus"
+    },
+    "major": {
+      "fool": "O Louco",
+      "magician": "O Mago",
+      "highPriestess": "A Suma Sacerdotisa",
+      "empress": "A Imperatriz",
+      "emperor": "O Imperador",
+      "hierophant": "O Hierofante",
+      "lovers": "Os Enamorados",
+      "chariot": "O Carro",
+      "strength": "A Força",
+      "hermit": "O Eremita",
+      "wheelOfFortune": "A Roda da Fortuna",
+      "justice": "A Justiça",
+      "hangedMan": "O Enforcado",
+      "death": "A Morte",
+      "temperance": "A Temperança",
+      "devil": "O Diabo",
+      "tower": "A Torre",
+      "star": "A Estrela",
+      "moon": "A Lua",
+      "sun": "O Sol",
+      "judgement": "O Julgamento",
+      "world": "O Mundo"
+    }
   },
   "reading": {
     "form": {
@@ -78,8 +122,24 @@
       "waiting": "Aguardando interpretação..."
     },
     "interpretation": {
+      "title": "Interpretar tiragem",
       "submit": "Interpretar",
       "submitting": "Interpretando…"
+    },
+    "new": {
+      "title": "Nova tiragem"
+    }
+  },
+  "hero": {
+    "title": "webtarot",
+    "tagline1": "tire seu webtarot",
+    "tagline2": "descubra seu webdestiny"
+  },
+  "layout": {
+    "footer": {
+      "madeBy": "por",
+      "languageAriaLabel": "Selecionar idioma",
+      "languageTitle": "Idioma"
     }
   }
 }

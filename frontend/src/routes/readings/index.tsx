@@ -5,19 +5,9 @@ import { Section } from '../../components/reading/layout/ReadingSubLayout.tsx'
 import ReadingTabs from '../../components/reading/layout/ReadingTabs.tsx'
 import { useQuery } from '@tanstack/react-query'
 import { useReadingIds } from '../../backend/queries.ts'
-import { FormWrapper, Heading } from '../../components/reading/form/form.tsx'
-
-function ReadingIndexForm () {
-  return (
-    <>
-      <Heading>tire seu webtarot</Heading>
-      <Heading>descubra seu webdestino</Heading>
-      <FormWrapper>
-        <ReadingForm/>
-      </FormWrapper>
-    </>
-  )
-}
+import { FormWrapper } from '../../components/reading/form/form.tsx'
+import { Footer } from '../../components/layout/Footer.tsx'
+import { t } from 'i18next'
 
 const Wrapper = styled.div`
   display: flex;
@@ -26,6 +16,29 @@ const Wrapper = styled.div`
   flex: 1;
 `
 
+export const Heading = styled.h2`
+  margin: 0;
+  text-align: center;
+  font-weight: 400;
+  font-size: var(--fs-xl);
+  opacity: 0;
+  animation: fade-in var(--anim-duration) var(--anim-function) forwards;
+  animation-delay: calc(var(--anim-duration));
+  text-shadow: 1px 2px 2px rgb(var(--black-rgb) / 0.8);
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  &:nth-of-type(2) {
+    animation-delay: calc(var(--anim-duration) * 1.75);
+  }
+`
 export default function ReadingsIndex () {
   const result = useQuery(useReadingIds())
 
@@ -34,7 +47,12 @@ export default function ReadingsIndex () {
       <Section style={{ flex: 'none', display: result.data?.length ? 'flex' : 'none' }}>
         <ReadingTabs/>
       </Section>
-      <ReadingIndexForm/>
+      <Heading>{t('hero.tagline1')}</Heading>
+      <Heading>{t('hero.tagline2')}</Heading>
+      <FormWrapper>
+        <ReadingForm/>
+      </FormWrapper>
+      <Footer/>
     </Wrapper>
   )
 }

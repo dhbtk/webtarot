@@ -2,6 +2,7 @@ import { createFileRoute, MatchRoute, Outlet } from '@tanstack/react-router'
 import ReadingForm from '../components/reading/form/ReadingForm.tsx'
 import styled from 'styled-components'
 import useWindowDimensions from '../util/useWindowDimensions.ts'
+import { t } from 'i18next'
 
 export const Route = createFileRoute('/readings')({
   component: RouteComponent,
@@ -50,7 +51,7 @@ function RouteComponent () {
         <MatchRoute to="/readings">
           {(match) => !match && (
             <FormWrapper>
-              <h2>Nova Tiragem</h2>
+              <h2>{t('reading.new.title')}</h2>
               <ReadingForm/>
             </FormWrapper>
           )}

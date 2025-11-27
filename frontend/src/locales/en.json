@@ -1,19 +1,4 @@
 {
-  "reading": {
-    "form": {
-      "questionLabel": "Question",
-      "questionPlaceholder": "What do you seek to know?",
-      "cardsLabel": "Cards",
-      "submit": "Ask",
-      "submitting": "Shuffling…"
-    },
-    "details": {
-      "askedAt": "Question asked on {{date}}",
-      "shuffledTimes_one": "Shuffled {{count}} time",
-      "shuffledTimes_other": "Shuffled {{count}} times",
-      "waiting": "Waiting for interpretation..."
-    }
-  },
   "stats": {
     "readings": "Readings",
     "totalCards": "Total cards",
@@ -71,6 +56,56 @@
     "createReading": "Failed to create reading",
     "createInterpretation": "Failed to create interpretation"
   },
+  "tarot": {
+    "minorPattern": "{{rank}} of {{suit}}",
+    "reversed": "(reversed)",
+    "rank": {
+      "ace": "Ace",
+      "two": "Two",
+      "three": "Three",
+      "four": "Four",
+      "five": "Five",
+      "six": "Six",
+      "seven": "Seven",
+      "eight": "Eight",
+      "nine": "Nine",
+      "ten": "Ten",
+      "page": "Page",
+      "knight": "Knight",
+      "queen": "Queen",
+      "king": "King"
+    },
+    "suit": {
+      "cups": "Cups",
+      "pentacles": "Pentacles",
+      "swords": "Swords",
+      "wands": "Wands"
+    },
+    "major": {
+      "fool": "The Fool",
+      "magician": "The Magician",
+      "highPriestess": "The High Priestess",
+      "empress": "The Empress",
+      "emperor": "The Emperor",
+      "hierophant": "The Hierophant",
+      "lovers": "The Lovers",
+      "chariot": "The Chariot",
+      "strength": "Strength",
+      "hermit": "The Hermit",
+      "wheelOfFortune": "Wheel of Fortune",
+      "justice": "Justice",
+      "hangedMan": "The Hanged Man",
+      "death": "Death",
+      "temperance": "Temperance",
+      "devil": "The Devil",
+      "tower": "The Tower",
+      "star": "The Star",
+      "moon": "The Moon",
+      "sun": "The Sun",
+      "judgement": "Judgement",
+      "world": "The World"
+    }
+  },
   "reading": {
     "form": {
       "questionLabel": "Question",
@@ -92,6 +127,18 @@
     },
     "new": {
       "title": "New Reading"
+    }
+  },
+  "hero": {
+    "title": "webtarot",
+    "tagline1": "read your webtarot",
+    "tagline2": "discover your webdestiny"
+  },
+  "layout": {
+    "footer": {
+      "madeBy": "by",
+      "languageAriaLabel": "Select language",
+      "languageTitle": "Language"
     }
   }
 }

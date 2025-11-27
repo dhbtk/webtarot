@@ -1,78 +1,44 @@
 import type { Arcana, Card, MajorArcana, Rank, Suit } from '../backend/models.ts'
+import i18n from '../i18n.ts'
 
 // Type guards for the Arcana union
-function isMajor(arcana: Arcana): arcana is { major: { name: MajorArcana } } {
+function isMajor (arcana: Arcana): arcana is { major: { name: MajorArcana } } {
   return (arcana as any).major !== undefined
 }
 
-function isMinor(arcana: Arcana): arcana is { minor: { rank: Rank; suit: Suit } } {
+function isMinor (arcana: Arcana): arcana is { minor: { rank: Rank; suit: Suit } } {
   return (arcana as any).minor !== undefined
 }
 
-const majorLabels: Record<MajorArcana, string> = {
-  fool: 'O Louco',
-  magician: 'O Mago',
-  highPriestess: 'A Suma Sacerdotisa',
-  empress: 'A Imperatriz',
-  emperor: 'O Imperador',
-  hierophant: 'O Hierofante',
-  lovers: 'Os Enamorados',
-  chariot: 'O Carro',
-  strength: 'A Força',
-  hermit: 'O Eremita',
-  wheelOfFortune: 'A Roda da Fortuna',
-  justice: 'A Justiça',
-  hangedMan: 'O Enforcado',
-  death: 'A Morte',
-  temperance: 'A Temperança',
-  devil: 'O Diabo',
-  tower: 'A Torre',
-  star: 'A Estrela',
-  moon: 'A Lua',
-  sun: 'O Sol',
-  judgement: 'O Julgamento',
-  world: 'O Mundo',
+function tMajor (name: MajorArcana): string {
+  return i18n.t(`tarot.major.${name}`)
 }
 
-const rankLabels: Record<Rank, string> = {
-  ace: 'Ás',
-  two: 'Dois',
-  three: 'Três',
-  four: 'Quatro',
-  five: 'Cinco',
-  six: 'Seis',
-  seven: 'Sete',
-  eight: 'Oito',
-  nine: 'Nove',
-  ten: 'Dez',
-  page: 'Valete',
-  knight: 'Cavaleiro',
-  queen: 'Rainha',
-  king: 'Rei',
+function tRank (rank: Rank): string {
+  return i18n.t(`tarot.rank.${rank}`)
 }
 
-const suitLabels: Record<Suit, string> = {
-  cups: 'Copas',
-  pentacles: 'Ouros',
-  swords: 'Espadas',
-  wands: 'Paus',
+function tSuit (suit: Suit): string {
+  return i18n.t(`tarot.suit.${suit}`)
 }
 
-export function arcanaLabel(arcana: Arcana): string {
+export function arcanaLabel (arcana: Arcana): string {
   if (isMajor(arcana)) {
-    return majorLabels[arcana.major.name]
+    return tMajor(arcana.major.name)
   }
   if (isMinor(arcana)) {
     const { rank, suit } = arcana.minor
-    return `${rankLabels[rank]} de ${suitLabels[suit]}`
+    const rankLabel = tRank(rank)
+    const suitLabel = tSuit(suit)
+    return i18n.t('tarot.minorPattern', { rank: rankLabel, suit: suitLabel })
   }
   // Fallback (should not happen with current typings)
   return ''
 }
 
-export function cardLabel(card: Card): string {
+export function cardLabel (card: Card): string {
   const base = arcanaLabel(card.arcana)
-  return card.flipped ? `${base} (invertido)` : base
+  return card.flipped ? `${base} ${i18n.t('tarot.reversed')}` : base
 }
 
 // --- Images mapping ---
@@ -83,7 +49,8 @@ export function cardLabel(card: Card): string {
 // - Minor Arcana: "SuitNN.jpg" (e.g., "Cups01.jpg", "Wands14.jpg")
 const imageModules = import.meta.glob('../assets/cardimages/*.{jpg,JPG,png,svg}', {
   eager: true,
-  as: 'url',
+  query: '?url',
+  import: 'default'
 }) as Record<string, string>
 
 // Build quick lookup maps from the imported modules
@@ -159,7 +126,7 @@ const rankNumber: Record<Rank, number> = {
   king: 14,
 }
 
-export function arcanaImage(arcana: Arcana): string {
+export function arcanaImage (arcana: Arcana): string {
   if (isMajor(arcana)) {
     const idx = majorIndexMap[arcana.major.name]
     const url = majorByIndex[idx]
