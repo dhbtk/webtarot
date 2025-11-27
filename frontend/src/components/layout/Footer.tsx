@@ -12,7 +12,7 @@ const FooterWrapper = styled.footer`
   align-items: center;
   gap: 1.5rem;
   box-shadow: 0.5rem 0.5rem 0.75rem 0 rgba(0, 0, 0, 0.25);
-  animation: slide-from-bottom var(--anim-duration) var(--anim-function) forwards;
+  animation: fade-in var(--anim-duration) var(--anim-function) forwards;
   animation-delay: calc(var(--anim-duration) * 2);
   opacity: 0;
   color: rgb(var(--white-rgb) / 0.5);
