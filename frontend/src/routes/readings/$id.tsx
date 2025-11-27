@@ -162,18 +162,49 @@ const MarkdownContainer = styled.div`
     font-size: var(--fs-md);
     font-weight: 600;
     margin: 0.5rem 0;
+
+    strong {
+      font-weight: 700;
+    }
+  }
+
+  h1 {
+    font-size: var(--fs-lg);
+  }
+
+  h2 {
+    font-size: var(--fs-md);
+  }
+
+  h3 {
+    font-size: var(--fs-base);
   }
 
   @media (min-width: 768px) {
     ul, ol {
-      padding-left: 1rem;
+      padding-left: 1.25rem;
+
+      li {
+        padding-left: 0.25rem;
+      }
     }
+  }
+
+  hr {
+    margin: 1rem 2rem;
+    border: none;
+    border-top: 1px solid rgb(var(--white-rgb) / 0.65);
+  }
+
+  strong {
+    font-weight: 900;
+    color: rgb(var(--white-rgb) / 0.92);
   }
 `
 
 const ReadingTitle = styled.h2`
   font-family: var(--font-sans);
-  font-size: var(--fs-md);
+  font-size: var(--fs-lg);
   font-weight: 600;
   margin: 0 0 0.5rem;
 `
