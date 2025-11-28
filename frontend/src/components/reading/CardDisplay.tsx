@@ -97,11 +97,13 @@ function calculateCardPosition (index: number, total: number): string {
     const x = (CARD_WIDTH + GAP * 2) + (index * (CARD_WIDTH + GAP))
     return `${x}px calc(50cqh - ${CARD_HEIGHT / 2}px)`
   } else {
-    const half = Math.floor(total / 2)
-    if (index === (total - 1) && total % 2 === 1) {
-      const x = (CARD_WIDTH + GAP * 2) + ((half + 0.25) * (CARD_WIDTH + GAP))
-      return `${x}px calc(50cqh - ${CARD_HEIGHT / 2}px)`
+    if (total % 2 === 1) {
+      const half = Math.ceil(total / 2)
+      const x = (CARD_WIDTH + GAP * 2) + ((index % half) * (CARD_WIDTH + GAP)) + (index >= half ? (CARD_WIDTH / 2 + GAP / 2) : 0)
+      const y = index < half ? `${GAP}` : `${CARD_HEIGHT + 3 * GAP}`
+      return `${x}px ${y}px`
     } else {
+      const half = Math.floor(total / 2)
       const x = (CARD_WIDTH + GAP * 2) + ((index % half) * (CARD_WIDTH + GAP))
       const y = index < half ? `${GAP}` : `${CARD_HEIGHT + 3 * GAP}`
       return `${x}px ${y}px`
