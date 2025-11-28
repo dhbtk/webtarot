@@ -1,11 +1,10 @@
 import { createFileRoute, redirect } from '@tanstack/react-router'
 
-// Root path: redirect to /readings
-export const beforeLoad = () => {
+const beforeLoad = () => {
   throw redirect({ to: '/readings' })
 }
 
-export default function IndexRedirect() {
+function IndexRedirect () {
   return null
 }
 

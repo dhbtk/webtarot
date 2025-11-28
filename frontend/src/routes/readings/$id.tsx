@@ -20,7 +20,7 @@ export const Route = createFileRoute('/readings/$id')({
   component: ReadingDetails
 })
 
-export default function ReadingDetails () {
+function ReadingDetails () {
   const { id } = useParams({ from: '/readings/$id' }) as { id: string }
   const queryClient = useQueryClient()
   const navigate = useNavigate()

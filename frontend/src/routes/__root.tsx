@@ -1,7 +1,7 @@
 import { createRootRoute, Outlet } from '@tanstack/react-router'
 import { AppShell } from '../components/layout/AppShell.tsx'
 
-export default function RootRoute () {
+function RootRoute () {
   return (
     <AppShell>
       <Outlet/>

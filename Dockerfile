@@ -25,7 +25,7 @@ RUN cargo build -p webtarot-backend --release
 
 
 # ---------- Runtime image ----------
-FROM debian:bookworm-slim AS runtime
+FROM debian AS runtime
 
 # Install minimal runtime deps and create app dir
 RUN apt-get update \

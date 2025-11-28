@@ -12,7 +12,7 @@ const Wrapper = styled.div`
   flex: 1;
 `
 
-export const Heading = styled.h2`
+const Heading = styled.h2`
   margin: 0;
   text-align: center;
   font-weight: 400;
@@ -35,7 +35,8 @@ export const Heading = styled.h2`
     animation-delay: calc(var(--anim-duration) * 1.75);
   }
 `
-export default function ReadingsIndex () {
+
+function ReadingsIndex () {
   // const result = useQuery(useReadingIds())
   const { t } = useTranslation()
 
