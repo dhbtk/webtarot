@@ -8,9 +8,7 @@ use std::time::Instant;
 pub async fn metrics(request: Request, next: Next) -> Response {
     let start = Instant::now();
     let path = match request.extensions().get::<MatchedPath>() {
-        None => {
-            format!("NO MATCHED PATH: {}", request.uri())
-        }
+        None => request.uri().path().to_owned(),
         Some(path) => path.as_str().to_owned(),
     };
     let method = request.method().clone();
@@ -24,8 +22,9 @@ pub async fn metrics(request: Request, next: Next) -> Response {
 
     let labels = [
         ("method", method.to_string()),
-        ("path", path),
+        ("path", path.clone()),
         ("status", status),
+        ("static", (!path.starts_with("/api")).to_string()),
     ];
 
     counter!("http_requests_total", &labels).increment(1);
