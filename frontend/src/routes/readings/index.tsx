@@ -1,10 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import styled from 'styled-components'
 import ReadingForm from '../../components/reading/form/ReadingForm.tsx'
-import { Section } from '../../components/reading/layout/ReadingSubLayout.tsx'
-import ReadingTabs from '../../components/reading/layout/ReadingTabs.tsx'
-import { useQuery } from '@tanstack/react-query'
-import { useReadingIds } from '../../backend/queries.ts'
 import { FormWrapper } from '../../components/reading/form/form.tsx'
 import { Footer } from '../../components/layout/Footer.tsx'
 import { useTranslation } from 'react-i18next'
@@ -40,14 +36,14 @@ export const Heading = styled.h2`
   }
 `
 export default function ReadingsIndex () {
-  const result = useQuery(useReadingIds())
+  // const result = useQuery(useReadingIds())
   const { t } = useTranslation()
 
   return (
     <Wrapper>
-      <Section style={{ flex: 'none', display: result.data?.length ? 'flex' : 'none' }}>
-        <ReadingTabs/>
-      </Section>
+      {/*<Section style={{ flex: 'none', display: result.data?.length ? 'flex' : 'none' }}>*/}
+      {/*  <ReadingTabs/>*/}
+      {/*</Section>*/}
       <Heading>{t('hero.tagline1')}</Heading>
       <Heading>{t('hero.tagline2')}</Heading>
       <FormWrapper>

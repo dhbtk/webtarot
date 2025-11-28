@@ -1,6 +1,5 @@
 import React from 'react'
 import styled from 'styled-components'
-import ReadingTabs from './ReadingTabs.tsx'
 
 export const Section = styled.section`
   flex: 1;
@@ -19,7 +18,7 @@ export const Section = styled.section`
 
 export const ReadingSubLayout: React.FC<React.PropsWithChildren<{}>> = ({ children }) => (
   <Section>
-    <ReadingTabs/>
+    {/*<ReadingTabs/>*/}
     <div style={{ flex: 1, minHeight: 0, maxHeight: '100%', overflowY: 'auto' }}>
       {children}
     </div>
