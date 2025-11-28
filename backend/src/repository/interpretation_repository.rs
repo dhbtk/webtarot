@@ -2,10 +2,12 @@ use crate::entity::interpretation;
 use crate::entity::interpretation::Interpretation;
 use crate::entity::reading::Reading;
 use crate::middleware::locale::Locale;
+use metrics::{counter, histogram};
 use redis::AsyncCommands;
 use redis::aio::ConnectionManager;
 use std::env;
 use std::fmt::{Debug, Formatter};
+use std::time::Instant;
 use uuid::Uuid;
 
 #[derive(Clone)]
@@ -64,8 +66,25 @@ impl InterpretationRepository {
     async fn start_interpretation_request(&mut self, reading: Reading, locale: Locale) {
         tracing::debug!("start_interpretation_request");
         rust_i18n::set_locale(&locale.0);
+        let start = Instant::now();
         let result = webtarot_shared::explain::explain(&reading.question, &reading.cards).await;
-        tracing::debug!(result = ?result, "start_interpretation_request result");
+        let elapsed = start.elapsed();
+        let card_count = reading.cards.len().to_string();
+        let labels = [
+            (
+                "status",
+                if result.is_ok() {
+                    "success".to_owned()
+                } else {
+                    "failure".to_owned()
+                },
+            ),
+            ("cards", card_count),
+        ];
+        counter!("interpretation_requests", &labels).increment(1);
+        histogram!("interpretation_requests_duration_seconds", &labels)
+            .record(elapsed.as_secs_f64());
+        tracing::debug!(result = ?result, ?elapsed, "start_interpretation_request result");
         let uuid = reading.id;
         let result = match result {
             Ok(result) => Interpretation::Done(reading, result),
