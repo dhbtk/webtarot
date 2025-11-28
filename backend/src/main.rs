@@ -2,8 +2,10 @@ mod entity;
 mod handler;
 mod middleware;
 mod repository;
+mod state;
 
 use crate::middleware::metrics::metrics;
+use crate::state::AppState;
 use axum::Router;
 use axum::middleware::{from_extractor, from_fn};
 use axum::routing::post;
@@ -14,7 +16,6 @@ use handler::{
 };
 use middleware::locale;
 use middleware::metrics::setup_metrics_recorder;
-use repository::interpretation_repository::InterpretationRepository;
 use std::future::ready;
 use tower_http::services::{ServeDir, ServeFile};
 use tower_http::trace::DefaultMakeSpan;
@@ -32,7 +33,6 @@ async fn main() {
     // Set default locale (Portuguese as the project currently uses PT as baseline)
     rust_i18n::set_locale("pt");
     let handle = setup_metrics_recorder();
-    let interpretation_manager = InterpretationRepository::new().await;
 
     let app = Router::new()
         .route("/metrics", get(move || ready(handle.render())))
@@ -58,7 +58,7 @@ async fn main() {
             post(create_interpretation::create_interpretation),
         )
         .route("/api/v1/stats", get(get_stats::get_stats))
-        .with_state(interpretation_manager)
+        .with_state(AppState::new().await)
         // Set locale and user for each request
         .route_layer(from_extractor::<locale::Locale>())
         .fallback_service(

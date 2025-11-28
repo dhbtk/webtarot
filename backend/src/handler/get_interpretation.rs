@@ -2,12 +2,12 @@ use crate::entity::interpretation::{GetInterpretationResult, Interpretation};
 use crate::middleware::user::User;
 use crate::repository::interpretation_repository::InterpretationRepository;
 use axum::Json;
-use axum::extract::{Path, State};
+use axum::extract::Path;
 use axum::http::StatusCode;
 
 #[tracing::instrument(skip(user), fields(user_id = %user.id.to_string()))]
 pub async fn get_interpretation(
-    State(interpretation_manager): State<InterpretationRepository>,
+    interpretation_repository: InterpretationRepository,
     user: User,
     Path(interpretation_id): Path<String>,
 ) -> (StatusCode, Json<GetInterpretationResult>) {
@@ -17,7 +17,7 @@ pub async fn get_interpretation(
             Json(GetInterpretationResult::default()),
         );
     };
-    let Some(interpretation) = interpretation_manager.get_interpretation(uuid).await else {
+    let Some(interpretation) = interpretation_repository.get_interpretation(uuid).await else {
         return (
             StatusCode::NOT_FOUND,
             Json(Option::<Interpretation>::None.into()),
@@ -27,7 +27,7 @@ pub async fn get_interpretation(
         return (
             StatusCode::OK,
             Json(
-                interpretation_manager
+                interpretation_repository
                     .assign_to_user(uuid, user.id)
                     .await
                     .into(),

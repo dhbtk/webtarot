@@ -2,10 +2,13 @@ use crate::entity::interpretation;
 use crate::entity::interpretation::Interpretation;
 use crate::entity::reading::Reading;
 use crate::middleware::locale::Locale;
+use crate::state::AppState;
+use axum::extract::FromRequestParts;
+use axum::http::request::Parts;
 use metrics::{counter, histogram};
 use redis::AsyncCommands;
 use redis::aio::ConnectionManager;
-use std::env;
+use std::convert::Infallible;
 use std::fmt::{Debug, Formatter};
 use std::time::Instant;
 use uuid::Uuid;
@@ -22,18 +25,27 @@ impl Debug for InterpretationRepository {
     }
 }
 
-impl InterpretationRepository {
-    pub async fn new() -> Self {
-        let client =
-            redis::Client::open(env::var("REDIS_URL").expect("REDIS_URL not set")).unwrap();
-        let manager = ConnectionManager::new(client).await.unwrap();
-        let (broadcast, _) = tokio::sync::broadcast::channel(100);
+impl FromRequestParts<AppState> for InterpretationRepository {
+    type Rejection = Infallible;
+
+    async fn from_request_parts(
+        _parts: &mut Parts,
+        state: &AppState,
+    ) -> Result<Self, Self::Rejection> {
+        Ok(state.clone().into())
+    }
+}
+
+impl From<AppState> for InterpretationRepository {
+    fn from(value: AppState) -> Self {
         Self {
-            connection_manager: manager,
-            broadcast,
+            connection_manager: value.connection_manager,
+            broadcast: value.interpretation_broadcast,
         }
     }
+}
 
+impl InterpretationRepository {
     pub fn subscribe(&self) -> tokio::sync::broadcast::Receiver<Interpretation> {
         self.broadcast.subscribe()
     }
