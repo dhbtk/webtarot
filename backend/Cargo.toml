@@ -25,3 +25,4 @@ dotenv = "0.15.0"
 diesel = { version = "2.3.4", features = ["chrono", "postgres", "uuid", "serde_json"] }
 diesel-async = { version = "0.7.4", features = ["postgres", "bb8"] }
 diesel_migrations = { version = "2.3.1", features = ["postgres"] }
+password-auth = "1.0.0"

@@ -7,6 +7,7 @@ mod repository;
 mod schema;
 mod state;
 
+use crate::handler::create_user;
 use crate::middleware::metrics::metrics;
 use crate::state::AppState;
 use axum::Router;
@@ -62,6 +63,7 @@ async fn main() {
             post(create_interpretation::create_interpretation),
         )
         .route("/api/v1/stats", get(get_stats::get_stats))
+        .route("/api/v1/user", post(create_user::create_user))
         .with_state(AppState::new().await)
         // Set locale and user for each request
         .route_layer(from_extractor::<locale::Locale>())

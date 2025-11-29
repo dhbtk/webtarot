@@ -1,5 +1,6 @@
 pub mod create_interpretation;
 pub mod create_reading;
+pub mod create_user;
 pub mod delete_interpretation;
 pub mod get_interpretation;
 pub mod get_interpretation_history;

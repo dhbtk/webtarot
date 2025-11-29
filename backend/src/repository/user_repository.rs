@@ -1,6 +1,10 @@
 use crate::database::DbPool;
+use crate::entity::user::{CreateUserRequest, CreateUserResponse, User};
+use crate::repository::error::AppError;
 use crate::state::AppState;
 use axum::extract::FromRequestParts;
+use axum::http::HeaderMap;
+use chrono::Utc;
 use diesel::ExpressionMethods;
 use diesel::{OptionalExtension, QueryDsl, SelectableHelper};
 use diesel_async::RunQueryDsl;
@@ -60,5 +64,74 @@ impl UserRepository {
             .await
             .optional()
             .unwrap()
+    }
+
+    pub async fn create_user(
+        &self,
+        id: Uuid,
+        request: CreateUserRequest,
+        headers: HeaderMap,
+    ) -> Result<CreateUserResponse, AppError> {
+        request.validate()?;
+        let ip = headers
+            .get("x-forwarded-for")
+            .and_then(|h| h.to_str().ok())
+            .unwrap_or("127.0.0.1");
+        let user_agent = headers
+            .get("user-agent")
+            .and_then(|h| h.to_str().ok())
+            .unwrap_or("unknown");
+        let mut conn = self
+            .db_pool
+            .get()
+            .await
+            .map_err(|e| AppError::internal_with_log("Failed to get DB connection", e))?;
+        let user = crate::model::User {
+            id,
+            created_at: Utc::now().naive_utc(),
+            updated_at: Utc::now().naive_utc(),
+            email: request.email,
+            name: request.name,
+            self_description: request.self_description,
+            password_digest: self.password_digest(&request.password),
+        };
+        let access_token = crate::model::NewAccessToken {
+            user_id: id,
+            created_at: Utc::now().naive_utc(),
+            token: self.generate_token(),
+            deleted_at: None,
+            last_user_ip: ip.to_string(),
+            last_user_agent: user_agent.to_string(),
+        };
+        diesel::insert_into(crate::schema::users::table)
+            .values(user.clone())
+            .execute(&mut conn)
+            .await
+            .map_err(|e| AppError::from_diesel_with_log("Failed to insert user", e))?;
+        let access_token = diesel::insert_into(crate::schema::access_tokens::table)
+            .values(access_token)
+            .returning(crate::model::AccessToken::as_returning())
+            .get_result(&mut conn)
+            .await
+            .map_err(|e| AppError::from_diesel_with_log("Failed to insert access token", e))?;
+        Ok((user, access_token).into())
+    }
+
+    fn password_digest(&self, password: &str) -> String {
+        password_auth::generate_hash(password)
+    }
+
+    fn generate_token(&self) -> String {
+        format!("at-{}", Uuid::new_v4())
+    }
+}
+
+impl From<(crate::model::User, crate::model::AccessToken)> for CreateUserResponse {
+    fn from(value: (crate::model::User, crate::model::AccessToken)) -> Self {
+        let (user, access_token) = value;
+        CreateUserResponse {
+            access_token: access_token.token.clone(),
+            user: User::from((user, access_token)),
+        }
     }
 }

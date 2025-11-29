@@ -111,10 +111,21 @@ pub struct User {
     pub self_description: String,
 }
 
-#[derive(Debug, Clone, Insertable, Queryable, Selectable, AsChangeset)]
+#[derive(Debug, Clone, Queryable, Selectable, AsChangeset)]
 #[diesel(table_name = crate::schema::access_tokens)]
 pub struct AccessToken {
     pub id: i64,
+    pub user_id: Uuid,
+    pub created_at: NaiveDateTime,
+    pub token: String,
+    pub last_user_ip: String,
+    pub last_user_agent: String,
+    pub deleted_at: Option<NaiveDateTime>,
+}
+
+#[derive(Debug, Clone, Insertable)]
+#[diesel(table_name = crate::schema::access_tokens)]
+pub struct NewAccessToken {
     pub user_id: Uuid,
     pub created_at: NaiveDateTime,
     pub token: String,

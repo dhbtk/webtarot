@@ -1,4 +1,8 @@
-#[derive(Clone, Debug)]
+use crate::repository::error::AppError;
+use serde::{Deserialize, Serialize};
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub enum User {
     Anonymous {
         id: uuid::Uuid,
@@ -23,7 +27,8 @@ impl User {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct AccessToken {
     pub id: i64,
     pub created_at: chrono::NaiveDateTime,
@@ -49,4 +54,36 @@ impl From<(crate::model::User, crate::model::AccessToken)> for User {
             },
         }
     }
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CreateUserRequest {
+    pub email: String,
+    pub name: String,
+    pub password: String,
+    pub self_description: String,
+}
+
+impl CreateUserRequest {
+    pub fn validate(&self) -> Result<(), AppError> {
+        if self.password.len() < 8 {
+            return Err(AppError::ValidateError(
+                "Password must be at least 8 characters long".to_string(),
+            ));
+        }
+        if !self.email.contains('@') {
+            return Err(AppError::ValidateError(
+                "Email must contain '@'".to_string(),
+            ));
+        }
+        Ok(())
+    }
+}
+
+#[derive(Clone, Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CreateUserResponse {
+    pub access_token: String,
+    pub user: User,
 }
