@@ -3,6 +3,7 @@ use crate::entity::interpretation;
 use crate::entity::interpretation::Interpretation;
 use crate::entity::reading::Reading;
 use crate::middleware::locale::Locale;
+use crate::repository::error::AppResult;
 use crate::state::AppState;
 use axum::extract::FromRequestParts;
 use axum::http::request::Parts;
@@ -143,6 +144,22 @@ impl InterpretationRepository {
         interpretation.reading_mut().user_id = Some(user_id);
         interpretation = self.update_interpretation(interpretation).await;
         Some(interpretation)
+    }
+
+    pub async fn reassign_from_anon_to_user(
+        &self,
+        anon_uuid: Uuid,
+        user_id: Uuid,
+    ) -> AppResult<()> {
+        let mut conn = self.db_pool.get().await?;
+        diesel::update(
+            crate::schema::readings::dsl::readings
+                .filter(crate::schema::readings::dsl::user_id.eq(anon_uuid)),
+        )
+        .set(crate::schema::readings::dsl::user_id.eq(user_id))
+        .execute(&mut conn)
+        .await?;
+        Ok(())
     }
 
     pub async fn get_all_interpretations(&self) -> Vec<Interpretation> {

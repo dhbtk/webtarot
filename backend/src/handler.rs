@@ -5,4 +5,6 @@ pub mod delete_interpretation;
 pub mod get_interpretation;
 pub mod get_interpretation_history;
 pub mod get_stats;
+pub mod get_user;
+pub mod log_in;
 pub mod notify_websocket_handler;

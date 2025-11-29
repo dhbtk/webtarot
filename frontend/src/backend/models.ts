@@ -180,3 +180,39 @@ export const isInterpretationsWebsocketMessage = (
   }
   return false
 }
+
+// -------- User/Auth models (mirror backend/src/entity/user.rs) --------
+
+export interface AccessToken {
+  id: number;
+  createdAt: string; // ISO timestamp
+  lastUserIp: string;
+  lastUserAgent: string;
+}
+
+// Mirrors Rust enum User with serde(rename_all = "camelCase") and externally-tagged variants
+export type User =
+  | { anonymous: { id: string } }
+  | {
+      authenticated: {
+        id: string;
+        createdAt: string;
+        updatedAt: string;
+        email: string;
+        name: string;
+        selfDescription: string;
+        accessToken: AccessToken;
+      };
+    };
+
+export interface CreateUserRequest {
+  email: string;
+  name: string;
+  password: string;
+  selfDescription: string;
+}
+
+export interface CreateUserResponse {
+  accessToken: string;
+  user: User;
+}

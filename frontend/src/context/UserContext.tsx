@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useMemo, useState } from 'react'
-import { getUserId as loadUserId, setUserId as persistUserId } from '../backend/userId'
+import { getUserId as loadUserId } from '../backend/user'
+import { setAnonymousUserId as persistAnonymousUserId } from '../backend/user'
 
 type UserContextValue = {
   userId: string
@@ -17,7 +18,8 @@ export function UserProvider ({ children }: { children: React.ReactNode }) {
     setUserId: (id: string) => {
       setUserIdState(id)
       try {
-        persistUserId(id)
+        // Persist as anonymous user if a component explicitly sets an id
+        persistAnonymousUserId(id)
       } catch {
         // ignore persistence errors (e.g., private mode)
       }

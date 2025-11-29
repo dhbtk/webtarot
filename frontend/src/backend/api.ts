@@ -7,8 +7,8 @@
 //
 // Models are defined in ./models.ts and mirror the Rust types.
 
-import type { CreateReadingRequest, CreateReadingResponse, GetInterpretationResult, Stats, Interpretation, CreateInterpretationRequest, CreateInterpretationResponse } from './models'
-import { getUserId } from './userId.ts'
+import type { CreateReadingRequest, CreateReadingResponse, GetInterpretationResult, Stats, Interpretation, CreateInterpretationRequest, CreateInterpretationResponse, CreateUserRequest, CreateUserResponse } from './models'
+import { getAuthHeaders } from './user.ts'
 import i18n from '../i18n.ts'
 
 const JSON_HEADERS = {
@@ -57,7 +57,7 @@ function getCurrentLocale (): string {
 
 function getDefaultHeaders () {
   return {
-    'x-user-uuid': getUserId(),
+    ...getAuthHeaders(),
     'x-locale': getCurrentLocale(),
   }
 }
@@ -153,4 +153,21 @@ export async function deleteInterpretation (
   })
   // For 204 No Content, handleJsonResponse returns undefined
   await handleJsonResponse<void>(res)
+}
+
+/**
+ * Create user (sign up)
+ * POST /api/v1/user
+ */
+export async function createUser (
+  payload: CreateUserRequest,
+  init?: RequestInit,
+): Promise<CreateUserResponse> {
+  const res = await fetch(`${API_BASE}/user`, {
+    method: 'POST',
+    headers: { ...getDefaultHeaders(), ...JSON_HEADERS, ...(init?.headers ?? {}) },
+    body: JSON.stringify(payload),
+    ...init,
+  })
+  return handleJsonResponse<CreateUserResponse>(res)
 }

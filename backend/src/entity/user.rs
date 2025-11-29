@@ -83,7 +83,7 @@ impl CreateUserRequest {
 
 #[derive(Clone, Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
-pub struct CreateUserResponse {
+pub struct AuthenticationResponse {
     pub access_token: String,
     pub user: User,
 }

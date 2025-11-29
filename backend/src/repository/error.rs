@@ -8,6 +8,10 @@ use tracing::error;
 // Keep these imports optional at compile time where this module is used.
 #[allow(unused_imports)]
 use diesel::result::{DatabaseErrorKind, Error as DieselError};
+use diesel_async::pooled_connection::bb8::RunError;
+
+pub type AppResult<T> = Result<T, AppError>;
+pub type ResponseResult<T> = axum::response::Result<T, AppError>;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum AppError {
@@ -63,5 +67,17 @@ impl IntoResponse for AppError {
         let status = self.status_code();
         let body = Json(self);
         (status, body).into_response()
+    }
+}
+
+impl From<RunError> for AppError {
+    fn from(value: RunError) -> Self {
+        AppError::internal_with_log("Failed to get DB connection", value)
+    }
+}
+
+impl From<DieselError> for AppError {
+    fn from(value: DieselError) -> Self {
+        AppError::from_diesel_with_log("Failed to execute DB query", value)
     }
 }

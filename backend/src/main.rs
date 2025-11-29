@@ -16,7 +16,7 @@ use axum::routing::post;
 use axum::routing::{delete, get};
 use handler::{
     create_interpretation, create_reading, delete_interpretation, get_interpretation,
-    get_interpretation_history, get_stats, notify_websocket_handler,
+    get_interpretation_history, get_stats, get_user, log_in, notify_websocket_handler,
 };
 use middleware::locale;
 use middleware::metrics::setup_metrics_recorder;
@@ -64,6 +64,8 @@ async fn main() {
         )
         .route("/api/v1/stats", get(get_stats::get_stats))
         .route("/api/v1/user", post(create_user::create_user))
+        .route("/api/v1/user", get(get_user::get_user))
+        .route("/api/v1/login", post(log_in::log_in))
         .with_state(AppState::new().await)
         // Set locale and user for each request
         .route_layer(from_extractor::<locale::Locale>())
