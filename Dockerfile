@@ -29,7 +29,7 @@ FROM debian AS runtime
 
 # Install minimal runtime deps and create app dir
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends ca-certificates openssl \
+    && apt-get install -y --no-install-recommends ca-certificates openssl libpq5 \
     && rm -rf /var/lib/apt/lists/* \
     && mkdir -p /app /static
 
