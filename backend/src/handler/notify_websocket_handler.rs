@@ -1,5 +1,5 @@
 use crate::entity::interpretation::Interpretation;
-use crate::middleware::user::User;
+use crate::entity::user::User;
 use crate::repository::interpretation_repository::InterpretationRepository;
 use axum::extract::WebSocketUpgrade;
 use axum::extract::ws::{Message, WebSocket};
@@ -16,7 +16,7 @@ pub enum InterpretationsWebsocketMessage {
     Done { uuid: Uuid },
 }
 
-#[tracing::instrument(skip(user, ws), fields(user_id = %user.id.to_string()))]
+#[tracing::instrument(skip(user, ws), fields(user_id = %user.id().to_string()))]
 pub async fn notify_websocket_handler(
     interpretation_repository: InterpretationRepository,
     user: User,
@@ -65,7 +65,7 @@ async fn notify_websocket(
                 serde_json::from_str(&message)
                 && let Some(interpretation) =
                     interpretation_repository.get_interpretation(uuid).await
-                && interpretation.reading().user_id == Some(user.id)
+                && interpretation.reading().user_id == Some(user.id())
             {
                 if let Interpretation::Pending(_) = interpretation {
                     tracing::debug!(uuid = ?uuid, "adding uuid to send queue");

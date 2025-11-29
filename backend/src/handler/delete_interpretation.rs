@@ -1,10 +1,10 @@
-use crate::middleware::user::User;
+use crate::entity::user::User;
 use crate::repository::interpretation_repository::InterpretationRepository;
 use axum::extract::Path;
 use axum::http::StatusCode;
 use uuid::Uuid;
 
-#[tracing::instrument(skip(user), fields(user_id = %user.id.to_string()))]
+#[tracing::instrument(skip(user), fields(user_id = %user.id().to_string()))]
 pub async fn delete_interpretation(
     interpretation_repository: InterpretationRepository,
     user: User,
@@ -14,7 +14,7 @@ pub async fn delete_interpretation(
         return StatusCode::BAD_REQUEST;
     };
     let Some(_) = interpretation_repository
-        .delete_interpretation(interpretation_id, user.id)
+        .delete_interpretation(interpretation_id, user.id())
         .await
     else {
         return StatusCode::BAD_REQUEST;

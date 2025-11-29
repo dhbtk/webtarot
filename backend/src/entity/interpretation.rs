@@ -1,5 +1,5 @@
 use crate::entity::reading::Reading;
-use crate::middleware::user::User;
+use crate::entity::user::User;
 use rust_i18n::t;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
@@ -120,7 +120,7 @@ impl From<(CreateInterpretationRequest, &User)> for Reading {
             question: value.question,
             shuffled_times: 0,
             cards: value.cards,
-            user_id: Some(user.id),
+            user_id: Some(user.id()),
         }
     }
 }

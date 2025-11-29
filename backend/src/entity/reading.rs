@@ -1,4 +1,4 @@
-use crate::middleware::user::User;
+use crate::entity::user::User;
 use serde::{Deserialize, Serialize};
 use tracing::instrument;
 use webtarot_shared::model::{Card, Deck};
@@ -50,6 +50,6 @@ pub fn perform_reading(request: &CreateReadingRequest, user: &User) -> Reading {
         question: request.question.clone(),
         shuffled_times: shuffles,
         cards,
-        user_id: Some(user.id),
+        user_id: Some(user.id()),
     }
 }

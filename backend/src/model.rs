@@ -98,3 +98,27 @@ impl ToSql<Text, Pg> for InterpretationStatus {
         Ok(IsNull::No)
     }
 }
+
+#[derive(Debug, Clone, Insertable, Queryable, Selectable, AsChangeset)]
+#[diesel(table_name = crate::schema::users)]
+pub struct User {
+    pub id: Uuid,
+    pub created_at: NaiveDateTime,
+    pub updated_at: NaiveDateTime,
+    pub email: String,
+    pub password_digest: String,
+    pub name: String,
+    pub self_description: String,
+}
+
+#[derive(Debug, Clone, Insertable, Queryable, Selectable, AsChangeset)]
+#[diesel(table_name = crate::schema::access_tokens)]
+pub struct AccessToken {
+    pub id: i64,
+    pub user_id: Uuid,
+    pub created_at: NaiveDateTime,
+    pub token: String,
+    pub last_user_ip: String,
+    pub last_user_agent: String,
+    pub deleted_at: Option<NaiveDateTime>,
+}
