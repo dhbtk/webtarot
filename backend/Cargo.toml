@@ -21,3 +21,5 @@ rust-i18n = "3.1.5"
 async-trait = "0.1.83"
 metrics = "0.24.3"
 metrics-exporter-prometheus = "0.18.0"
+dotenv = "0.15.0"
+diesel = { version = "2.3.4", features = ["chrono", "postgres", "r2d2", "uuid", "serde_json"] }

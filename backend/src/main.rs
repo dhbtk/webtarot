@@ -1,7 +1,9 @@
 mod entity;
 mod handler;
 mod middleware;
+mod model;
 mod repository;
+mod schema;
 mod state;
 
 use crate::middleware::metrics::metrics;
@@ -29,6 +31,7 @@ rust_i18n::i18n!("locales");
 
 #[tokio::main]
 async fn main() {
+    dotenv::dotenv().ok();
     fmt().with_env_filter("info,webtarot=trace").init();
     // Set default locale (Portuguese as the project currently uses PT as baseline)
     rust_i18n::set_locale("pt");
