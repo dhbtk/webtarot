@@ -15,6 +15,7 @@ import { useUser } from '../../context/UserContext'
 import type { InterpretationsWebsocketMessage } from '../../backend/models.ts'
 import { isInterpretationsWebsocketMessage } from '../../backend/models.ts'
 import { useTranslation } from 'react-i18next'
+import { getStoredUser } from '../../backend/user.ts'
 
 export const Route = createFileRoute('/readings/$id')({
   component: ReadingDetails
@@ -26,7 +27,6 @@ function ReadingDetails () {
   const navigate = useNavigate()
   const { t } = useTranslation()
   const { user } = useUser()
-  const userId = 'anonymous' in user ? user.anonymous.id : user.authenticated.id
   const removeMutation = useMutation({
     mutationFn: () => {
       const currentIndex = getSavedReadings().indexOf(id)
@@ -54,7 +54,8 @@ function ReadingDetails () {
   useEffect(() => {
     const url = new URL('/api/v1/interpretation/notify', window.location.href)
     url.protocol = url.protocol.replace('http', 'ws')
-    const websocket = new WebSocket(url.href, [userId])
+    const idToSend = 'anonymous' in user ? user.anonymous.id : getStoredUser().accessToken ?? ''
+    const websocket = new WebSocket(url.href, [idToSend])
 
     websocket.onopen = () => {
       console.log('ws connected')
@@ -74,7 +75,7 @@ function ReadingDetails () {
     }
 
     return () => websocket.close()
-  }, [id, userId])
+  }, [id, user])
 
   const query = useQuery({
     queryKey: ['readings', id],

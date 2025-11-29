@@ -24,7 +24,7 @@ export const useReadingById = (id: string) => queryOptions({
 
 // -------- Auth mutations --------
 
-export const useLogInMutation = () => mutationOptions<{ email: string; password: string }, Error, User>({
+export const useLogInMutation = () => mutationOptions<User, Error, LogInRequest>({
   mutationKey: ['auth', 'login'],
   mutationFn: async (vars: LogInRequest) => {
     const res = await apiLogIn(vars)
