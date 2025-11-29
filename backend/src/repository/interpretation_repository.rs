@@ -6,6 +6,10 @@ use crate::middleware::locale::Locale;
 use crate::state::AppState;
 use axum::extract::FromRequestParts;
 use axum::http::request::Parts;
+use diesel::{
+    BoolExpressionMethods, ExpressionMethods, OptionalExtension, QueryDsl, SelectableHelper,
+};
+use diesel_async::RunQueryDsl;
 use metrics::{counter, histogram};
 use redis::AsyncCommands;
 use redis::aio::ConnectionManager;
@@ -61,19 +65,17 @@ impl InterpretationRepository {
     pub fn request_interpretation(&self, reading: Reading, locale: Locale) {
         let mut cloned = self.clone();
         tokio::spawn(async move {
-            cloned.mark_started(reading.clone()).await;
+            cloned.save_as_pending(reading.clone()).await;
             cloned.start_interpretation_request(reading, locale).await;
         });
     }
 
-    async fn mark_started(&mut self, reading: Reading) {
-        let to_store = Interpretation::Pending(reading);
-        let mut manager = self.connection_manager.clone();
-        manager
-            .set::<String, String, String>(
-                self.key_for_uuid(to_store.reading().id),
-                serde_json::to_string(&to_store).unwrap(),
-            )
+    async fn save_as_pending(&mut self, reading: Reading) {
+        let to_store: crate::model::Reading = Interpretation::Pending(reading).into();
+        let mut conn = self.db_pool.get().await.unwrap();
+        diesel::insert_into(crate::schema::readings::dsl::readings)
+            .values(&to_store)
+            .execute(&mut conn)
             .await
             .unwrap();
     }
@@ -100,106 +102,96 @@ impl InterpretationRepository {
         histogram!("interpretation_requests_duration_seconds", &labels)
             .record(elapsed.as_secs_f64());
         tracing::debug!(result = ?result, ?elapsed, "start_interpretation_request result");
-        let uuid = reading.id;
         let result = match result {
             Ok(result) => Interpretation::Done(reading, result),
             Err(e) => Interpretation::Failed(reading, interpretation::localize_explain_error(&e)),
         };
-        let mut manager = self.connection_manager.clone();
-        manager
-            .set::<String, String, String>(
-                self.key_for_uuid(uuid),
-                serde_json::to_string(&result).unwrap(),
-            )
-            .await
+        self.broadcast
+            .send(self.update_interpretation(result).await)
             .unwrap();
-        self.broadcast.send(result).unwrap();
     }
 
     pub async fn get_interpretation(&self, uuid: Uuid) -> Option<Interpretation> {
-        let mut manager = self.connection_manager.clone();
-        let Ok(value) = manager.get::<String, String>(self.key_for_uuid(uuid)).await else {
-            return None;
-        };
-        let Ok(parsed) = serde_json::from_str::<Interpretation>(&value) else {
-            return None;
-        };
-        Some(parsed)
+        let mut conn = self.db_pool.get().await.unwrap();
+        let interpretation = crate::schema::readings::dsl::readings
+            .find(uuid)
+            .select(crate::model::Reading::as_select())
+            .first(&mut conn)
+            .await
+            .optional()
+            .unwrap();
+        if let Some(interpretation) = interpretation {
+            return Some(Interpretation::from(interpretation));
+        }
+        None
+    }
+
+    async fn update_interpretation(&self, interpretation: Interpretation) -> Interpretation {
+        let mut conn = self.db_pool.get().await.unwrap();
+        let reading: crate::model::Reading = interpretation.into();
+        diesel::update(crate::schema::readings::dsl::readings.find(reading.id))
+            .set(reading)
+            .returning(crate::model::Reading::as_returning())
+            .get_result(&mut conn)
+            .await
+            .unwrap()
+            .into()
     }
 
     pub async fn assign_to_user(&self, uuid: Uuid, user_id: Uuid) -> Option<Interpretation> {
         let mut interpretation = self.get_interpretation(uuid).await?;
         interpretation.reading_mut().user_id = Some(user_id);
-        let mut manager = self.connection_manager.clone();
-        manager
-            .set::<String, String, String>(
-                self.key_for_uuid(uuid),
-                serde_json::to_string(&interpretation).unwrap(),
-            )
-            .await
-            .unwrap();
+        interpretation = self.update_interpretation(interpretation).await;
         Some(interpretation)
     }
 
     pub async fn get_all_interpretations(&self) -> Vec<Interpretation> {
-        let mut manager = self.connection_manager.clone();
-        let keys: Vec<String> = manager.keys("interpretation:*").await.unwrap();
-        let mut results = Vec::new();
-        for key in keys {
-            let Ok(value) = manager.get::<String, String>(key).await else {
-                continue;
-            };
-            let Ok(parsed) = serde_json::from_str::<Interpretation>(&value) else {
-                continue;
-            };
-            if parsed.is_done() {
-                results.push(parsed);
-            };
-        }
-        results
+        let mut conn = self.db_pool.get().await.unwrap();
+        crate::schema::readings::dsl::readings
+            .select(crate::model::Reading::as_select())
+            .filter(crate::schema::readings::dsl::deleted_at.is_null())
+            .load::<crate::model::Reading>(&mut conn)
+            .await
+            .unwrap()
+            .into_iter()
+            .map(Interpretation::from)
+            .collect()
     }
 
     pub async fn get_history_for_user(&self, user_id: Uuid) -> Vec<Interpretation> {
-        let mut manager = self.connection_manager.clone();
-        let keys: Vec<String> = manager.keys("interpretation:*").await.unwrap();
-        let mut results = Vec::new();
-        for key in keys {
-            let Ok(value) = manager.get::<String, String>(key).await else {
-                continue;
-            };
-            let Ok(parsed) = serde_json::from_str::<Interpretation>(&value) else {
-                continue;
-            };
-            let Some(reading_user_uuid) = parsed.reading().user_id else {
-                continue;
-            };
-            if reading_user_uuid == user_id {
-                results.push(parsed);
-            }
-        }
-        results.sort_by(|a, b| b.reading().created_at.cmp(&a.reading().created_at));
-        results
+        let mut conn = self.db_pool.get().await.unwrap();
+        crate::schema::readings::dsl::readings
+            .select(crate::model::Reading::as_select())
+            .filter(
+                crate::schema::readings::dsl::user_id
+                    .eq(user_id)
+                    .and(crate::schema::readings::dsl::deleted_at.is_null()),
+            )
+            .order(crate::schema::readings::dsl::created_at.desc())
+            .load::<crate::model::Reading>(&mut conn)
+            .await
+            .unwrap()
+            .into_iter()
+            .map(Interpretation::from)
+            .collect()
     }
 
     pub async fn delete_interpretation(&self, uuid: Uuid, user_id: Uuid) -> Option<()> {
-        let mut manager = self.connection_manager.clone();
-        let interpretation = self.get_interpretation(uuid).await?;
-        let reading_user_uuid = interpretation.reading().user_id?;
-        if reading_user_uuid == user_id {
-            manager
-                .del::<String, String>(self.key_for_uuid(uuid))
-                .await
-                .unwrap();
-            return Some(());
-        }
-        None
+        let mut conn = self.db_pool.get().await.unwrap();
+        diesel::update(crate::schema::readings::dsl::readings.find(uuid))
+            .set(crate::schema::readings::dsl::deleted_at.eq(diesel::dsl::now))
+            .filter(crate::schema::readings::dsl::user_id.eq(user_id))
+            .execute(&mut conn)
+            .await
+            .optional()
+            .unwrap();
+        Some(())
     }
 
     pub async fn copy_all_from_redis_to_db(&self) {
         use crate::schema::readings::dsl::*;
         use diesel::prelude::*;
         use diesel_async::RunQueryDsl;
-        use serde_json::json;
 
         let mut manager = self.connection_manager.clone();
         let keys: Vec<String> = match manager.keys("interpretation:*").await {
@@ -232,7 +224,7 @@ impl InterpretationRepository {
             let exists = readings
                 .find(reading_model.id)
                 .select(id)
-                .first::<uuid::Uuid>(&mut conn)
+                .first::<Uuid>(&mut conn)
                 .await
                 .optional();
 
@@ -246,33 +238,8 @@ impl InterpretationRepository {
             };
 
             if should_insert {
-                // Prepare plain values to avoid custom ToSql impls
-                let status_str = match reading_model.interpretation_status {
-                    crate::model::InterpretationStatus::Pending => "pending",
-                    crate::model::InterpretationStatus::Done => "done",
-                    crate::model::InterpretationStatus::Failed => "failed",
-                };
-
-                let cards_vec: Vec<webtarot_shared::model::Card> =
-                    reading_model.cards.clone().into();
-                let cards_json = serde_json::to_value(cards_vec).unwrap_or_else(|_| json!([]));
-
                 if let Err(e) = diesel::insert_into(readings)
-                    .values((
-                        id.eq(reading_model.id),
-                        created_at.eq(reading_model.created_at),
-                        question.eq(reading_model.question.clone()),
-                        context.eq(reading_model.context.clone()),
-                        cards.eq(cards_json),
-                        shuffled_times.eq(reading_model.shuffled_times),
-                        user_id.eq(reading_model.user_id),
-                        user_name.eq(reading_model.user_name.clone()),
-                        user_self_description.eq(reading_model.user_self_description.clone()),
-                        interpretation_status.eq(status_str),
-                        interpretation_text.eq(reading_model.interpretation_text.clone()),
-                        interpretation_error.eq(reading_model.interpretation_error.clone()),
-                        deleted_at.eq(reading_model.deleted_at),
-                    ))
+                    .values(&reading_model)
                     .execute(&mut conn)
                     .await
                 {
@@ -282,9 +249,5 @@ impl InterpretationRepository {
                 }
             }
         }
-    }
-
-    fn key_for_uuid(&self, uuid: Uuid) -> String {
-        format!("interpretation:{}", uuid)
     }
 }
