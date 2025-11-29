@@ -1,3 +1,4 @@
+mod database;
 mod entity;
 mod handler;
 mod middleware;

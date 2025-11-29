@@ -1,7 +1,7 @@
 use chrono::NaiveDateTime;
 use diesel::deserialize::FromSql;
 use diesel::pg::{Pg, PgValue};
-use diesel::sql_types::Jsonb;
+use diesel::sql_types::{Jsonb, Text};
 use diesel::{AsExpression, FromSqlRow, Insertable, Queryable, Selectable};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
@@ -20,7 +20,7 @@ pub struct Reading {
     pub user_id: Uuid,
     pub user_name: String,
     pub user_self_description: String,
-    pub interpretation_status: String,
+    pub interpretation_status: InterpretationStatus,
     pub interpretation_text: String,
     pub interpretation_error: String,
     pub deleted_at: Option<NaiveDateTime>,
@@ -46,5 +46,30 @@ impl FromSql<Jsonb, Pg> for Cards {
     fn from_sql(bytes: PgValue<'_>) -> diesel::deserialize::Result<Self> {
         let value = <serde_json::Value as FromSql<Jsonb, Pg>>::from_sql(bytes)?;
         Ok(serde_json::from_value(value)?)
+    }
+}
+
+#[derive(Debug, Clone, FromSqlRow, Serialize, Deserialize, AsExpression)]
+#[diesel(sql_type = Text)]
+pub enum InterpretationStatus {
+    Pending,
+    Done,
+    Failed,
+}
+
+impl FromSql<Text, Pg> for InterpretationStatus {
+    fn from_sql(bytes: PgValue<'_>) -> diesel::deserialize::Result<Self> {
+        // Reuse Diesel's own FromSql implementation for String from TEXT
+        let status = <String as FromSql<Text, Pg>>::from_sql(bytes)?;
+        match status.to_lowercase().as_str() {
+            // Be flexible with casing
+            "pending" => Ok(InterpretationStatus::Pending),
+            "done" => Ok(InterpretationStatus::Done),
+            "failed" => Ok(InterpretationStatus::Failed),
+            other => Err(Box::new(std::io::Error::new(
+                std::io::ErrorKind::InvalidData,
+                format!("Unknown InterpretationStatus: {}", other),
+            ))),
+        }
     }
 }

@@ -42,6 +42,69 @@ impl Interpretation {
     }
 }
 
+impl From<Interpretation> for crate::model::Reading {
+    fn from(value: Interpretation) -> Self {
+        use crate::model::InterpretationStatus;
+
+        let (reading, status, interpretation_text, interpretation_error) = match value {
+            Interpretation::Pending(r) => (
+                r,
+                InterpretationStatus::Pending,
+                String::new(),
+                String::new(),
+            ),
+            Interpretation::Done(r, text) => (r, InterpretationStatus::Done, text, String::new()),
+            Interpretation::Failed(r, err) => (r, InterpretationStatus::Failed, String::new(), err),
+        };
+
+        crate::model::Reading {
+            id: reading.id,
+            created_at: reading.created_at.naive_utc(),
+            question: reading.question,
+            context: String::new(),
+            cards: reading.cards.into(),
+            shuffled_times: reading.shuffled_times as i32,
+            user_id: reading.user_id.unwrap_or_else(Uuid::nil),
+            user_name: String::new(),
+            user_self_description: String::new(),
+            interpretation_status: status,
+            interpretation_text,
+            interpretation_error,
+            deleted_at: None,
+        }
+    }
+}
+
+impl From<crate::model::Reading> for Interpretation {
+    fn from(value: crate::model::Reading) -> Self {
+        use crate::model::InterpretationStatus;
+
+        let reading = Reading {
+            id: value.id,
+            created_at: chrono::DateTime::<chrono::Utc>::from_naive_utc_and_offset(
+                value.created_at,
+                chrono::Utc,
+            ),
+            question: value.question,
+            shuffled_times: value.shuffled_times as usize,
+            cards: value.cards.into(),
+            user_id: if value.user_id.is_nil() {
+                None
+            } else {
+                Some(value.user_id)
+            },
+        };
+
+        match value.interpretation_status {
+            InterpretationStatus::Pending => Interpretation::Pending(reading),
+            InterpretationStatus::Done => Interpretation::Done(reading, value.interpretation_text),
+            InterpretationStatus::Failed => {
+                Interpretation::Failed(reading, value.interpretation_error)
+            }
+        }
+    }
+}
+
 #[derive(Serialize, Deserialize, Clone, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct CreateInterpretationRequest {
