@@ -27,6 +27,7 @@ impl FromRequestParts<AppState> for User {
             .and_then(|v| v.parse::<Uuid>().ok());
         if let Some(user_id) = user_id {
             if user_repository.exists_by_id(user_id).await {
+                tracing::warn!(?user_id, "anon user request but user has signed up");
                 return Err(StatusCode::UNAUTHORIZED);
             }
             Ok(User::Anonymous { id: user_id })
@@ -44,9 +45,11 @@ impl FromRequestParts<AppState> for User {
                 })
                 .map(|v| v.to_owned())
             else {
+                tracing::warn!("no auth header");
                 return Err(StatusCode::UNAUTHORIZED);
             };
             let Some(result) = user_repository.find_by_access_token(&token).await else {
+                tracing::warn!("invalid auth token");
                 return Err(StatusCode::UNAUTHORIZED);
             };
             Ok(result.into())

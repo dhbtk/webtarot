@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { useUserId } from '../../context/UserContext'
+import { useUser } from '../../context/UserContext'
 import { useTranslation } from 'react-i18next'
 
 const FooterWrapper = styled.footer`
@@ -52,7 +52,8 @@ const LocaleSelect = styled.select`
 
 export const Footer = () => {
   const { i18n, t } = useTranslation()
-  const { userId } = useUserId()
+  const { user } = useUser()
+  const userId = 'anonymous' in user ? user.anonymous.id : user.authenticated.id
 
   const onChangeLocale = (e: React.ChangeEvent<HTMLSelectElement>) => {
     void i18n.changeLanguage(e.target.value)

@@ -1,30 +1,31 @@
 import React, { createContext, useContext, useMemo, useState } from 'react'
-import { getUserId as loadUserId } from '../backend/user'
-import { setAnonymousUserId as persistAnonymousUserId } from '../backend/user'
+import type { User } from '../backend/models'
+import { getStoredUser, setStoredUser } from '../backend/user'
 
 type UserContextValue = {
-  userId: string
-  setUserId: (id: string) => void
+  user: User
+  setUser: (user: User) => void
 }
 
 const UserContext = createContext<UserContextValue | undefined>(undefined)
 
 export function UserProvider ({ children }: { children: React.ReactNode }) {
   // Lazy initialize from localStorage (or generate if absent)
-  const [userIdState, setUserIdState] = useState<string>(() => loadUserId())
+  const [userState, setUserState] = useState<User>(() => getStoredUser().user)
 
   const value = useMemo<UserContextValue>(() => ({
-    userId: userIdState,
-    setUserId: (id: string) => {
-      setUserIdState(id)
+    user: userState,
+    setUser: (user: User) => {
+      setUserState(user)
       try {
-        // Persist as anonymous user if a component explicitly sets an id
-        persistAnonymousUserId(id)
+        // Persist the user while preserving any existing access token
+        const stored = getStoredUser()
+        setStoredUser({ user, accessToken: stored.accessToken })
       } catch {
         // ignore persistence errors (e.g., private mode)
       }
     }
-  }), [userIdState])
+  }), [userState])
 
   return (
     <UserContext.Provider value={value}>
@@ -33,8 +34,8 @@ export function UserProvider ({ children }: { children: React.ReactNode }) {
   )
 }
 
-export function useUserId () {
+export function useUser () {
   const ctx = useContext(UserContext)
-  if (!ctx) throw new Error('useUserId must be used within a UserProvider')
+  if (!ctx) throw new Error('useUser must be used within a UserProvider')
   return ctx
 }

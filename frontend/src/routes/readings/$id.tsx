@@ -11,7 +11,7 @@ import styled from 'styled-components'
 import { useEffect } from 'react'
 import { ReadingSubLayout } from '../../components/reading/layout/ReadingSubLayout.tsx'
 import { CardSpinner } from '../../components/reading/CardSpinner.tsx'
-import { useUserId } from '../../context/UserContext'
+import { useUser } from '../../context/UserContext'
 import type { InterpretationsWebsocketMessage } from '../../backend/models.ts'
 import { isInterpretationsWebsocketMessage } from '../../backend/models.ts'
 import { useTranslation } from 'react-i18next'
@@ -25,7 +25,8 @@ function ReadingDetails () {
   const queryClient = useQueryClient()
   const navigate = useNavigate()
   const { t } = useTranslation()
-  const { userId } = useUserId()
+  const { user } = useUser()
+  const userId = 'anonymous' in user ? user.anonymous.id : user.authenticated.id
   const removeMutation = useMutation({
     mutationFn: () => {
       const currentIndex = getSavedReadings().indexOf(id)

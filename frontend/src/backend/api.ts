@@ -7,7 +7,7 @@
 //
 // Models are defined in ./models.ts and mirror the Rust types.
 
-import type { CreateReadingRequest, CreateReadingResponse, GetInterpretationResult, Stats, Interpretation, CreateInterpretationRequest, CreateInterpretationResponse, CreateUserRequest, CreateUserResponse } from './models'
+import type { CreateReadingRequest, CreateReadingResponse, GetInterpretationResult, Stats, Interpretation, CreateInterpretationRequest, CreateInterpretationResponse, CreateUserRequest, CreateUserResponse, LogInRequest } from './models'
 import { getAuthHeaders } from './user.ts'
 import i18n from '../i18n.ts'
 
@@ -164,6 +164,23 @@ export async function createUser (
   init?: RequestInit,
 ): Promise<CreateUserResponse> {
   const res = await fetch(`${API_BASE}/user`, {
+    method: 'POST',
+    headers: { ...getDefaultHeaders(), ...JSON_HEADERS, ...(init?.headers ?? {}) },
+    body: JSON.stringify(payload),
+    ...init,
+  })
+  return handleJsonResponse<CreateUserResponse>(res)
+}
+
+/**
+ * Log in
+ * POST /api/v1/login
+ */
+export async function logIn (
+  payload: LogInRequest,
+  init?: RequestInit,
+): Promise<CreateUserResponse> {
+  const res = await fetch(`${API_BASE}/login`, {
     method: 'POST',
     headers: { ...getDefaultHeaders(), ...JSON_HEADERS, ...(init?.headers ?? {}) },
     body: JSON.stringify(payload),

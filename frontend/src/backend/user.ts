@@ -90,3 +90,15 @@ export function getAuthHeaders (): Record<string, string> {
   const id = getUserId()
   return { 'x-user-uuid': id }
 }
+
+/**
+ * Frontend-only logout: clear any stored access token and switch to an anonymous user.
+ * Does not call the backend.
+ */
+export function logOut () {
+  // Generate a fresh anonymous id
+  const id = (typeof crypto !== 'undefined' && 'randomUUID' in crypto)
+    ? crypto.randomUUID()
+    : `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`
+  setAnonymousUserId(id)
+}

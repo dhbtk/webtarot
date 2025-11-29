@@ -9,7 +9,9 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SignupRouteImport } from './routes/signup'
 import { Route as ReadingsRouteImport } from './routes/readings'
+import { Route as LoginRouteImport } from './routes/login'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ReadingsIndexRouteImport } from './routes/readings/index'
 import { Route as ReadingsStatsRouteImport } from './routes/readings/stats'
@@ -17,9 +19,19 @@ import { Route as ReadingsHistoryRouteImport } from './routes/readings/history'
 import { Route as ReadingsIdRouteImport } from './routes/readings/$id'
 import { Route as InterpretationsNewRouteImport } from './routes/interpretations/new'
 
+const SignupRoute = SignupRouteImport.update({
+  id: '/signup',
+  path: '/signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ReadingsRoute = ReadingsRouteImport.update({
   id: '/readings',
   path: '/readings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -55,7 +67,9 @@ const InterpretationsNewRoute = InterpretationsNewRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/login': typeof LoginRoute
   '/readings': typeof ReadingsRouteWithChildren
+  '/signup': typeof SignupRoute
   '/interpretations/new': typeof InterpretationsNewRoute
   '/readings/$id': typeof ReadingsIdRoute
   '/readings/history': typeof ReadingsHistoryRoute
@@ -64,6 +78,8 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/login': typeof LoginRoute
+  '/signup': typeof SignupRoute
   '/interpretations/new': typeof InterpretationsNewRoute
   '/readings/$id': typeof ReadingsIdRoute
   '/readings/history': typeof ReadingsHistoryRoute
@@ -73,7 +89,9 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/login': typeof LoginRoute
   '/readings': typeof ReadingsRouteWithChildren
+  '/signup': typeof SignupRoute
   '/interpretations/new': typeof InterpretationsNewRoute
   '/readings/$id': typeof ReadingsIdRoute
   '/readings/history': typeof ReadingsHistoryRoute
@@ -84,7 +102,9 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/login'
     | '/readings'
+    | '/signup'
     | '/interpretations/new'
     | '/readings/$id'
     | '/readings/history'
@@ -93,6 +113,8 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/login'
+    | '/signup'
     | '/interpretations/new'
     | '/readings/$id'
     | '/readings/history'
@@ -101,7 +123,9 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/login'
     | '/readings'
+    | '/signup'
     | '/interpretations/new'
     | '/readings/$id'
     | '/readings/history'
@@ -111,17 +135,33 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  LoginRoute: typeof LoginRoute
   ReadingsRoute: typeof ReadingsRouteWithChildren
+  SignupRoute: typeof SignupRoute
   InterpretationsNewRoute: typeof InterpretationsNewRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/signup': {
+      id: '/signup'
+      path: '/signup'
+      fullPath: '/signup'
+      preLoaderRoute: typeof SignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/readings': {
       id: '/readings'
       path: '/readings'
       fullPath: '/readings'
       preLoaderRoute: typeof ReadingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -189,7 +229,9 @@ const ReadingsRouteWithChildren = ReadingsRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  LoginRoute: LoginRoute,
   ReadingsRoute: ReadingsRouteWithChildren,
+  SignupRoute: SignupRoute,
   InterpretationsNewRoute: InterpretationsNewRoute,
 }
 export const routeTree = rootRouteImport

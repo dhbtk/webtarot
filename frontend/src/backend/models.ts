@@ -216,3 +216,9 @@ export interface CreateUserResponse {
   accessToken: string;
   user: User;
 }
+
+// Mirrors Rust: LogInRequest in backend/src/handler/log_in.rs
+export interface LogInRequest {
+  email: string;
+  password: string;
+}

@@ -11,6 +11,8 @@ use crate::handler::create_user;
 use crate::middleware::metrics::metrics;
 use crate::state::AppState;
 use axum::Router;
+use axum::http::HeaderValue;
+use axum::http::header::CACHE_CONTROL;
 use axum::middleware::{from_extractor, from_fn};
 use axum::routing::post;
 use axum::routing::{delete, get};
@@ -21,7 +23,9 @@ use handler::{
 use middleware::locale;
 use middleware::metrics::setup_metrics_recorder;
 use std::future::ready;
+use tower::ServiceBuilder;
 use tower_http::services::{ServeDir, ServeFile};
+use tower_http::set_header::SetResponseHeaderLayer;
 use tower_http::trace::DefaultMakeSpan;
 use tower_http::trace::DefaultOnResponse;
 use tower_http::trace::TraceLayer;
@@ -69,9 +73,27 @@ async fn main() {
         .with_state(AppState::new().await)
         // Set locale and user for each request
         .route_layer(from_extractor::<locale::Locale>())
-        .fallback_service(
-            ServeDir::new("/static").not_found_service(ServeFile::new("/static/index.html")),
-        )
+        .fallback_service({
+            // SPA entry point should not be cached to ensure users get latest app shell
+            let no_cache = SetResponseHeaderLayer::overriding(
+                CACHE_CONTROL,
+                HeaderValue::from_static("no-cache"),
+            );
+            let index_service = ServiceBuilder::new()
+                .layer(no_cache)
+                .service(ServeFile::new("/static/index.html"));
+
+            // Combine ServeDir with index fallback first
+            let combined = ServeDir::new("/static").not_found_service(index_service);
+
+            // Then apply long-term caching to anything that didn't set Cache-Control yet
+            let static_cache = SetResponseHeaderLayer::if_not_present(
+                CACHE_CONTROL,
+                HeaderValue::from_static("public, max-age=31536000, immutable"),
+            );
+
+            ServiceBuilder::new().layer(static_cache).service(combined)
+        })
         .layer(
             TraceLayer::new_for_http()
                 .make_span_with(DefaultMakeSpan::new().level(Level::INFO))
