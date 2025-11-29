@@ -140,5 +140,31 @@
       "languageAriaLabel": "Selecionar idioma",
       "languageTitle": "Idioma"
     }
+  },
+  "auth": {
+    "login": {
+      "title": "Entrar",
+      "emailLabel": "Email",
+      "emailPlaceholder": "voce@exemplo.com",
+      "passwordLabel": "Senha",
+      "passwordPlaceholder": "••••••••",
+      "submit": "Entrar",
+      "submitting": "Entrando…",
+      "error": "Falha no login"
+    },
+    "signup": {
+      "title": "Criar conta",
+      "nameLabel": "Nome",
+      "namePlaceholder": "Seu nome",
+      "emailLabel": "Email",
+      "emailPlaceholder": "voce@exemplo.com",
+      "passwordLabel": "Senha",
+      "passwordPlaceholder": "Pelo menos 8 caracteres",
+      "selfDescriptionLabel": "Sobre você",
+      "selfDescriptionPlaceholder": "Conte um pouco sobre você (opcional)",
+      "submit": "Criar conta",
+      "submitting": "Criando conta…",
+      "error": "Falha no cadastro"
+    }
   }
 }

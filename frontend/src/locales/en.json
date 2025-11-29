@@ -140,5 +140,31 @@
       "languageAriaLabel": "Select language",
       "languageTitle": "Language"
     }
+  },
+  "auth": {
+    "login": {
+      "title": "Login",
+      "emailLabel": "Email",
+      "emailPlaceholder": "you@example.com",
+      "passwordLabel": "Password",
+      "passwordPlaceholder": "••••••••",
+      "submit": "Sign in",
+      "submitting": "Signing in…",
+      "error": "Login failed"
+    },
+    "signup": {
+      "title": "Sign up",
+      "nameLabel": "Name",
+      "namePlaceholder": "Your name",
+      "emailLabel": "Email",
+      "emailPlaceholder": "you@example.com",
+      "passwordLabel": "Password",
+      "passwordPlaceholder": "At least 8 characters",
+      "selfDescriptionLabel": "About you",
+      "selfDescriptionPlaceholder": "Tell us a bit about yourself (optional)",
+      "submit": "Create account",
+      "submitting": "Creating account…",
+      "error": "Sign up failed"
+    }
   }
 }

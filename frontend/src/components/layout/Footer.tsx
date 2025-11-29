@@ -1,6 +1,7 @@
 import styled from 'styled-components'
 import { useUser } from '../../context/UserContext'
 import { useTranslation } from 'react-i18next'
+import { Link } from '@tanstack/react-router'
 
 const FooterWrapper = styled.footer`
   margin-top: auto;
@@ -53,7 +54,7 @@ const LocaleSelect = styled.select`
 export const Footer = () => {
   const { i18n, t } = useTranslation()
   const { user } = useUser()
-  const userId = 'anonymous' in user ? user.anonymous.id : user.authenticated.id
+  const userId = 'anonymous' in user ? user.anonymous.id : user.authenticated.email
 
   const onChangeLocale = (e: React.ChangeEvent<HTMLSelectElement>) => {
     void i18n.changeLanguage(e.target.value)
@@ -62,7 +63,22 @@ export const Footer = () => {
   return (
     <FooterWrapper>
       <span>{t('layout.footer.madeBy')} <a href="https://github.com/dhbtk" target="_blank">@dhbtk</a><br/>
-      <code>{userId}</code>
+        {'anonymous' in user && (
+          <>
+            <code>{userId}</code>
+            {' '}
+            <Link to="/login">Log in</Link>
+            {' '}
+            &bull;
+            {' '}
+            <Link to="/signup">Register</Link>
+          </>
+        )}
+        {'authenticated' in user && (
+          <>
+            <Link to="/logout">Log out</Link>
+          </>
+        )}
       </span>
       <LocaleSelect
         aria-label={t('layout.footer.languageAriaLabel')}
