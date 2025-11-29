@@ -1,7 +1,7 @@
 use crate::database::DbPool;
-use crate::entity::user::{AuthenticationResponse, CreateUserRequest, User};
-use crate::model::{AccessToken, NewAccessToken};
-use crate::repository::error::AppError;
+use crate::entity::user::{AuthenticationResponse, CreateUserRequest, UpdateUserRequest, User};
+use crate::model::{AccessToken, NewAccessToken, UpdateUserFields};
+use crate::repository::error::{AppError, AppResult};
 use crate::state::AppState;
 use axum::extract::FromRequestParts;
 use axum::http::HeaderMap;
@@ -54,18 +54,15 @@ impl UserRepository {
     pub async fn find_by_access_token(
         &self,
         access_token: &str,
-    ) -> Option<(crate::model::User, crate::model::AccessToken)> {
+    ) -> Option<(crate::model::User, AccessToken)> {
         let mut conn = self.db_pool.get().await.unwrap();
         use crate::schema::{access_tokens, users};
 
         access_tokens::table
             .inner_join(users::table)
             .filter(access_tokens::dsl::token.eq(access_token))
-            .select((
-                crate::model::User::as_select(),
-                crate::model::AccessToken::as_select(),
-            ))
-            .first::<(crate::model::User, crate::model::AccessToken)>(&mut conn)
+            .select((crate::model::User::as_select(), AccessToken::as_select()))
+            .first::<(crate::model::User, AccessToken)>(&mut conn)
             .await
             .optional()
             .unwrap()
@@ -123,10 +120,30 @@ impl UserRepository {
     ) -> Result<AccessToken, AppError> {
         diesel::insert_into(crate::schema::access_tokens::table)
             .values(access_token)
-            .returning(crate::model::AccessToken::as_returning())
+            .returning(AccessToken::as_returning())
             .get_result(&mut conn)
             .await
             .map_err(|e| AppError::from_diesel_with_log("Failed to insert access token", e))
+    }
+
+    pub async fn update_user(
+        &self,
+        id: Uuid,
+        access_token_id: i64,
+        request: UpdateUserRequest,
+    ) -> AppResult<User> {
+        let mut conn = self.db_pool.get().await?;
+        let user = diesel::update(crate::schema::users::dsl::users.find(id))
+            .set(UpdateUserFields::from(request))
+            .returning(crate::model::User::as_returning())
+            .get_result(&mut conn)
+            .await?;
+        let access_token = crate::schema::access_tokens::dsl::access_tokens
+            .find(access_token_id)
+            .select(AccessToken::as_select())
+            .first(&mut conn)
+            .await?;
+        Ok((user, access_token).into())
     }
 
     pub async fn log_in(
@@ -177,12 +194,22 @@ impl UserRepository {
     }
 }
 
-impl From<(crate::model::User, crate::model::AccessToken)> for AuthenticationResponse {
-    fn from(value: (crate::model::User, crate::model::AccessToken)) -> Self {
+impl From<(crate::model::User, AccessToken)> for AuthenticationResponse {
+    fn from(value: (crate::model::User, AccessToken)) -> Self {
         let (user, access_token) = value;
         AuthenticationResponse {
             access_token: access_token.token.clone(),
             user: User::from((user, access_token)),
+        }
+    }
+}
+
+impl From<UpdateUserRequest> for UpdateUserFields {
+    fn from(value: UpdateUserRequest) -> Self {
+        Self {
+            name: value.name,
+            self_description: value.self_description,
+            email: value.email,
         }
     }
 }

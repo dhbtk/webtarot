@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as ReadingsRouteImport } from './routes/readings'
+import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as LogoutRouteImport } from './routes/logout'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as IndexRouteImport } from './routes/index'
@@ -28,6 +29,11 @@ const SignupRoute = SignupRouteImport.update({
 const ReadingsRoute = ReadingsRouteImport.update({
   id: '/readings',
   path: '/readings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfileRoute = ProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LogoutRoute = LogoutRouteImport.update({
@@ -75,6 +81,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/logout': typeof LogoutRoute
+  '/profile': typeof ProfileRoute
   '/readings': typeof ReadingsRouteWithChildren
   '/signup': typeof SignupRoute
   '/interpretations/new': typeof InterpretationsNewRoute
@@ -87,6 +94,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/logout': typeof LogoutRoute
+  '/profile': typeof ProfileRoute
   '/signup': typeof SignupRoute
   '/interpretations/new': typeof InterpretationsNewRoute
   '/readings/$id': typeof ReadingsIdRoute
@@ -99,6 +107,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/logout': typeof LogoutRoute
+  '/profile': typeof ProfileRoute
   '/readings': typeof ReadingsRouteWithChildren
   '/signup': typeof SignupRoute
   '/interpretations/new': typeof InterpretationsNewRoute
@@ -113,6 +122,7 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/logout'
+    | '/profile'
     | '/readings'
     | '/signup'
     | '/interpretations/new'
@@ -125,6 +135,7 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/logout'
+    | '/profile'
     | '/signup'
     | '/interpretations/new'
     | '/readings/$id'
@@ -136,6 +147,7 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/logout'
+    | '/profile'
     | '/readings'
     | '/signup'
     | '/interpretations/new'
@@ -149,6 +161,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   LoginRoute: typeof LoginRoute
   LogoutRoute: typeof LogoutRoute
+  ProfileRoute: typeof ProfileRoute
   ReadingsRoute: typeof ReadingsRouteWithChildren
   SignupRoute: typeof SignupRoute
   InterpretationsNewRoute: typeof InterpretationsNewRoute
@@ -168,6 +181,13 @@ declare module '@tanstack/react-router' {
       path: '/readings'
       fullPath: '/readings'
       preLoaderRoute: typeof ReadingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profile': {
+      id: '/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/logout': {
@@ -251,6 +271,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   LoginRoute: LoginRoute,
   LogoutRoute: LogoutRoute,
+  ProfileRoute: ProfileRoute,
   ReadingsRoute: ReadingsRouteWithChildren,
   SignupRoute: SignupRoute,
   InterpretationsNewRoute: InterpretationsNewRoute,

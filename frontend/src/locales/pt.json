@@ -38,7 +38,10 @@
   "nav": {
     "interpret": "Interpretar",
     "history": "Histórico",
-    "stats": "Estatísticas"
+    "stats": "Estatísticas",
+    "register": "Registrar",
+    "login": "Entrar",
+    "profile": "Perfil"
   },
   "aria": {
     "openMenu": "Abrir menu"

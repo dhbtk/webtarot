@@ -2,6 +2,7 @@ use crate::database::DbPool;
 use crate::entity::interpretation;
 use crate::entity::interpretation::Interpretation;
 use crate::entity::reading::Reading;
+use crate::entity::user::User;
 use crate::middleware::locale::Locale;
 use crate::repository::error::AppResult;
 use crate::state::AppState;
@@ -63,11 +64,13 @@ impl InterpretationRepository {
         self.broadcast.send(interpretation).unwrap();
     }
 
-    pub fn request_interpretation(&self, reading: Reading, locale: Locale) {
+    pub fn request_interpretation(&self, reading: Reading, locale: Locale, user: User) {
         let mut cloned = self.clone();
         tokio::spawn(async move {
             cloned.save_as_pending(reading.clone()).await;
-            cloned.start_interpretation_request(reading, locale).await;
+            cloned
+                .start_interpretation_request(reading, locale, user)
+                .await;
         });
     }
 
@@ -81,21 +84,34 @@ impl InterpretationRepository {
             .unwrap();
     }
 
-    async fn start_interpretation_request(&mut self, reading: Reading, locale: Locale) {
+    async fn start_interpretation_request(&mut self, reading: Reading, locale: Locale, user: User) {
         tracing::debug!("start_interpretation_request");
         rust_i18n::set_locale(&locale.0);
         let start = Instant::now();
-        let result = webtarot_shared::explain::explain(&reading.question, &reading.cards).await;
+        let (user_name, user_self_description) = match user {
+            User::Authenticated {
+                name,
+                self_description,
+                ..
+            } => (
+                Some(name).filter(|s| !s.is_empty()),
+                Some(self_description).filter(|s| !s.is_empty()),
+            ),
+            _ => (None, None),
+        };
+        let result = webtarot_shared::explain::explain(
+            &reading.question,
+            &reading.cards,
+            user_name,
+            user_self_description,
+        )
+        .await;
         let elapsed = start.elapsed();
         let card_count = reading.cards.len().to_string();
         let labels = [
             (
                 "status",
-                if result.is_ok() {
-                    "success".to_owned()
-                } else {
-                    "failure".to_owned()
-                },
+                (if result.is_ok() { "success" } else { "failure" }).to_owned(),
             ),
             ("cards", card_count),
         ];

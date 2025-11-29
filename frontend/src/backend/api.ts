@@ -7,7 +7,7 @@
 //
 // Models are defined in ./models.ts and mirror the Rust types.
 
-import type { CreateReadingRequest, CreateReadingResponse, GetInterpretationResult, Stats, Interpretation, CreateInterpretationRequest, CreateInterpretationResponse, CreateUserRequest, CreateUserResponse, LogInRequest } from './models'
+import type { CreateReadingRequest, CreateReadingResponse, GetInterpretationResult, Stats, Interpretation, CreateInterpretationRequest, CreateInterpretationResponse, CreateUserRequest, CreateUserResponse, LogInRequest, UpdateUserRequest, User } from './models'
 import { getAuthHeaders } from './user.ts'
 import i18n from '../i18n.ts'
 
@@ -187,4 +187,34 @@ export async function logIn (
     ...init,
   })
   return handleJsonResponse<CreateUserResponse>(res)
+}
+
+/**
+ * Get current user
+ * GET /api/v1/user
+ */
+export async function getUser (init?: RequestInit): Promise<User> {
+  const res = await fetch(`${API_BASE}/user`, {
+    method: 'GET',
+    headers: { ...getDefaultHeaders(), ...(init?.headers ?? {}) },
+    ...init,
+  })
+  return handleJsonResponse<User>(res)
+}
+
+/**
+ * Update current user
+ * PATCH /api/v1/user
+ */
+export async function updateUser (
+  payload: UpdateUserRequest,
+  init?: RequestInit,
+): Promise<User> {
+  const res = await fetch(`${API_BASE}/user`, {
+    method: 'PATCH',
+    headers: { ...getDefaultHeaders(), ...JSON_HEADERS, ...(init?.headers ?? {}) },
+    body: JSON.stringify(payload),
+    ...init,
+  })
+  return handleJsonResponse<User>(res)
 }

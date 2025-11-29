@@ -7,6 +7,7 @@ pub enum User {
     Anonymous {
         id: uuid::Uuid,
     },
+    #[serde(rename_all = "camelCase")]
     Authenticated {
         id: uuid::Uuid,
         created_at: chrono::NaiveDateTime,
@@ -86,4 +87,23 @@ impl CreateUserRequest {
 pub struct AuthenticationResponse {
     pub access_token: String,
     pub user: User,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct UpdateUserRequest {
+    pub name: String,
+    pub self_description: String,
+    pub email: String,
+}
+
+impl UpdateUserRequest {
+    pub fn validate(&self) -> Result<(), AppError> {
+        if !self.email.contains('@') {
+            return Err(AppError::ValidateError(
+                "Email must contain '@'".to_string(),
+            ));
+        }
+        Ok(())
+    }
 }

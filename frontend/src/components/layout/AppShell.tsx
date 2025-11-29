@@ -3,6 +3,7 @@ import { Link, useLocation } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 import { MenuOutlined } from '@ant-design/icons'
 import styled from 'styled-components'
+import { useUser } from '../../context/UserContext.tsx'
 
 const Header = styled.header`
   background-color: rgb(82 69 150 / 0.7);
@@ -105,6 +106,7 @@ export const AppShell: React.FC<React.PropsWithChildren> = ({ children }) => {
     e.preventDefault()
     setOpen(!open)
   }
+  const { user } = useUser()
 
   return (
     <Wrapper>
@@ -125,6 +127,9 @@ export const AppShell: React.FC<React.PropsWithChildren> = ({ children }) => {
           <h1>{t('hero.title')}</h1>
         </Link>
         <nav>
+          {'anonymous' in user && (<HeaderLink to="/register">{t('nav.register')}</HeaderLink>)}
+          {'anonymous' in user && (<HeaderLink to="/login">{t('nav.login')}</HeaderLink>)}
+          {'authenticated' in user && (<HeaderLink to="/profile">{t('nav.profile')}</HeaderLink>)}
           <HeaderLink to="/interpretations/new">{t('nav.interpret')}</HeaderLink>
           <HeaderLink to="/readings/history">{t('nav.history')}</HeaderLink>
           <HeaderLink to="/readings/stats">{t('nav.stats')}</HeaderLink>

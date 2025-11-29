@@ -32,7 +32,8 @@ async fn main() {
     if args.explain {
         println!("Interpretando...\n\n");
 
-        let explanation = webtarot_shared::explain::explain(&args.question, &cards).await;
+        let explanation =
+            webtarot_shared::explain::explain(&args.question, &cards, None, None).await;
         if let Ok(explanation) = explanation {
             println!("{}", explanation);
             return;

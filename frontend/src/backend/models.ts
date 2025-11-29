@@ -222,3 +222,11 @@ export interface LogInRequest {
   email: string;
   password: string;
 }
+
+// Mirrors Rust: UpdateUserRequest in backend/src/entity/user.rs
+// serde(rename_all = "camelCase")
+export interface UpdateUserRequest {
+  name: string;
+  selfDescription: string;
+  email: string;
+}

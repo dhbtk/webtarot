@@ -8,3 +8,4 @@ pub mod get_stats;
 pub mod get_user;
 pub mod log_in;
 pub mod notify_websocket_handler;
+pub mod update_user;

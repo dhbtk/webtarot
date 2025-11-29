@@ -68,7 +68,12 @@ impl StdError for ExplainError {
     }
 }
 
-pub async fn explain(question: &str, cards: &[Card]) -> Result<String, ExplainError> {
+pub async fn explain(
+    question: &str,
+    cards: &[Card],
+    user_name: Option<String>,
+    user_self_description: Option<String>,
+) -> Result<String, ExplainError> {
     // Prepare a concise, helpful prompt for the model with localized card names
     let cards_list = cards
         .iter()
@@ -82,12 +87,24 @@ pub async fn explain(question: &str, cards: &[Card]) -> Result<String, ExplainEr
 
     let label_now = t!("labels.now");
     let label_question = t!("labels.question");
+    let label_user_name = t!("labels.user_name");
+    let label_user_self_description = t!("labels.user_self_description");
     let label_cards = t!("labels.cards_in_order");
 
-    let user = format!(
+    let mut user = format!(
         "{} {}\n{} {}\n{}\n{}",
         label_now, now, label_question, question, label_cards, cards_list
     );
+
+    if let Some(name) = user_name {
+        user.push('\n');
+        user.push_str(&format!("{} {}", label_user_name, name));
+    }
+
+    if let Some(desc) = user_self_description {
+        user.push('\n');
+        user.push_str(&format!("{} {}", label_user_self_description, desc));
+    }
 
     // Read API key from environment
     let key = match std::env::var("OPENAI_KEY") {

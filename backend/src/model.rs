@@ -111,6 +111,14 @@ pub struct User {
     pub self_description: String,
 }
 
+#[derive(Debug, Clone, AsChangeset)]
+#[diesel(table_name = crate::schema::users)]
+pub struct UpdateUserFields {
+    pub name: String,
+    pub self_description: String,
+    pub email: String,
+}
+
 #[derive(Debug, Clone, Queryable, Selectable, AsChangeset)]
 #[diesel(table_name = crate::schema::access_tokens)]
 pub struct AccessToken {

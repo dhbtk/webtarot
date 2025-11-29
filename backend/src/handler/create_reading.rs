@@ -14,6 +14,6 @@ pub async fn create_reading(
     Json(create_reading_request): Json<CreateReadingRequest>,
 ) -> (StatusCode, Json<CreateReadingResponse>) {
     let reading = entity::reading::perform_reading(&create_reading_request, &user);
-    interpretation_repository.request_interpretation(reading.clone(), locale);
+    interpretation_repository.request_interpretation(reading.clone(), locale, user);
     (StatusCode::OK, Json(CreateReadingResponse::from(reading)))
 }
