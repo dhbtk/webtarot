@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react'
-import { Form, Label, SubmitButton, Textarea } from './form.tsx'
+import { Form, InputWrapper, Label, SubmitButton, Textarea } from './form.tsx'
 import { type Card, type CreateInterpretationRequest, getAllArcana } from '../../../backend/models.ts'
 import { arcanaImage, arcanaLabel, cardLabel } from '../../../util/cards.ts'
 import styled from 'styled-components'
@@ -83,13 +83,15 @@ export default function InterpretationForm () {
     <Form onSubmit={onSubmit}>
       <Label>
         <span>{t('reading.form.questionLabel')}</span>
-        <Textarea
-          required
-          value={question}
-          onChange={(e) => setQuestion(e.target.value)}
-          placeholder={t('reading.form.questionPlaceholder')}
-          rows={4}
-        />
+        <InputWrapper>
+          <Textarea
+            required
+            value={question}
+            onChange={(e) => setQuestion(e.target.value)}
+            placeholder={t('reading.form.questionPlaceholder')}
+            rows={4}
+          />
+        </InputWrapper>
       </Label>
       <Label>
         <span>{t('reading.form.cardsLabel')}</span>

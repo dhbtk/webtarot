@@ -1,9 +1,12 @@
-- [ ] Substituir polling por websocket: subscribe no id da tiragem → recebe atualização do backend
 - [ ] Notificação quando interpretação fica pronta
 - [ ] Botão de compartilhar na tiragem
-- [ ] Cadastro de usuário?
-- [ ] pequena bio para incluir como contexto para a pergunta
 - [ ] campo de contexto para interpretar
+
+bugs:
+
+- pré-definir dimensões das cartas no form de interpretar para evitar que a página pule pra lá e pra cá até a img
+  carregar
+- fazer lista do autocomplete aparecer para cima quando não houver espaço suficiente na tela
 
 backend only:
 

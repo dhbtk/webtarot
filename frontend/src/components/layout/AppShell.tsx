@@ -127,7 +127,7 @@ export const AppShell: React.FC<React.PropsWithChildren> = ({ children }) => {
           <h1>{t('hero.title')}</h1>
         </Link>
         <nav>
-          {'anonymous' in user && (<HeaderLink to="/register">{t('nav.register')}</HeaderLink>)}
+          {'anonymous' in user && (<HeaderLink to="/signup">{t('nav.register')}</HeaderLink>)}
           {'anonymous' in user && (<HeaderLink to="/login">{t('nav.login')}</HeaderLink>)}
           {'authenticated' in user && (<HeaderLink to="/profile">{t('nav.profile')}</HeaderLink>)}
           <HeaderLink to="/interpretations/new">{t('nav.interpret')}</HeaderLink>

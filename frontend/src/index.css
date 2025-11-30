@@ -34,6 +34,7 @@
   font-family: var(--font-sans);
   line-height: 1.5;
   font-weight: 400;
+  text-shadow: 2px 2px 4px rgb(var(--black-rgb) / 0.8);
 
   color-scheme: light dark;
   color: var(--color-text);

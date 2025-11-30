@@ -1,7 +1,7 @@
 import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router'
 import React from 'react'
 import styled from 'styled-components'
-import { Form, FormWrapper, Label, SubmitButton, Textarea } from '../components/reading/form/form'
+import { Form, FormWrapper, InputWrapper, Label, SubmitButton, Textarea } from '../components/reading/form/form'
 import { useTranslation } from 'react-i18next'
 import { useCurrentUserQuery, useUpdateUserMutation } from '../backend/queries'
 import { useMutation, useQuery } from '@tanstack/react-query'
@@ -102,38 +102,44 @@ function RouteComponent () {
         <Form onSubmit={onSubmit}>
           <Label>
             <span>{t('profile.nameLabel', 'Name')}</span>
-            <Input
-              type="text"
-              name="name"
-              autoComplete="name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-              placeholder={t('profile.namePlaceholder', 'Your name')}
-            />
+            <InputWrapper>
+              <Input
+                type="text"
+                name="name"
+                autoComplete="name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+                placeholder={t('profile.namePlaceholder', 'Your name')}
+              />
+            </InputWrapper>
           </Label>
           <Label>
             <span>{t('profile.emailLabel', 'Email')}</span>
-            <Input
-              type="email"
-              name="email"
-              autoComplete="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              placeholder={t('profile.emailPlaceholder', 'you@example.com')}
-            />
+            <InputWrapper>
+              <Input
+                type="email"
+                name="email"
+                autoComplete="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                placeholder={t('profile.emailPlaceholder', 'you@example.com')}
+              />
+            </InputWrapper>
           </Label>
           <Label>
             <span>{t('profile.selfDescriptionLabel', 'About you')}</span>
-            <Textarea
-              name="selfDescription"
-              defaultValue={selfDescription}
-              value={selfDescription}
-              onChange={(e) => setSelfDescription(e.target.value)}
-              rows={4}
-              placeholder={t('profile.selfDescriptionPlaceholder', 'Tell us a bit about you')}
-            />
+            <InputWrapper>
+              <Textarea
+                name="selfDescription"
+                defaultValue={selfDescription}
+                value={selfDescription}
+                onChange={(e) => setSelfDescription(e.target.value)}
+                rows={10}
+                placeholder={t('profile.selfDescriptionPlaceholder', 'Tell us a bit about you')}
+              />
+            </InputWrapper>
           </Label>
           {updateMutation.error && (
             <div role="alert" aria-live="assertive" style={{ color: 'salmon', fontSize: 'var(--fs-xs)' }}>

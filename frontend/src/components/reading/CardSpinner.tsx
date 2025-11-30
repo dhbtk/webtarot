@@ -17,7 +17,7 @@ const SmallerCardDiv = styled(CardDiv)`
   height: ${CARD_HEIGHT / 1.5}px;
   position: unset;
   transform-origin: center;
-  animation: card-rotate calc(var(--anim-duration) * 2) infinite var(--anim-function),
+  animation: card-rotate calc(var(--anim-duration) * 4.5) infinite linear,
   slide calc(var(--anim-duration) * 2) infinite alternate var(--anim-function);
   animation-delay: var(--anim-duration);
 

@@ -4,7 +4,7 @@ import type { CreateReadingRequest } from '../../../backend/models.ts'
 import { useRouter } from '@tanstack/react-router'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { addToHistory, getSavedReadings, saveReadings } from '../../../backend/savedReadings.ts'
-import { Form, Label, RoundButton, SubmitButton, Textarea } from './form.tsx'
+import { Form, InputWrapper, Label, RoundButton, SubmitButton, Textarea } from './form.tsx'
 import { MinusOutlined, PlusOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
 
@@ -48,13 +48,15 @@ export default function ReadingForm () {
     <Form onSubmit={onSubmit}>
       <Label>
         <span>{t('reading.form.questionLabel')}</span>
-        <Textarea
-          required
-          value={question}
-          onChange={(e) => setQuestion(e.target.value)}
-          placeholder={t('reading.form.questionPlaceholder')}
-          rows={4}
-        />
+        <InputWrapper>
+          <Textarea
+            required
+            value={question}
+            onChange={(e) => setQuestion(e.target.value)}
+            placeholder={t('reading.form.questionPlaceholder')}
+            rows={4}
+          />
+        </InputWrapper>
       </Label>
       <Label>
         <span>{t('reading.form.cardsLabel')}</span>

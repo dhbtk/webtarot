@@ -177,7 +177,7 @@ function DeleteButton ({ id, onDeleted }: { id: string, onDeleted: (id: string) 
     },
   })
   return (
-    <button
+    <StyledDeleteButton
       onClick={() => {
         if (confirm(t('history.delete.confirm'))) {
           mutation.mutate()
@@ -186,16 +186,42 @@ function DeleteButton ({ id, onDeleted }: { id: string, onDeleted: (id: string) 
       disabled={mutation.isPending}
       title={mutation.isPending ? t('history.delete.deleting') : t('history.delete.delete')}
       style={{
-        fontSize: 'var(--fs-xs)',
-        padding: '0.25rem 0.5rem',
-        background: 'transparent',
-        border: '1px solid rgb(255 255 255 / 0.3)',
-        color: 'inherit',
-        borderRadius: 4,
         cursor: mutation.isPending ? 'default' : 'pointer',
       }}
     >
       {mutation.isPending ? t('history.delete.deleting') : t('history.delete.delete')}
-    </button>
+    </StyledDeleteButton>
   )
 }
+
+const StyledDeleteButton = styled.button`
+  font-size: var(--fs-xs);
+  padding: 0.25rem 0.5rem;
+  background: transparent;
+  border: 1px solid rgb(255 255 255 / 0.3);
+  color: inherit;
+  border-radius: 6px;
+
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 6px;
+    box-shadow: 2px 2px 2px 2px rgb(var(--black-rgb) / 0.2);
+  }
+
+  &:hover {
+    background-position: 100px;
+    box-shadow: 0 0 2px 2px rgb(var(--accent-rgb) / 0.5);
+  }
+
+  &:active {
+    background-position: 150px;
+    box-shadow: 0 0 2px 2px rgb(var(--accent-rgb) / 1);
+  }
+`

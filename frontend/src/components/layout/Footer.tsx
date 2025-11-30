@@ -11,6 +11,7 @@ const FooterWrapper = styled.footer`
   width: 100%;
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 1.5rem;
   box-shadow: 0.5rem 0.5rem 0.75rem 0 rgba(0, 0, 0, 0.25);
   animation: fade-in var(--anim-duration) var(--anim-function) forwards;
@@ -54,7 +55,6 @@ const LocaleSelect = styled.select`
 export const Footer = () => {
   const { i18n, t } = useTranslation()
   const { user } = useUser()
-  const userId = 'anonymous' in user ? user.anonymous.id : user.authenticated.email
 
   const onChangeLocale = (e: React.ChangeEvent<HTMLSelectElement>) => {
     void i18n.changeLanguage(e.target.value)
@@ -62,30 +62,20 @@ export const Footer = () => {
 
   return (
     <FooterWrapper>
-      <span>{t('layout.footer.madeBy')} <a href="https://github.com/dhbtk" target="_blank">@dhbtk</a><br/>
-        {'anonymous' in user && (
-          <>
-            <code>{userId}</code>
-            {' '}
-            <Link to="/login">Log in</Link>
-            {' '}
-            &bull;
-            {' '}
-            <Link to="/signup">Register</Link>
-          </>
-        )}
+      <span>
         {'authenticated' in user && (
           <>
             <Link to="/logout">Log out</Link>
           </>
         )}
       </span>
+      <span>{t('layout.footer.madeBy')} <a href="https://github.com/dhbtk" target="_blank">@dhbtk</a>
+      </span>
       <LocaleSelect
         aria-label={t('layout.footer.languageAriaLabel')}
         title={t('layout.footer.languageTitle')}
         value={i18n.language?.split('-')[0] ?? 'en'}
         onChange={onChangeLocale}
-        style={{ marginLeft: 'auto' }}
       >
         <option value="en">English</option>
         <option value="pt">Português</option>

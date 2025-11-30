@@ -160,6 +160,8 @@ const MiniHeading = styled.header`
 
 `
 const MarkdownContainer = styled.div`
+  text-shadow: 2px 1px 3px rgb(var(--black-rgb) / 0.8);
+
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-sans);
     font-size: var(--fs-md);
@@ -197,6 +199,7 @@ const MarkdownContainer = styled.div`
     margin: 1rem 2rem;
     border: none;
     border-top: 1px solid rgb(var(--white-rgb) / 0.65);
+    box-shadow: 0 0 2px 2px rgb(var(--black-rgb) / 0.2);
   }
 
   strong {
@@ -210,6 +213,7 @@ const ReadingTitle = styled.h2`
   font-size: var(--fs-lg);
   font-weight: 600;
   margin: 0 0 0.5rem;
+  text-shadow: 2px 1px 3px rgb(var(--black-rgb) / 0.8);
 `
 
 const BadgeSpan = styled.span`
@@ -222,6 +226,7 @@ const BadgeSpan = styled.span`
   display: flex;
   align-items: center;
   padding-top: 4px; // fix for weird vertical alignment
+  box-shadow: 3px 3px 6px 2px rgb(var(--black-rgb) / 0.2);
 `
 
 function CardBadge ({ card }: { card: Card }) {

@@ -78,6 +78,7 @@ export const CardImage = styled.div`
   height: 100%;
   backface-visibility: hidden;
   position: absolute;
+  border-radius: 6px;
 `
 
 export const CardBack = styled.div`
@@ -90,6 +91,7 @@ export const CardBack = styled.div`
   transform: rotateY(180deg);
   backface-visibility: hidden;
   position: absolute;
+  border-radius: 6px;
 `
 
 function calculateCardPosition (index: number, total: number): string {

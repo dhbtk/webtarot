@@ -35,6 +35,13 @@ export const Textarea = styled.textarea`
     box-shadow: 0 0 2px 2px rgb(var(--accent-rgb));
   }
 `
+
+export const InputWrapper = styled.div`
+  border-radius: 6px;
+  box-shadow: 3px 3px 6px 2px rgb(var(--black-rgb) / 0.2);
+  display: grid;
+`
+
 export const RoundButton = styled.button`
   font-family: var(--font-sans);
   padding: 0.12rem;
@@ -48,6 +55,18 @@ export const RoundButton = styled.button`
   transition: all 0.25s ease-in-out;
 
   background: rgb(var(--white-rgb) / 0.1);
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    box-shadow: 3px 3px 6px 2px rgb(var(--black-rgb) / 0.2);
+  }
 
   &:hover {
     background: rgb(var(--white-rgb) / 0.15);
@@ -71,6 +90,18 @@ export const SubmitButton = styled.button`
   border: 1px solid rgb(var(--white-rgb) / 0.1);
   transition: all 0.15s ease-in-out;
   text-shadow: 1px 2px 2px rgb(var(--black-rgb) / 0.8);
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 0.5rem;
+    box-shadow: 3px 3px 6px 2px rgb(var(--black-rgb) / 0.2);
+  }
 
   &:hover {
     background-position: 100px;

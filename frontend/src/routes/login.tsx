@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import styled from 'styled-components'
 import React from 'react'
-import { FormWrapper, Form, Label, SubmitButton } from '../components/reading/form/form.tsx'
+import { Form, FormWrapper, InputWrapper, Label, SubmitButton } from '../components/reading/form/form.tsx'
 import { Footer } from '../components/layout/Footer.tsx'
 import { useMutation } from '@tanstack/react-query'
 import { useLogInMutation } from '../backend/queries.ts'
@@ -40,7 +40,7 @@ const Input = styled.input`
   }
 `
 
-function RouteComponent() {
+function RouteComponent () {
   const [email, setEmail] = React.useState('')
   const [password, setPassword] = React.useState('')
   const navigate = useNavigate()
@@ -48,7 +48,7 @@ function RouteComponent() {
   const loginMutation = useMutation(useLogInMutation())
   const { t } = useTranslation()
 
-  async function onSubmit(e: React.FormEvent) {
+  async function onSubmit (e: React.FormEvent) {
     e.preventDefault()
     if (!email || !password || loginMutation.isPending) return
     loginMutation.mutate(
@@ -71,27 +71,31 @@ function RouteComponent() {
         <Form onSubmit={onSubmit}>
           <Label>
             <span>{t('auth.login.emailLabel')}</span>
-            <Input
-              type="email"
-              name="email"
-              autoComplete="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              placeholder={t('auth.login.emailPlaceholder')}
-            />
+            <InputWrapper>
+              <Input
+                type="email"
+                name="email"
+                autoComplete="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                placeholder={t('auth.login.emailPlaceholder')}
+              />
+            </InputWrapper>
           </Label>
           <Label>
             <span>{t('auth.login.passwordLabel')}</span>
-            <Input
-              type="password"
-              name="password"
-              autoComplete="current-password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              placeholder={t('auth.login.passwordPlaceholder')}
-            />
+            <InputWrapper>
+              <Input
+                type="password"
+                name="password"
+                autoComplete="current-password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                placeholder={t('auth.login.passwordPlaceholder')}
+              />
+            </InputWrapper>
           </Label>
           {loginMutation.error && (
             <div role="alert" aria-live="assertive" style={{ color: 'salmon', fontSize: 'var(--fs-xs)' }}>
