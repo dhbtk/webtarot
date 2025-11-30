@@ -36,6 +36,28 @@ export const Textarea = styled.textarea`
   }
 `
 
+// Shared text input to keep consistent styles across forms
+export const Input = styled.input`
+  font-family: var(--font-sans-alt);
+  font-size: var(--fs-sm);
+  background: rgb(var(--black-rgb) / 0.2);
+  border: 1px solid rgb(var(--accent-rgb) / 0.5);
+  border-radius: 6px;
+  padding: 0.5rem;
+  box-shadow: 0 0 2px 2px transparent;
+  transition: box-shadow 0.25s ease-in-out;
+  color: rgb(var(--white-rgb) / 0.75);
+
+  &:hover {
+    box-shadow: 0 0 2px 2px rgb(var(--accent-rgb) / 0.5);
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 2px 2px rgb(var(--accent-rgb));
+  }
+`
+
 export const InputWrapper = styled.div`
   border-radius: 6px;
   box-shadow: 3px 3px 6px 2px rgb(var(--black-rgb) / 0.2);
@@ -135,4 +157,12 @@ export const FormWrapper = styled.div`
     font-size: var(--fs-lg);
     font-weight: 500;
   }
+`
+
+// Shared page wrapper for auth/profile pages
+export const PageWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  flex: 1;
 `

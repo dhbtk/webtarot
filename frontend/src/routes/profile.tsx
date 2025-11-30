@@ -1,7 +1,15 @@
 import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router'
 import React from 'react'
-import styled from 'styled-components'
-import { Form, FormWrapper, InputWrapper, Label, SubmitButton, Textarea } from '../components/reading/form/form'
+import {
+  Form,
+  FormWrapper,
+  Input,
+  InputWrapper,
+  Label,
+  PageWrapper,
+  SubmitButton,
+  Textarea
+} from '../components/reading/form/form'
 import { useTranslation } from 'react-i18next'
 import { useCurrentUserQuery, useUpdateUserMutation } from '../backend/queries'
 import { useMutation, useQuery } from '@tanstack/react-query'
@@ -18,34 +26,6 @@ export const Route = createFileRoute('/profile')({
     }
   },
 })
-
-const Wrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  flex: 1;
-`
-
-const Input = styled.input`
-  font-family: var(--font-sans-alt);
-  font-size: var(--fs-sm);
-  background: rgb(var(--black-rgb) / 0.2);
-  border: 1px solid rgb(var(--accent-rgb) / 0.5);
-  border-radius: 6px;
-  padding: 0.5rem;
-  box-shadow: 0 0 2px 2px transparent;
-  transition: box-shadow 0.25s ease-in-out;
-  color: rgb(var(--white-rgb) / 0.75);
-
-  &:hover {
-    box-shadow: 0 0 2px 2px rgb(var(--accent-rgb) / 0.5);
-  }
-
-  &:focus {
-    outline: none;
-    box-shadow: 0 0 2px 2px rgb(var(--accent-rgb));
-  }
-`
 
 function RouteComponent () {
   const { t } = useTranslation()
@@ -96,7 +76,7 @@ function RouteComponent () {
   if (!authenticated) return null
 
   return (
-    <Wrapper>
+    <PageWrapper>
       <FormWrapper>
         <h2>{t('profile.title', 'Profile')}</h2>
         <Form onSubmit={onSubmit}>
@@ -157,6 +137,6 @@ function RouteComponent () {
           </SubmitButton>
         </Form>
       </FormWrapper>
-    </Wrapper>
+    </PageWrapper>
   )
 }

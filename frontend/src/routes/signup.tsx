@@ -1,7 +1,15 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import styled from 'styled-components'
 import React from 'react'
-import { Form, FormWrapper, InputWrapper, Label, SubmitButton, Textarea } from '../components/reading/form/form.tsx'
+import {
+  Form,
+  FormWrapper,
+  Input,
+  InputWrapper,
+  Label,
+  PageWrapper,
+  SubmitButton,
+  Textarea
+} from '../components/reading/form/form.tsx'
 import { Footer } from '../components/layout/Footer.tsx'
 import { useSignUpMutation } from '../backend/mutations.ts'
 import { useUser } from '../context/UserContext.tsx'
@@ -38,7 +46,7 @@ function RouteComponent () {
   }
 
   return (
-    <Wrapper>
+    <PageWrapper>
       <FormWrapper>
         <h2>{t('auth.signup.title')}</h2>
         <Form onSubmit={onSubmit}>
@@ -107,34 +115,6 @@ function RouteComponent () {
         </Form>
       </FormWrapper>
       <Footer/>
-    </Wrapper>
+    </PageWrapper>
   )
 }
-
-const Wrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  flex: 1;
-`
-
-const Input = styled.input`
-  font-family: var(--font-sans-alt);
-  font-size: var(--fs-sm);
-  background: rgb(var(--black-rgb) / 0.2);
-  border: 1px solid rgb(var(--accent-rgb) / 0.5);
-  border-radius: 6px;
-  padding: 0.5rem;
-  box-shadow: 0 0 2px 2px transparent;
-  transition: box-shadow 0.25s ease-in-out;
-  color: rgb(var(--white-rgb) / 0.75);
-
-  &:hover {
-    box-shadow: 0 0 2px 2px rgb(var(--accent-rgb) / 0.5);
-  }
-
-  &:focus {
-    outline: none;
-    box-shadow: 0 0 2px 2px rgb(var(--accent-rgb));
-  }
-`
