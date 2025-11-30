@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import React from 'react'
 import { logOut, getStoredUser } from '../backend/user'
-import { useUser } from '../context/UserContext'
+import { useUser } from '../context/useUser'
 
 export const Route = createFileRoute('/logout')({
   component: RouteComponent,

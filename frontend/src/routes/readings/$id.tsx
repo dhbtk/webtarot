@@ -11,7 +11,7 @@ import styled from 'styled-components'
 import { useEffect } from 'react'
 import { ReadingSubLayout } from '../../components/reading/layout/ReadingSubLayout.tsx'
 import { CardSpinner } from '../../components/reading/CardSpinner.tsx'
-import { useUser } from '../../context/UserContext'
+import { useUser } from '../../context/useUser'
 import type { InterpretationsWebsocketMessage } from '../../backend/models.ts'
 import { isInterpretationsWebsocketMessage } from '../../backend/models.ts'
 import { useTranslation } from 'react-i18next'
@@ -49,7 +49,7 @@ function ReadingDetails () {
       addReading(id)
       queryClient.invalidateQueries({ queryKey: ['readings'] })
     }
-  }, [id])
+  }, [id, queryClient])
 
   useEffect(() => {
     const url = new URL('/api/v1/interpretation/notify', window.location.href)
@@ -75,7 +75,7 @@ function ReadingDetails () {
     }
 
     return () => websocket.close()
-  }, [id, user])
+  }, [id, user, queryClient])
 
   const query = useQuery({
     queryKey: ['readings', id],

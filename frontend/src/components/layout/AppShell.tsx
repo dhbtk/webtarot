@@ -3,7 +3,7 @@ import { Link, useLocation } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 import { MenuOutlined } from '@ant-design/icons'
 import styled from 'styled-components'
-import { useUser } from '../../context/UserContext.tsx'
+import { useUser } from '../../context/useUser'
 
 const Header = styled.header`
   background-color: rgb(82 69 150 / 0.7);

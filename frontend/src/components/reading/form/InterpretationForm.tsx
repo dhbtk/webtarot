@@ -66,8 +66,9 @@ export default function InterpretationForm () {
       setQuestion('')
       setCards([])
       await router.navigate({ to: '/readings/$id', params: { id: res.interpretationId } })
-    } catch (err: any) {
-      setError(err?.message ?? t('errors.createInterpretation'))
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : t('errors.createInterpretation')
+      setError(message)
     } finally {
       setSubmitting(false)
     }
@@ -115,9 +116,9 @@ export default function InterpretationForm () {
             ))}
           </div>
           <ComboWrapper>
-            <Combobox
-              value={null as any}
-              onChange={(arc: { id: number, name: string } | null) => {
+            <Combobox<{ id: number; name: string } | null>
+              value={null}
+              onChange={(arc) => {
                 if (arc) {
                   setCards([...cards, { arcana: allArcana[arc.id], flipped: false }])
                   setQuery('')
@@ -125,17 +126,17 @@ export default function InterpretationForm () {
               }}
             >
               <Combobox.Input
-                as={ComboInput as any}
+                as={ComboInput as unknown as React.ElementType}
                 placeholder={t('common.combobox.selectCard')}
                 displayValue={() => ''}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setQuery(e.target.value)}
               />
-              <Combobox.Options as={Options as any}>
+              <Combobox.Options as={Options as unknown as React.ElementType}>
                 {searchedArcana.length === 0 && (
                   <EmptyOption>{t('common.combobox.noResults')}</EmptyOption>
                 )}
                 {searchedArcana.map(arc => (
-                  <Combobox.Option key={arc.id} value={arc} as={Option as any}>
+                  <Combobox.Option key={arc.id} value={arc} as={Option as unknown as React.ElementType}>
                     {arc.name}
                   </Combobox.Option>
                 ))}

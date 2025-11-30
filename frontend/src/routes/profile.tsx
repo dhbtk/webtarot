@@ -14,14 +14,14 @@ import { useTranslation } from 'react-i18next'
 import { useCurrentUserQuery, useUpdateUserMutation } from '../backend/queries'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import type { User } from '../backend/models'
-import { useUser } from '../context/UserContext'
+import { useUser } from '../context/useUser'
 
 export const Route = createFileRoute('/profile')({
   component: RouteComponent,
   beforeLoad: ({ context }) => {
     // Guard route: if user is anonymous (from initial stored state), redirect to /login
-    const storedUser: User | undefined = (context as any)?.user
-    if (storedUser && (storedUser as any).anonymous) {
+    const storedUser: User | undefined = (context as { user?: User } | undefined)?.user
+    if (storedUser && 'anonymous' in storedUser) {
       throw redirect({ to: '/login' })
     }
   },
@@ -35,7 +35,7 @@ function RouteComponent () {
   const userQuery = useQuery(useCurrentUserQuery())
   const updateMutation = useMutation(useUpdateUserMutation())
 
-  const authenticated = (ctxUser as any).authenticated
+  const authenticated = 'authenticated' in ctxUser
 
   const [name, setName] = React.useState('')
   const [email, setEmail] = React.useState('')
@@ -48,7 +48,9 @@ function RouteComponent () {
       void navigate({ to: '/login', replace: true })
       return
     }
-    const u = (userQuery.data as any)?.authenticated || (ctxUser as any).authenticated
+    const u = (userQuery.data && 'authenticated' in userQuery.data)
+      ? userQuery.data.authenticated
+      : ('authenticated' in ctxUser ? ctxUser.authenticated : undefined)
     if (u) {
       setName(u.name || '')
       setEmail(u.email || '')

@@ -9,12 +9,15 @@ type StoredUser = {
 const USER_STORAGE_KEY = 'user'
 const ANONYMOUS_USER_ID_KEY = 'userId'
 
-function isAuthenticated (u: User): u is { authenticated: any } {
-  return (u as any).authenticated != null
+type AuthenticatedVariant = Extract<User, { authenticated: unknown }>
+type AnonymousVariant = Extract<User, { anonymous: unknown }>
+
+function isAuthenticated (u: User): u is AuthenticatedVariant {
+  return 'authenticated' in u
 }
 
-function isAnonymous (u: User): u is { anonymous: { id: string } } {
-  return (u as any).anonymous != null
+function isAnonymous (u: User): u is AnonymousVariant {
+  return 'anonymous' in u
 }
 
 function readRaw (): StoredUser | null {

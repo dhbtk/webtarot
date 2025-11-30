@@ -37,8 +37,9 @@ export default function ReadingForm () {
       setQuestion('')
       setCards(3)
       await router.navigate({ to: '/readings/$id', params: { id: res.interpretationId } })
-    } catch (err: any) {
-      setError(err?.message ?? t('errors.createReading'))
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : t('errors.createReading')
+      setError(message)
     } finally {
       setSubmitting(false)
     }

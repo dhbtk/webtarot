@@ -4,7 +4,7 @@ import { Form, FormWrapper, Input, InputWrapper, Label, PageWrapper, SubmitButto
 import { Footer } from '../components/layout/Footer.tsx'
 import { useMutation } from '@tanstack/react-query'
 import { useLogInMutation } from '../backend/queries.ts'
-import { useUser } from '../context/UserContext.tsx'
+import { useUser } from '../context/useUser'
 import { useTranslation } from 'react-i18next'
 
 export const Route = createFileRoute('/login')({

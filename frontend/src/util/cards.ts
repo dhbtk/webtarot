@@ -3,11 +3,11 @@ import i18n from '../i18n.ts'
 
 // Type guards for the Arcana union
 function isMajor (arcana: Arcana): arcana is { major: { name: MajorArcana } } {
-  return (arcana as any).major !== undefined
+  return typeof arcana === 'object' && arcana !== null && 'major' in arcana
 }
 
 function isMinor (arcana: Arcana): arcana is { minor: { rank: Rank; suit: Suit } } {
-  return (arcana as any).minor !== undefined
+  return typeof arcana === 'object' && arcana !== null && 'minor' in arcana
 }
 
 function tMajor (name: MajorArcana): string {

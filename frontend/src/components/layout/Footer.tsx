@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { useUser } from '../../context/UserContext'
+import { useUser } from '../../context/useUser'
 import { useTranslation } from 'react-i18next'
 import { Link } from '@tanstack/react-router'
 

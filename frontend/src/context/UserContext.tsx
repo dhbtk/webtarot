@@ -1,13 +1,7 @@
-import React, { createContext, useContext, useMemo, useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import type { User } from '../backend/models'
 import { getStoredUser, setStoredUser } from '../backend/user'
-
-type UserContextValue = {
-  user: User
-  setUser: (user: User) => void
-}
-
-const UserContext = createContext<UserContextValue | undefined>(undefined)
+import { UserContext, type UserContextValue } from './UserContextBase'
 
 export function UserProvider ({ children }: { children: React.ReactNode }) {
   // Lazy initialize from localStorage (or generate if absent)
@@ -32,10 +26,4 @@ export function UserProvider ({ children }: { children: React.ReactNode }) {
       {children}
     </UserContext.Provider>
   )
-}
-
-export function useUser () {
-  const ctx = useContext(UserContext)
-  if (!ctx) throw new Error('useUser must be used within a UserProvider')
-  return ctx
 }

@@ -122,7 +122,7 @@ const CardWidget: React.FC<{ card: Card, index: number, total: number }> = ({ ca
     setTimeout(() => {
       setClassName(card.flipped ? 'revealed flipped' : 'revealed')
     }, (ANIMATION_DURATION_PER_CARD * 1000 * total) + (ANIMATION_DURATION_PER_CARD * 1000) * index)
-  }, [setClassName])
+  }, [card.flipped, index, total])
   return (
     <CardDiv className={className} style={{ translate: calculateCardPosition(index, total) }}>
       <CardImage style={{ backgroundImage: `url(${arcanaImage(card.arcana)})` }}/>

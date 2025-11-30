@@ -12,7 +12,7 @@ import {
 } from '../components/reading/form/form.tsx'
 import { Footer } from '../components/layout/Footer.tsx'
 import { useSignUpMutation } from '../backend/mutations.ts'
-import { useUser } from '../context/UserContext.tsx'
+import { useUser } from '../context/useUser'
 import { useTranslation } from 'react-i18next'
 
 export const Route = createFileRoute('/signup')({

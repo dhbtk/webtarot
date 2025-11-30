@@ -16,7 +16,7 @@ export const Section = styled.section`
   }
 `
 
-export const ReadingSubLayout: React.FC<React.PropsWithChildren<{}>> = ({ children }) => (
+export const ReadingSubLayout: React.FC<React.PropsWithChildren> = ({ children }) => (
   <Section>
     {/*<ReadingTabs/>*/}
     <div style={{ flex: 1, minHeight: 0, maxHeight: '100%', overflowY: 'auto' }}>

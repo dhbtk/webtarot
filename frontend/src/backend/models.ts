@@ -152,9 +152,9 @@ export type Interpretation =
   | { Failed: [Reading, string] };
 
 export function interpretationReading (i: Interpretation): Reading {
-  if ((i as any).Pending) return (i as { Pending: Reading }).Pending
-  if ((i as any).Done) return (i as { Done: [Reading, string] }).Done[0]
-  if ((i as any).Failed) return (i as { Failed: [Reading, string] }).Failed[0]
+  if ('Pending' in i) return i.Pending
+  if ('Done' in i) return i.Done[0]
+  if ('Failed' in i) return i.Failed[0]
   // Fallback to a narrow type error; this should never happen at runtime
   throw new Error('Unknown Interpretation variant')
 }
@@ -171,12 +171,14 @@ export const isInterpretationsWebsocketMessage = (
   value: unknown
 ): value is InterpretationsWebsocketMessage => {
   if (typeof value !== 'object' || value === null) return false
-  const v = value as Record<string, any>
-  if (v.subscribe && typeof v.subscribe === 'object') {
-    return typeof v.subscribe.uuid === 'string'
+  const v = value as Record<string, unknown>
+  if ('subscribe' in v && typeof v.subscribe === 'object' && v.subscribe !== null) {
+    const s = v.subscribe as Record<string, unknown>
+    return typeof s.uuid === 'string'
   }
-  if (v.done && typeof v.done === 'object') {
-    return typeof v.done.uuid === 'string'
+  if ('done' in v && typeof v.done === 'object' && v.done !== null) {
+    const d = v.done as Record<string, unknown>
+    return typeof d.uuid === 'string'
   }
   return false
 }
