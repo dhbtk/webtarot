@@ -19,7 +19,7 @@ function RouteComponent () {
   const { t } = useTranslation()
   return (
     <Wrapper>
-      <FormWrapper style={{ overflow: 'auto' }}>
+      <FormWrapper style={{ overflow: 'auto', flex: 1 }}>
         <h2>{t('reading.interpretation.title')}</h2>
         <InterpretationForm/>
       </FormWrapper>

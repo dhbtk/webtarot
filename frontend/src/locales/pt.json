@@ -169,5 +169,18 @@
       "submitting": "Criando conta…",
       "error": "Falha no cadastro"
     }
+  },
+  "profile": {
+    "title": "Perfil",
+    "nameLabel": "Nome",
+    "namePlaceholder": "Seu nome",
+    "emailLabel": "Email",
+    "emailPlaceholder": "voce@exemplo.com",
+    "selfDescriptionLabel": "Sobre você",
+    "selfDescriptionPlaceholder": "Conte um pouco sobre você",
+    "error": "Não foi possível atualizar o perfil",
+    "saved": "Perfil atualizado!",
+    "submit": "Salvar alterações",
+    "submitting": "Salvando…"
   }
 }

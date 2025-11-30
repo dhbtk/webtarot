@@ -2,12 +2,6 @@
 - [ ] Botão de compartilhar na tiragem
 - [ ] campo de contexto para interpretar
 
-bugs:
-
-- pré-definir dimensões das cartas no form de interpretar para evitar que a página pule pra lá e pra cá até a img
-  carregar
-- fazer lista do autocomplete aparecer para cima quando não houver espaço suficiente na tela
-
 backend only:
 
 - organizar código em camadas: handler, controllers, repositories

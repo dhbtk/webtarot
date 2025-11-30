@@ -8,7 +8,7 @@ import { createInterpretation } from '../../../backend/api.ts'
 import { useRouter } from '@tanstack/react-router'
 import { addToHistory, getSavedReadings, saveReadings } from '../../../backend/savedReadings.ts'
 import { CloseOutlined, RedoOutlined } from '@ant-design/icons'
-import { Combobox } from '@headlessui/react'
+import { Combobox, ComboboxInput, ComboboxOption, ComboboxOptions } from '@headlessui/react'
 import Fuse from 'fuse.js'
 import { useTranslation } from 'react-i18next'
 
@@ -81,7 +81,7 @@ export default function InterpretationForm () {
   }
 
   return (
-    <Form onSubmit={onSubmit}>
+    <Form onSubmit={onSubmit} style={{ paddingBottom: '7rem' }}>
       <Label>
         <span>{t('reading.form.questionLabel')}</span>
         <InputWrapper>
@@ -125,22 +125,22 @@ export default function InterpretationForm () {
                 }
               }}
             >
-              <Combobox.Input
-                as={ComboInput as unknown as React.ElementType}
+              <ComboboxInput
+                as={ComboInput}
                 placeholder={t('common.combobox.selectCard')}
                 displayValue={() => ''}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setQuery(e.target.value)}
               />
-              <Combobox.Options as={Options as unknown as React.ElementType}>
+              <ComboboxOptions as={Options}>
                 {searchedArcana.length === 0 && (
                   <EmptyOption>{t('common.combobox.noResults')}</EmptyOption>
                 )}
                 {searchedArcana.map(arc => (
-                  <Combobox.Option key={arc.id} value={arc} as={Option as unknown as React.ElementType}>
+                  <ComboboxOption key={arc.id} value={arc} as={Option}>
                     {arc.name}
-                  </Combobox.Option>
+                  </ComboboxOption>
                 ))}
-              </Combobox.Options>
+              </ComboboxOptions>
             </Combobox>
           </ComboWrapper>
         </div>
@@ -165,8 +165,11 @@ const CardContainer = styled.div`
 
 const CardImage = styled.img`
   width: 4rem;
+  height: calc((527 / 300) * 4rem);
   transition: transform var(--anim-duration) var(--anim-function);
   backface-visibility: hidden;
+  border-radius: 6px;
+  box-shadow: 0 0 2px 2px rgb(var(--black-rgb) / 0.2);
 
   &.flipped {
     transform: rotateZ(180deg);

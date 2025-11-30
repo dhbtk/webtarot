@@ -169,5 +169,18 @@
       "submitting": "Creating account…",
       "error": "Sign up failed"
     }
+  },
+  "profile": {
+    "title": "Profile",
+    "nameLabel": "Name",
+    "namePlaceholder": "Your name",
+    "emailLabel": "Email",
+    "emailPlaceholder": "you@example.com",
+    "selfDescriptionLabel": "About you",
+    "selfDescriptionPlaceholder": "Tell us a bit about you",
+    "error": "Could not update profile",
+    "saved": "Profile updated!",
+    "submit": "Save changes",
+    "submitting": "Saving…"
   }
 }
