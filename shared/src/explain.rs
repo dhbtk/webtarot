@@ -221,7 +221,7 @@ mod tests {
     #[tokio::test]
     async fn explain_sends_expected_request_and_returns_text() {
         // Dedicated mock server instance for this test
-        let mut server = Server::new();
+        let mut server = Server::new_async().await;
         let base_url = server.url();
         unsafe {
             std::env::set_var("OPENAI_BASE_URL", &base_url);

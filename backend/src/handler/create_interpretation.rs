@@ -14,7 +14,9 @@ pub async fn create_interpretation(
     Json(create_interpretation_request): Json<CreateInterpretationRequest>,
 ) -> (StatusCode, Json<CreateInterpretationResponse>) {
     let reading: Reading = (create_interpretation_request, &user).into();
-    interpretation_repository.request_interpretation(reading.clone(), locale, user);
+    interpretation_repository
+        .request_interpretation(reading.clone(), locale, user)
+        .await;
     (StatusCode::OK, Json(reading.id.into()))
 }
 

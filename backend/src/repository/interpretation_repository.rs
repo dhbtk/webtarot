@@ -63,17 +63,18 @@ impl InterpretationRepository {
         self.broadcast.send(interpretation).unwrap();
     }
 
-    pub fn request_interpretation(&self, reading: Reading, locale: Locale, user: User) {
-        let mut cloned = self.clone();
+    pub async fn request_interpretation(&self, reading: Reading, locale: Locale, user: User) {
+        self.save_as_pending(reading.clone()).await;
+        let cloned = self.clone();
+
         tokio::spawn(async move {
-            cloned.save_as_pending(reading.clone()).await;
             cloned
                 .start_interpretation_request(reading, locale, user)
                 .await;
         });
     }
 
-    async fn save_as_pending(&mut self, reading: Reading) {
+    async fn save_as_pending(&self, reading: Reading) {
         let to_store: crate::model::Reading = Interpretation::Pending(reading).into();
         let mut conn = self.db_pool.get().await.unwrap();
         diesel::insert_into(crate::schema::readings::dsl::readings)
@@ -83,7 +84,7 @@ impl InterpretationRepository {
             .unwrap();
     }
 
-    async fn start_interpretation_request(&mut self, reading: Reading, locale: Locale, user: User) {
+    async fn start_interpretation_request(&self, reading: Reading, locale: Locale, user: User) {
         tracing::debug!("start_interpretation_request");
         rust_i18n::set_locale(&locale.0);
         let start = Instant::now();
