@@ -32,3 +32,4 @@ hyper = { version = "1.8.1", features = ["full"] }
 [dev-dependencies]
 serial_test = "3.2.0"
 tower = { version = "0.5", features = ["util"] }
+mockito = "1.7.1"

@@ -3,14 +3,14 @@ use serde::{Deserialize, Serialize};
 use tracing::instrument;
 use webtarot_shared::model::{Card, Deck};
 
-#[derive(Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct CreateReadingRequest {
     pub question: String,
     pub cards: u8,
 }
 
-#[derive(Serialize, Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct CreateReadingResponse {
     pub shuffled_times: usize,

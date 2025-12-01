@@ -3,6 +3,7 @@ use axum::middleware::Next;
 use axum::response::Response;
 use metrics::{counter, histogram};
 use metrics_exporter_prometheus::{Matcher, PrometheusBuilder, PrometheusHandle};
+use std::sync::OnceLock;
 use std::time::Instant;
 
 pub async fn metrics(request: Request, next: Next) -> Response {
@@ -33,18 +34,28 @@ pub async fn metrics(request: Request, next: Next) -> Response {
     response
 }
 
+static PROM_HANDLE: OnceLock<PrometheusHandle> = OnceLock::new();
+
 pub fn setup_metrics_recorder() -> PrometheusHandle {
     const EXPONENTIAL_SECONDS: &[f64] = &[
         0.001, 0.002, 0.003, 0.005, 0.01, 0.015, 0.020, 0.025, 0.03, 0.04, 0.05, 0.1, 0.25, 0.5,
         1.0, 2.5, 5.0, 10.0,
     ];
 
-    PrometheusBuilder::new()
+    if let Some(h) = PROM_HANDLE.get() {
+        return h.clone();
+    }
+
+    let handle = PrometheusBuilder::new()
         .set_buckets_for_metric(
             Matcher::Full("http_requests_duration_seconds".to_string()),
             EXPONENTIAL_SECONDS,
         )
         .unwrap()
         .install_recorder()
-        .unwrap()
+        .unwrap();
+
+    // Store for subsequent calls
+    let _ = PROM_HANDLE.set(handle.clone());
+    handle
 }

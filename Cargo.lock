@@ -3330,6 +3330,7 @@ dependencies = [
  "hyper",
  "metrics",
  "metrics-exporter-prometheus",
+ "mockito",
  "password-auth",
  "redis",
  "rust-i18n",
