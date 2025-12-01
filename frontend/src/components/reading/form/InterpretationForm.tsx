@@ -13,20 +13,23 @@ import Fuse from 'fuse.js'
 import { useTranslation } from 'react-i18next'
 
 const allArcana = getAllArcana()
-const mappedArcana = allArcana.map((arc, index) => ({ name: arcanaLabel(arc), id: index }))
 
 export default function InterpretationForm () {
   const router = useRouter()
   const queryClient = useQueryClient()
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const [question, setQuestion] = useState('')
   const [cards, setCards] = useState<Card[]>([])
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
+  const mappedArcana = useMemo(() => allArcana.map((arc, index) => ({
+    name: arcanaLabel(arc),
+    id: index
+  })), [i18n.language])
   const filteredArcana = useMemo(() => {
     return mappedArcana.filter(arc => !cards.some(card => arcanaLabel(card.arcana) === arc.name))
-  }, [cards])
+  }, [cards, mappedArcana])
 
   const [query, setQuery] = useState('')
 

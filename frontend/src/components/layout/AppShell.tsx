@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { MenuOutlined } from '@ant-design/icons'
 import styled from 'styled-components'
 import { useUser } from '../../context/useUser'
+import logoUrl from '../../assets/logo.png'
 
 const Header = styled.header`
   background-color: rgb(82 69 150 / 0.7);
@@ -15,6 +16,15 @@ const Header = styled.header`
   gap: 0.5rem;
   box-shadow: 0.5rem 0.5rem 0.75rem 0 rgba(0, 0, 0, 0.25);
   animation: slide-from-top var(--anim-duration) var(--anim-function) forwards;
+
+  img.logo {
+    height: 2.5rem;
+    width: 2.5rem;
+    object-fit: contain;
+    border-radius: 0.25rem;
+    border: 1px solid rgb(var(--white-rgb) / 0.55);
+    box-shadow: 3px 3px 6px 0 rgb(var(--black-rgb) / 0.55);
+  }
 
   h1 {
     margin: 0;
@@ -124,6 +134,7 @@ export const AppShell: React.FC<React.PropsWithChildren> = ({ children }) => {
                            aria-controls="menu" title={t('aria.openMenu')}>
             <MenuOutlined/>
           </HamburgerButton>
+          <img className="logo" alt={t('hero.logo_alt')} src={logoUrl}/>
           <h1>{t('hero.title')}</h1>
         </Link>
         <nav>

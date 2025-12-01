@@ -24,8 +24,8 @@
   --border-light: #ddd;
   --panel-purple-rgb: 82 69 150;
   --soft-pink-rgb: 251 131 207;
-  --link: #646cff;
-  --link-hover: #535bf2;
+  --link: rgb(var(--soft-pink-rgb) / 0.82);
+  --link-hover: rgb(var(--soft-pink-rgb) / 1);
   --color-bg: #170F49;
   --color-text: rgb(var(--white-rgb) / 0.87);
   --color-error: #b91c1c;
@@ -137,6 +137,15 @@ h1 {
   }
   100% {
     transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
     opacity: 1;
   }
 }

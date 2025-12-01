@@ -3,6 +3,7 @@ import ReadingForm from '../components/reading/form/ReadingForm.tsx'
 import styled from 'styled-components'
 import useWindowDimensions from '../util/useWindowDimensions.ts'
 import { useTranslation } from 'react-i18next'
+import { Footer } from '../components/layout/Footer.tsx'
 
 export const Route = createFileRoute('/readings')({
   component: RouteComponent,
@@ -54,6 +55,7 @@ function RouteComponent () {
             <FormWrapper>
               <h2>{t('reading.new.title')}</h2>
               <ReadingForm/>
+              <Footer minimal/>
             </FormWrapper>
           )}
         </MatchRoute>

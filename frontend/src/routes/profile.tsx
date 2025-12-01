@@ -15,6 +15,7 @@ import { useCurrentUserQuery, useUpdateUserMutation } from '../backend/queries'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import type { User } from '../backend/models'
 import { useUser } from '../context/useUser'
+import { Footer } from '../components/layout/Footer.tsx'
 
 export const Route = createFileRoute('/profile')({
   component: RouteComponent,
@@ -104,7 +105,7 @@ function RouteComponent () {
                 name="email"
                 autoComplete="email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e: { target: { value: string } }) => setEmail(e.target.value)}
                 required
                 placeholder={t('profile.emailPlaceholder', 'you@example.com')}
               />
@@ -115,7 +116,6 @@ function RouteComponent () {
             <InputWrapper>
               <Textarea
                 name="selfDescription"
-                defaultValue={selfDescription}
                 value={selfDescription}
                 onChange={(e) => setSelfDescription(e.target.value)}
                 rows={10}
@@ -139,6 +139,7 @@ function RouteComponent () {
           </SubmitButton>
         </Form>
       </FormWrapper>
+      <Footer/>
     </PageWrapper>
   )
 }

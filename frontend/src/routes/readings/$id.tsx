@@ -8,7 +8,7 @@ import { addReading, getSavedReadings, removeReading } from '../../backend/saved
 import Markdown from 'react-markdown'
 import remarkBreaks from 'remark-breaks'
 import styled from 'styled-components'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { ReadingSubLayout } from '../../components/reading/layout/ReadingSubLayout.tsx'
 import { CardSpinner } from '../../components/reading/CardSpinner.tsx'
 import { useUser } from '../../context/useUser'
@@ -16,6 +16,7 @@ import type { InterpretationsWebsocketMessage } from '../../backend/models.ts'
 import { isInterpretationsWebsocketMessage } from '../../backend/models.ts'
 import { useTranslation } from 'react-i18next'
 import { getStoredUser } from '../../backend/user.ts'
+import logoUrl from '../../assets/logo.png'
 
 export const Route = createFileRoute('/readings/$id')({
   component: ReadingDetails
@@ -27,6 +28,17 @@ function ReadingDetails () {
   const navigate = useNavigate()
   const { t } = useTranslation()
   const { user } = useUser()
+  const [notifPermission, setNotifPermission] = useState<NotificationPermission | 'unsupported'>(() => {
+    if (typeof window === 'undefined') return 'unsupported'
+    if (!('Notification' in window)) return 'unsupported'
+    return Notification.permission
+  })
+
+  useEffect(() => {
+    // Keep local permission state in sync (in case it changes elsewhere)
+    if (!('Notification' in window)) return
+    setNotifPermission(Notification.permission)
+  }, [])
   const removeMutation = useMutation({
     mutationFn: () => {
       const currentIndex = getSavedReadings().indexOf(id)
@@ -69,6 +81,16 @@ function ReadingDetails () {
       if (isInterpretationsWebsocketMessage(data) && 'done' in data) {
         if (data.done.uuid === id) {
           queryClient.invalidateQueries({ queryKey: ['readings', id] })
+          try {
+            if (typeof document !== 'undefined' && document.visibilityState === 'hidden' && 'Notification' in window && Notification.permission === 'granted') {
+              new Notification(t('reading.notification.title'), {
+                body: t('reading.notification.body'),
+                icon: logoUrl,
+              })
+            }
+          } catch (e) {
+            // ignore notification errors
+          }
           websocket.close()
         }
       }
@@ -91,6 +113,17 @@ function ReadingDetails () {
   })
 
   const reading = query.data?.reading ?? null
+  const isNotifSupported = notifPermission !== 'unsupported'
+
+  const requestNotifications = async () => {
+    if (!('Notification' in window)) return
+    try {
+      const result = await Notification.requestPermission()
+      setNotifPermission(result)
+    } catch (e) {
+      // ignore
+    }
+  }
 
   return (
     <ReadingSubLayout>
@@ -127,6 +160,13 @@ function ReadingDetails () {
                     <>
                       <CardSpinner/>
                       <h3 style={{ textAlign: 'center' }}>{t('reading.details.waiting')}</h3>
+                      {isNotifSupported && notifPermission === 'default' && (
+                        <NotificationContainer>
+                          <NotificationButton type="button" onClick={requestNotifications}>
+                            {t('reading.notification.enable')}
+                          </NotificationButton>
+                        </NotificationContainer>
+                      )}
                     </>
                   )}
 
@@ -206,6 +246,21 @@ const MarkdownContainer = styled.div`
     font-weight: 900;
     color: rgb(var(--white-rgb) / 0.92);
   }
+`
+
+const NotificationContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  margin-top: 0.5rem;
+`
+
+const NotificationButton = styled.button`
+  padding: 0.35rem 0.75rem;
+  border-radius: 6px;
+  border: 1px solid rgb(var(--white-rgb) / 0.25);
+  background: rgb(var(--white-rgb) / 0.08);
+  color: inherit;
+  box-shadow: 3px 3px 6px 2px rgb(var(--black-rgb) / 0.2);
 `
 
 const ReadingTitle = styled.h2`

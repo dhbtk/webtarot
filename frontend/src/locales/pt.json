@@ -130,10 +130,15 @@
     },
     "new": {
       "title": "Nova tiragem"
+    },
+    "notification": {
+      "title": "A interpretação de sua tiragem está pronta!",
+      "body": "Venha ver!",
+      "enable": "Enviar notificação quando ficar pronta"
     }
   },
   "hero": {
-    "title": "webtarot",
+    "title": "webtarot.io",
     "tagline1": "tire seu webtarot",
     "tagline2": "descubra seu webdestino"
   },

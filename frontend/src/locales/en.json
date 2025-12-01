@@ -130,10 +130,15 @@
     },
     "new": {
       "title": "New Reading"
+    },
+    "notification": {
+      "title": "Your interpretation is ready!",
+      "body": "Check it out!",
+      "enable": "Send notification when ready"
     }
   },
   "hero": {
-    "title": "webtarot",
+    "title": "webtarot.io",
     "tagline1": "read your webtarot",
     "tagline2": "discover your webdestiny"
   },

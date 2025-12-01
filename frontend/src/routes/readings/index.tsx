@@ -22,15 +22,6 @@ const Heading = styled.h2`
   animation-delay: calc(var(--anim-duration));
   text-shadow: 1px 2px 2px rgb(var(--black-rgb) / 0.8);
 
-  @keyframes fade-in {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
-  }
-
   &:nth-of-type(2) {
     animation-delay: calc(var(--anim-duration) * 1.75);
   }
