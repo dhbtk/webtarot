@@ -110,8 +110,13 @@ impl InterpretationService {
             ]
         });
 
+        // Allow overriding the base URL via env var for testing
+        let base_url = std::env::var("OPENAI_BASE_URL")
+            .unwrap_or_else(|_| "https://api.openai.com".to_string());
+        let endpoint = format!("{}/v1/chat/completions", base_url.trim_end_matches('/'));
+
         let req = client
-            .post("https://api.openai.com/v1/chat/completions")
+            .post(endpoint)
             .bearer_auth(key)
             .header(reqwest::header::CONTENT_TYPE, "application/json")
             .timeout(Duration::from_mins(5))
@@ -180,5 +185,139 @@ impl InterpretationService {
             user.push_str(&format!("{} {}", label_user_self_description, desc));
         }
         user
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::model::{Arcana, Card, MajorArcana};
+    use mockito::{Matcher, Server};
+    use serde_json::json;
+
+    fn sample_cards() -> Vec<Card> {
+        vec![
+            Card {
+                arcana: Arcana::Major {
+                    name: MajorArcana::Fool,
+                },
+                flipped: false,
+            },
+            Card {
+                arcana: Arcana::Major {
+                    name: MajorArcana::Magician,
+                },
+                flipped: true,
+            },
+            Card {
+                arcana: Arcana::Major {
+                    name: MajorArcana::HighPriestess,
+                },
+                flipped: false,
+            },
+        ]
+    }
+
+    #[tokio::test]
+    async fn explain_sends_expected_request_and_returns_text() {
+        // Dedicated mock server instance for this test
+        let mut server = Server::new();
+        let base_url = server.url();
+        unsafe {
+            std::env::set_var("OPENAI_BASE_URL", &base_url);
+        }
+
+        let mocked_text = "This is a mocked explanation";
+        let _m = server
+            .mock("POST", "/v1/chat/completions")
+            .match_header(
+                "content-type",
+                Matcher::Any, // reqwest may set charset; we assert presence later in JSON
+            )
+            .match_header("authorization", Matcher::Regex("(?i)^Bearer .+".into()))
+            .match_body(Matcher::AllOf(vec![
+                Matcher::PartialJson(json!({"model": "gpt-5.1"})),
+                // Verify that the user message contains the question string
+                Matcher::Regex(r"Will I get the job\?".into()),
+            ]))
+            .with_status(200)
+            .with_header("content-type", "application/json")
+            .with_body(
+                json!({
+                    "choices": [
+                        {"message": {"content": mocked_text}}
+                    ]
+                })
+                .to_string(),
+            )
+            .create();
+
+        let svc = InterpretationService::new("test_key".into());
+
+        let cards = sample_cards();
+        let result = svc
+            .explain(
+                "Will I get the job?",
+                &cards,
+                Some("Alice".to_string()),
+                Some("A software engineer".to_string()),
+            )
+            .await
+            .expect("explain should succeed");
+
+        assert_eq!(result, mocked_text);
+    }
+
+    #[test]
+    fn get_user_prompt_cases() {
+        let cards = sample_cards();
+
+        let prompt_no_user =
+            InterpretationService::get_user_prompt("What is my path?", &cards, None, None);
+        assert!(
+            prompt_no_user.contains(t!("labels.question").as_ref()),
+            "should include localized question label"
+        );
+        assert!(
+            prompt_no_user.contains(t!("labels.cards_in_order").as_ref()),
+            "should include cards label"
+        );
+        assert!(
+            !prompt_no_user.contains(t!("labels.user_name").as_ref()),
+            "should not include user name label"
+        );
+        assert!(prompt_no_user.contains("1."), "should enumerate cards");
+
+        let prompt_with_name = InterpretationService::get_user_prompt(
+            "What is my path?",
+            &cards,
+            Some("Bob".into()),
+            None,
+        );
+        assert!(prompt_with_name.contains(&format!("{} Bob", t!("labels.user_name").as_ref())));
+        assert!(!prompt_with_name.contains(t!("labels.user_self_description").as_ref()));
+
+        let prompt_with_desc = InterpretationService::get_user_prompt(
+            "What is my path?",
+            &cards,
+            None,
+            Some("Curious learner".into()),
+        );
+        assert!(prompt_with_desc.contains(&format!(
+            "{} Curious learner",
+            t!("labels.user_self_description").as_ref()
+        )));
+
+        let prompt_with_both = InterpretationService::get_user_prompt(
+            "What is my path?",
+            &cards,
+            Some("Carol".into()),
+            Some("Explorer".into()),
+        );
+        assert!(prompt_with_both.contains(&format!("{} Carol", t!("labels.user_name").as_ref())));
+        assert!(prompt_with_both.contains(&format!(
+            "{} Explorer",
+            t!("labels.user_self_description").as_ref()
+        )));
     }
 }
