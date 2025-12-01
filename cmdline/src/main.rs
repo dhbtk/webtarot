@@ -1,4 +1,5 @@
 use clap::Parser;
+use webtarot_shared::explain::InterpretationService;
 use webtarot_shared::model::Deck;
 
 #[derive(Parser, Debug)]
@@ -31,9 +32,9 @@ async fn main() {
 
     if args.explain {
         println!("Interpretando...\n\n");
-
-        let explanation =
-            webtarot_shared::explain::explain(&args.question, &cards, None, None).await;
+        let explanation = InterpretationService::new(std::env::var("OPENAI_KEY").unwrap())
+            .explain(&args.question, &cards, None, None)
+            .await;
         if let Ok(explanation) = explanation {
             println!("{}", explanation);
             return;

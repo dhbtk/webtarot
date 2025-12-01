@@ -19,12 +19,14 @@ use std::convert::Infallible;
 use std::fmt::{Debug, Formatter};
 use std::time::Instant;
 use uuid::Uuid;
+use webtarot_shared::explain::InterpretationService;
 
 #[derive(Clone)]
 pub struct InterpretationRepository {
     connection_manager: ConnectionManager,
     broadcast: tokio::sync::broadcast::Sender<Interpretation>,
     db_pool: DbPool,
+    interpretation_service: InterpretationService,
 }
 
 impl Debug for InterpretationRepository {
@@ -50,6 +52,7 @@ impl From<AppState> for InterpretationRepository {
             connection_manager: value.redis_connection_manager,
             broadcast: value.interpretation_broadcast,
             db_pool: value.postgresql_pool,
+            interpretation_service: InterpretationService::new(value.env.openai_api_key.clone()),
         }
     }
 }
@@ -99,13 +102,15 @@ impl InterpretationRepository {
             ),
             _ => (None, None),
         };
-        let result = webtarot_shared::explain::explain(
-            &reading.question,
-            &reading.cards,
-            user_name,
-            user_self_description,
-        )
-        .await;
+        let result = self
+            .interpretation_service
+            .explain(
+                &reading.question,
+                &reading.cards,
+                user_name,
+                user_self_description,
+            )
+            .await;
         let elapsed = start.elapsed();
         let card_count = reading.cards.len().to_string();
         let labels = [
