@@ -1,6 +1,5 @@
 use crate::database::DbPool;
 use crate::entity::interpretation::Interpretation;
-use crate::repository::interpretation_repository::InterpretationRepository;
 use redis::aio::ConnectionManager;
 use std::env;
 
@@ -38,19 +37,19 @@ pub struct AppState {
 impl AppState {
     pub async fn new() -> Self {
         let env = AppEnviroment::new();
+        Self::from_env(env).await
+    }
+
+    pub async fn from_env(env: AppEnviroment) -> Self {
         let client = redis::Client::open(env.redis_url.clone()).unwrap();
         let manager = ConnectionManager::new(client).await.unwrap();
         let (interpretation_broadcast, _) = tokio::sync::broadcast::channel(100);
         let postgresql_pool = crate::database::create_database_pool(env.database_url.clone()).await;
-        let state = Self {
+        Self {
             env,
             redis_connection_manager: manager,
             interpretation_broadcast,
             postgresql_pool,
-        };
-        InterpretationRepository::from(state.clone())
-            .copy_all_from_redis_to_db()
-            .await;
-        state
+        }
     }
 }

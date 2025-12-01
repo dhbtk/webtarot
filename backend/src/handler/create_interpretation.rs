@@ -17,3 +17,85 @@ pub async fn create_interpretation(
     interpretation_repository.request_interpretation(reading.clone(), locale, user);
     (StatusCode::OK, Json(reading.id.into()))
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::app::create_test_app;
+    use diesel::ExpressionMethods;
+
+    use crate::model;
+    use axum::body::Body;
+    use axum::extract::Request;
+    use diesel::pg::Pg;
+    use diesel::{OptionalExtension, QueryDsl, SelectableHelper};
+    use diesel_async::RunQueryDsl;
+    use serial_test::serial;
+    use tower::ServiceExt;
+    use uuid::Uuid;
+    use webtarot_shared::model::MajorArcana::Fool;
+    use webtarot_shared::model::{Arcana, Card};
+
+    #[tokio::test]
+    #[serial]
+    async fn test_create_interpretation_anon_user() {
+        let (state, app) = create_test_app().await;
+        let mut conn = state.postgresql_pool.get().await.unwrap();
+
+        let request = CreateInterpretationRequest {
+            question: "test question".to_string(),
+            cards: vec![
+                Card {
+                    arcana: Arcana::Major { name: Fool },
+                    flipped: false,
+                },
+                Card {
+                    arcana: Arcana::Minor {
+                        rank: webtarot_shared::model::Rank::Ace,
+                        suit: webtarot_shared::model::Suit::Cups,
+                    },
+                    flipped: false,
+                },
+            ],
+        };
+
+        let uuid = Uuid::new_v4();
+
+        let request = Request::builder()
+            .method("POST")
+            .uri("/api/v1/interpretation".to_string())
+            .header("Content-Type", "application/json")
+            .header("x-user-uuid", uuid.to_string().as_str())
+            .body(Body::from(serde_json::to_string(&request).unwrap()))
+            .unwrap();
+
+        let response = app.oneshot(request).await.unwrap();
+
+        assert_eq!(
+            response.status(),
+            StatusCode::OK,
+            "Expected status code 200, got {}",
+            response.status()
+        );
+
+        let body = axum::body::to_bytes(response.into_body(), usize::MAX)
+            .await
+            .unwrap();
+        let response: CreateInterpretationResponse = serde_json::from_slice(&body).unwrap();
+
+        println!("uuid: {}", response.interpretation_id);
+
+        let query = crate::schema::readings::dsl::readings
+            .filter(crate::schema::readings::dsl::user_id.eq(uuid))
+            .select(model::Reading::as_select());
+
+        println!("{}", diesel::debug_query::<Pg, _>(&query));
+
+        let reading = query.first(&mut conn).await.optional().unwrap();
+        assert!(reading.is_some());
+        let reading = reading.unwrap();
+        assert_eq!(reading.id, response.interpretation_id);
+        assert_eq!(reading.user_id, uuid);
+        assert_eq!(reading.question, "test question".to_string());
+    }
+}

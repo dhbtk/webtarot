@@ -16,5 +16,15 @@ pub async fn create_database_pool(db_url: String) -> DbPool {
     let mut conn = PgConnection::establish(&db_url).unwrap();
     conn.run_pending_migrations(MIGRATIONS)
         .expect("failed to run migrations");
+    #[cfg(test)]
+    {
+        use diesel::RunQueryDsl;
+        diesel::delete(crate::schema::users::dsl::users)
+            .execute(&mut conn)
+            .expect("Error deleting users to clear db");
+        diesel::delete(crate::schema::readings::dsl::readings)
+            .execute(&mut conn)
+            .expect("Error deleting readings to clear db");
+    }
     pool
 }

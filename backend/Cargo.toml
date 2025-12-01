@@ -27,3 +27,8 @@ diesel = { version = "2.3.4", features = ["chrono", "postgres", "uuid", "serde_j
 diesel-async = { version = "0.7.4", features = ["postgres", "bb8"] }
 diesel_migrations = { version = "2.3.1", features = ["postgres"] }
 password-auth = "1.0.0"
+hyper = { version = "1.8.1", features = ["full"] }
+
+[dev-dependencies]
+serial_test = "3.2.0"
+tower = { version = "0.5", features = ["util"] }

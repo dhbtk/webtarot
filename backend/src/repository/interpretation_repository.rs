@@ -13,8 +13,6 @@ use diesel::{
 };
 use diesel_async::RunQueryDsl;
 use metrics::{counter, histogram};
-use redis::AsyncCommands;
-use redis::aio::ConnectionManager;
 use std::convert::Infallible;
 use std::fmt::{Debug, Formatter};
 use std::time::Instant;
@@ -23,7 +21,6 @@ use webtarot_shared::explain::InterpretationService;
 
 #[derive(Clone)]
 pub struct InterpretationRepository {
-    connection_manager: ConnectionManager,
     broadcast: tokio::sync::broadcast::Sender<Interpretation>,
     db_pool: DbPool,
     interpretation_service: InterpretationService,
@@ -49,7 +46,6 @@ impl FromRequestParts<AppState> for InterpretationRepository {
 impl From<AppState> for InterpretationRepository {
     fn from(value: AppState) -> Self {
         Self {
-            connection_manager: value.redis_connection_manager,
             broadcast: value.interpretation_broadcast,
             db_pool: value.postgresql_pool,
             interpretation_service: InterpretationService::new(value.env.openai_api_key.clone()),
@@ -224,68 +220,5 @@ impl InterpretationRepository {
             .optional()
             .unwrap();
         Some(())
-    }
-
-    pub async fn copy_all_from_redis_to_db(&self) {
-        use crate::schema::readings::dsl::*;
-        use diesel::prelude::*;
-        use diesel_async::RunQueryDsl;
-
-        let mut manager = self.connection_manager.clone();
-        let keys: Vec<String> = match manager.keys("interpretation:*").await {
-            Ok(k) => k,
-            Err(e) => {
-                tracing::error!(error = ?e, "failed listing interpretation keys from redis");
-                return;
-            }
-        };
-        for key in keys {
-            let Ok(value) = manager.get::<String, String>(key.clone()).await else {
-                tracing::warn!(%key, "failed to fetch interpretation value from redis");
-                continue;
-            };
-            let Ok(interpretation) = serde_json::from_str::<Interpretation>(&value) else {
-                tracing::warn!(%key, "failed to parse interpretation json from redis");
-                continue;
-            };
-            let reading_model: crate::model::Reading = interpretation.into();
-
-            let mut conn = match self.db_pool.get().await {
-                Ok(c) => c,
-                Err(e) => {
-                    tracing::error!(error = ?e, "failed to get db connection");
-                    return;
-                }
-            };
-
-            // Check if the reading already exists by primary key (id)
-            let exists = readings
-                .find(reading_model.id)
-                .select(id)
-                .first::<Uuid>(&mut conn)
-                .await
-                .optional();
-
-            let should_insert = match exists {
-                Ok(Some(_)) => false,
-                Ok(None) => true,
-                Err(e) => {
-                    tracing::warn!(error = ?e, "failed checking reading existence; skipping insert");
-                    false
-                }
-            };
-
-            if should_insert {
-                if let Err(e) = diesel::insert_into(readings)
-                    .values(&reading_model)
-                    .execute(&mut conn)
-                    .await
-                {
-                    tracing::error!(error = ?e, reading_id = %reading_model.id, "failed inserting reading into database");
-                } else {
-                    tracing::info!(reading_id = %reading_model.id, "copied reading from redis to db");
-                }
-            }
-        }
     }
 }
