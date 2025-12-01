@@ -86,6 +86,7 @@ const Wrapper = styled.div`
   gap: 1rem;
   @media (max-width: 768px) {
     padding: calc(0.5rem + env(safe-area-inset-top)) 0.5rem calc(0.5rem + env(safe-area-inset-bottom));
+    gap: 0.5rem;
   }
 `
 const HeaderLink = styled(Link)`

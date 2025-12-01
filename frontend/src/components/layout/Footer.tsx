@@ -31,6 +31,16 @@ const FooterWrapper = styled.footer`
     color: rgb(var(--white-rgb) / 0.7);
   }
 
+  &.layout-only {
+    padding: 0.75rem;
+    background: rgb(var(--black-rgb) / 0.1);
+    margin-left: -1rem;
+    width: calc(100% + 2rem);
+    margin-bottom: -1rem;
+    border-radius: 0.5rem;
+    border: 1px solid rgb(var(--black-rgb) / 0.1);
+  }
+
   font-size: var(--fs-xs);
 
   @media (max-width: 768px) {
