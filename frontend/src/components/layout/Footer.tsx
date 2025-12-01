@@ -63,7 +63,7 @@ const LocaleSelect = styled.select`
   }
 `
 
-export const Footer: React.FC<{ minimal: boolean | undefined }> = ({ minimal }) => {
+export const Footer: React.FC<{ minimal?: boolean }> = ({ minimal }) => {
   const { i18n, t } = useTranslation()
   const { user } = useUser()
 
