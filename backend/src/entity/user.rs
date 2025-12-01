@@ -1,4 +1,4 @@
-use crate::repository::error::AppError;
+use crate::error::AppError;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Serialize, Deserialize)]

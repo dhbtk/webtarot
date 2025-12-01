@@ -1,5 +1,6 @@
 mod database;
 mod entity;
+pub mod error;
 mod handler;
 mod middleware;
 mod model;

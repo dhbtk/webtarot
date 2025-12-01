@@ -1,5 +1,5 @@
 use crate::entity::user::{UpdateUserRequest, User};
-use crate::repository::error::{AppError, ResponseResult};
+use crate::error::{AppError, ResponseResult};
 use crate::repository::user_repository::UserRepository;
 use axum::Json;
 use axum::http::StatusCode;

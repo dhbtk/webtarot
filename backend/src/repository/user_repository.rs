@@ -1,7 +1,7 @@
 use crate::database::DbPool;
 use crate::entity::user::{AuthenticationResponse, CreateUserRequest, UpdateUserRequest, User};
+use crate::error::{AppError, AppResult};
 use crate::model::{AccessToken, NewAccessToken, UpdateUserFields};
-use crate::repository::error::{AppError, AppResult};
 use crate::state::AppState;
 use axum::extract::FromRequestParts;
 use axum::http::HeaderMap;

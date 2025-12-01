@@ -1,5 +1,5 @@
 use crate::entity::user::{AuthenticationResponse, CreateUserRequest, User};
-use crate::repository::error::AppError;
+use crate::error::AppError;
 use crate::repository::user_repository::UserRepository;
 use crate::state::AppState;
 use axum::Json;
