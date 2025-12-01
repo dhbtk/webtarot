@@ -37,6 +37,8 @@ mod tests {
     use uuid::Uuid;
     use webtarot_shared::model::MajorArcana::Fool;
     use webtarot_shared::model::{Arcana, Card};
+    // test helpers
+    use crate::test_helpers::{setup_mock_openai, subscribe_to_repo, wait_for_done};
 
     #[tokio::test]
     #[serial]
@@ -99,5 +101,62 @@ mod tests {
         assert_eq!(reading.id, response.interpretation_id);
         assert_eq!(reading.user_id, uuid);
         assert_eq!(reading.question, "test question".to_string());
+    }
+
+    #[tokio::test]
+    #[serial]
+    async fn test_create_interpretation_broadcast_and_mocked_interpretation() {
+        let (state, app) = create_test_app().await;
+
+        // Setup mock OpenAI and subscribe to repository broadcast
+        let (_server, mocked_text) = setup_mock_openai("This is a mocked interpretation").await;
+        let mut rx = subscribe_to_repo(&state);
+
+        // Build a request with explicit cards
+        let request = CreateInterpretationRequest {
+            question: "mock broadcast question".to_string(),
+            cards: vec![
+                Card {
+                    arcana: Arcana::Major { name: Fool },
+                    flipped: false,
+                },
+                Card {
+                    arcana: Arcana::Minor {
+                        rank: webtarot_shared::model::Rank::Two,
+                        suit: webtarot_shared::model::Suit::Wands,
+                    },
+                    flipped: true,
+                },
+            ],
+        };
+
+        let uuid = Uuid::new_v4();
+
+        let request = Request::builder()
+            .method("POST")
+            .uri("/api/v1/interpretation")
+            .header("Content-Type", "application/json")
+            .header("x-user-uuid", uuid.to_string())
+            .body(Body::from(serde_json::to_string(&request).unwrap()))
+            .unwrap();
+
+        let response = app.oneshot(request).await.unwrap();
+        assert_eq!(response.status(), StatusCode::OK);
+
+        let body = axum::body::to_bytes(response.into_body(), usize::MAX)
+            .await
+            .unwrap();
+        let response: CreateInterpretationResponse = serde_json::from_slice(&body).unwrap();
+        let interpretation_id = response.interpretation_id;
+
+        // Wait for interpretation to complete via broadcast
+        let (reading, text) = wait_for_done(&mut rx, interpretation_id, 5)
+            .await
+            .expect("Should receive Done event for our interpretation");
+
+        assert_eq!(text, mocked_text);
+        assert_eq!(reading.id, response.interpretation_id);
+        assert_eq!(reading.question, "mock broadcast question");
+        assert_eq!(reading.cards.len(), 2);
     }
 }

@@ -8,6 +8,8 @@ mod model;
 mod repository;
 mod schema;
 mod state;
+#[cfg(test)]
+mod test_helpers;
 
 use crate::state::AppState;
 use tracing_subscriber::fmt;
