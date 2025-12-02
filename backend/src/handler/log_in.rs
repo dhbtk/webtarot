@@ -1,5 +1,5 @@
 use crate::entity::user::{AuthenticationResponse, User};
-use crate::error::AppError;
+use crate::error::{AppError, ResponseResult};
 use crate::repository::interpretation_repository::InterpretationRepository;
 use crate::repository::user_repository::UserRepository;
 use axum::Json;
@@ -12,10 +12,7 @@ pub async fn log_in(
     interpretation_repository: InterpretationRepository,
     headers: HeaderMap,
     Json(log_in_request): Json<LogInRequest>,
-) -> (
-    StatusCode,
-    axum::response::Result<Json<AuthenticationResponse>, AppError>,
-) {
+) -> (StatusCode, ResponseResult<Json<AuthenticationResponse>>) {
     if let User::Authenticated { .. } = user {
         return AppError::Forbidden.into_response();
     }

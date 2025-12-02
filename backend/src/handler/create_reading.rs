@@ -1,6 +1,7 @@
 use crate::entity;
 use crate::entity::reading::{CreateReadingRequest, CreateReadingResponse};
 use crate::entity::user::User;
+use crate::error::ResponseResult;
 use crate::middleware::locale::Locale;
 use crate::repository::interpretation_repository::InterpretationRepository;
 use axum::Json;
@@ -12,12 +13,15 @@ pub async fn create_reading(
     user: User,
     locale: Locale,
     Json(create_reading_request): Json<CreateReadingRequest>,
-) -> (StatusCode, Json<CreateReadingResponse>) {
+) -> (StatusCode, ResponseResult<Json<CreateReadingResponse>>) {
     let reading = entity::reading::perform_reading(&create_reading_request, &user);
     interpretation_repository
         .request_interpretation(reading.clone(), locale, user)
         .await;
-    (StatusCode::OK, Json(CreateReadingResponse::from(reading)))
+    (
+        StatusCode::OK,
+        Ok(Json(CreateReadingResponse::from(reading))),
+    )
 }
 
 #[cfg(test)]

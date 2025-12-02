@@ -1,5 +1,5 @@
 use crate::entity::user::{AuthenticationResponse, CreateUserRequest, User};
-use crate::error::AppError;
+use crate::error::{AppError, ResponseResult};
 use crate::repository::user_repository::UserRepository;
 use crate::state::AppState;
 use axum::Json;
@@ -11,10 +11,7 @@ pub async fn create_user(
     user_repository: UserRepository,
     headers: HeaderMap,
     Json(request_body): Json<CreateUserRequest>,
-) -> (
-    StatusCode,
-    axum::response::Result<Json<AuthenticationResponse>, AppError>,
-) {
+) -> (StatusCode, ResponseResult<Json<AuthenticationResponse>>) {
     if let User::Authenticated { .. } = user {
         return AppError::Forbidden.into_response();
     }

@@ -14,17 +14,7 @@ impl FromRequestParts<AppState> for User {
         state: &AppState,
     ) -> Result<Self, Self::Rejection> {
         let user_repository: UserRepository = state.clone().into();
-        let user_id = parts
-            .headers
-            .get("x-user-uuid")
-            .or_else(|| {
-                parts
-                    .headers
-                    .get("sec-websocket-protocol")
-                    .filter(|v| v.len() == 36)
-            }) // uuid length
-            .and_then(|v| v.to_str().ok())
-            .and_then(|v| v.parse::<Uuid>().ok());
+        let user_id = get_anonymous_uuid(parts);
         if let Some(user_id) = user_id {
             if user_repository.exists_by_id(user_id).await {
                 tracing::warn!(?user_id, "anon user request but user has signed up");
@@ -32,19 +22,7 @@ impl FromRequestParts<AppState> for User {
             }
             Ok(User::Anonymous { id: user_id })
         } else {
-            let Some(token) = parts
-                .headers
-                .get("authorization")
-                .and_then(|v| v.to_str().ok())
-                .and_then(|v| v.split_once("Bearer ").map(|v| v.1))
-                .or_else(|| {
-                    parts
-                        .headers
-                        .get("sec-websocket-protocol")
-                        .and_then(|v| v.to_str().ok())
-                })
-                .map(|v| v.to_owned())
-            else {
+            let Some(token) = get_authenticated_token(parts) else {
                 tracing::warn!("no auth header");
                 return Err(StatusCode::UNAUTHORIZED);
             };
@@ -55,4 +33,33 @@ impl FromRequestParts<AppState> for User {
             Ok(result.into())
         }
     }
+}
+
+fn get_anonymous_uuid(parts: &mut Parts) -> Option<Uuid> {
+    parts
+        .headers
+        .get("x-user-uuid")
+        .or_else(|| {
+            parts
+                .headers
+                .get("sec-websocket-protocol")
+                .filter(|v| v.len() == 36) // uuid length. authenticated user tokens are longer
+        })
+        .and_then(|v| v.to_str().ok())
+        .and_then(|v| v.parse::<Uuid>().ok())
+}
+
+fn get_authenticated_token(parts: &mut Parts) -> Option<String> {
+    parts
+        .headers
+        .get("authorization")
+        .and_then(|v| v.to_str().ok())
+        .and_then(|v| v.split_once("Bearer ").map(|v| v.1))
+        .or_else(|| {
+            parts
+                .headers
+                .get("sec-websocket-protocol")
+                .and_then(|v| v.to_str().ok())
+        })
+        .map(|v| v.to_owned())
 }

@@ -1,4 +1,4 @@
-#![cfg(test)]
+#[cfg(test)]
 use crate::entity::interpretation::Interpretation;
 use crate::entity::reading::Reading;
 use crate::repository::interpretation_repository::InterpretationRepository;
@@ -6,7 +6,7 @@ use crate::state::AppState;
 use mockito::{Matcher, Server, ServerGuard};
 use tokio::time::{Duration, timeout};
 use uuid::Uuid;
-use webtarot_shared::explain; // ensure dependency resolved
+// ensure dependency resolved
 
 /// Start a mock server for the OpenAI Chat Completions API and point the
 /// application to it via the OPENAI_BASE_URL env var.

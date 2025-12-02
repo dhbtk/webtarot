@@ -2,7 +2,7 @@ use axum::extract::{MatchedPath, Request};
 use axum::middleware::Next;
 use axum::response::Response;
 use metrics::{counter, histogram};
-use metrics_exporter_prometheus::{Matcher, PrometheusBuilder, PrometheusHandle};
+use metrics_exporter_prometheus::{PrometheusBuilder, PrometheusHandle};
 use std::sync::OnceLock;
 use std::time::Instant;
 
@@ -47,10 +47,7 @@ pub fn setup_metrics_recorder() -> PrometheusHandle {
     }
 
     let handle = PrometheusBuilder::new()
-        .set_buckets_for_metric(
-            Matcher::Full("http_requests_duration_seconds".to_string()),
-            EXPONENTIAL_SECONDS,
-        )
+        .set_buckets(EXPONENTIAL_SECONDS)
         .unwrap()
         .install_recorder()
         .unwrap();

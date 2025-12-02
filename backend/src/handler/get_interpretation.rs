@@ -1,5 +1,6 @@
-use crate::entity::interpretation::{GetInterpretationResult, Interpretation};
+use crate::entity::interpretation::GetInterpretationResult;
 use crate::entity::user::User;
+use crate::error::{AppError, AppResult};
 use crate::repository::interpretation_repository::InterpretationRepository;
 use axum::Json;
 use axum::extract::Path;
@@ -10,31 +11,25 @@ pub async fn get_interpretation(
     interpretation_repository: InterpretationRepository,
     user: User,
     Path(interpretation_id): Path<String>,
-) -> (StatusCode, Json<GetInterpretationResult>) {
+) -> (StatusCode, AppResult<Json<GetInterpretationResult>>) {
     let Ok(uuid) = interpretation_id.parse() else {
-        return (
-            StatusCode::NOT_FOUND,
-            Json(GetInterpretationResult::default()),
-        );
+        return AppError::ValidateError("invalid uuid".into()).into_response();
     };
     let Some(interpretation) = interpretation_repository.get_interpretation(uuid).await else {
-        return (
-            StatusCode::NOT_FOUND,
-            Json(Option::<Interpretation>::None.into()),
-        );
+        return AppError::NotFound.into_response();
     };
     let Some(_) = interpretation.reading().user_id else {
         return (
             StatusCode::OK,
-            Json(
+            Ok(Json(
                 interpretation_repository
                     .assign_to_user(uuid, user.id())
                     .await
                     .into(),
-            ),
+            )),
         );
     };
-    (StatusCode::OK, Json(interpretation.into()))
+    (StatusCode::OK, Ok(Json(interpretation.into())))
 }
 
 #[cfg(test)]
@@ -43,8 +38,6 @@ mod tests {
     use crate::app::create_test_app;
     use axum::body::Body;
     use axum::extract::Request;
-    use diesel::ExpressionMethods;
-    use diesel::{QueryDsl, SelectableHelper};
     use diesel_async::RunQueryDsl;
     use serial_test::serial;
     use tower::ServiceExt;

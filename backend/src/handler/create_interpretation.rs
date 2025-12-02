@@ -1,6 +1,7 @@
 use crate::entity::interpretation::{CreateInterpretationRequest, CreateInterpretationResponse};
 use crate::entity::reading::Reading;
 use crate::entity::user::User;
+use crate::error::ResponseResult;
 use crate::middleware::locale::Locale;
 use crate::repository::interpretation_repository::InterpretationRepository;
 use axum::Json;
@@ -12,12 +13,15 @@ pub async fn create_interpretation(
     user: User,
     locale: Locale,
     Json(create_interpretation_request): Json<CreateInterpretationRequest>,
-) -> (StatusCode, Json<CreateInterpretationResponse>) {
+) -> (
+    StatusCode,
+    ResponseResult<Json<CreateInterpretationResponse>>,
+) {
     let reading: Reading = (create_interpretation_request, &user).into();
     interpretation_repository
         .request_interpretation(reading.clone(), locale, user)
         .await;
-    (StatusCode::OK, Json(reading.id.into()))
+    (StatusCode::OK, Ok(Json(reading.id.into())))
 }
 
 #[cfg(test)]
@@ -27,6 +31,8 @@ mod tests {
     use diesel::ExpressionMethods;
 
     use crate::model;
+    // test helpers
+    use crate::test_helpers::{setup_mock_openai, subscribe_to_repo, wait_for_done};
     use axum::body::Body;
     use axum::extract::Request;
     use diesel::pg::Pg;
@@ -37,8 +43,6 @@ mod tests {
     use uuid::Uuid;
     use webtarot_shared::model::MajorArcana::Fool;
     use webtarot_shared::model::{Arcana, Card};
-    // test helpers
-    use crate::test_helpers::{setup_mock_openai, subscribe_to_repo, wait_for_done};
 
     #[tokio::test]
     #[serial]
