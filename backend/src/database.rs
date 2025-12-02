@@ -8,6 +8,7 @@ pub const MIGRATIONS: EmbeddedMigrations = embed_migrations!();
 
 pub type DbPool = Pool<AsyncPgConnection>;
 pub async fn create_database_pool(db_url: String) -> DbPool {
+    tracing::info!(?db_url, "connecting to postgresql");
     let config = AsyncDieselConnectionManager::<AsyncPgConnection>::new(db_url.clone());
     let pool = Pool::builder()
         .build(config)
