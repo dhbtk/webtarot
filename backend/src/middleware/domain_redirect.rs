@@ -1,7 +1,7 @@
 use crate::state::AppState;
 use axum::extract::{Request, State};
 use axum::middleware::Next;
-use axum::response::IntoResponse;
+use axum::response::{IntoResponse, Redirect};
 
 const DOMAIN: &str = "webtarot.io";
 
@@ -22,5 +22,5 @@ pub async fn domain_redirect(
     }
     let uri = format!("https://{}{}", DOMAIN, request.uri());
     tracing::warn!("redirecting to {}", uri);
-    (axum::http::StatusCode::MOVED_PERMANENTLY, uri).into_response()
+    Redirect::permanent(&uri).into_response()
 }
