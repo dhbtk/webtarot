@@ -5,9 +5,16 @@ use std::env;
 
 #[derive(Clone)]
 pub struct AppEnvironment {
+    pub environment: RuntimeEnv,
     pub redis_url: String,
     pub database_url: String,
     pub openai_api_key: String,
+}
+
+impl AppEnvironment {
+    pub fn is_development(&self) -> bool {
+        self.environment == RuntimeEnv::Development
+    }
 }
 
 impl Default for AppEnvironment {
@@ -16,9 +23,26 @@ impl Default for AppEnvironment {
     }
 }
 
+#[derive(Debug, Clone, Copy, Eq, PartialEq)]
+pub enum RuntimeEnv {
+    Development,
+    Production,
+}
+
+impl RuntimeEnv {
+    pub fn from_env() -> Self {
+        if env::var("RUST_ENV").unwrap_or_else(|_| "development".to_string()) == "production" {
+            Self::Production
+        } else {
+            Self::Development
+        }
+    }
+}
+
 impl AppEnvironment {
     pub fn new() -> Self {
         Self {
+            environment: RuntimeEnv::from_env(),
             redis_url: env::var("REDIS_URL").expect("REDIS_URL not set"),
             database_url: env::var("DATABASE_URL").expect("DATABASE_URL not set"),
             openai_api_key: env::var("OPENAI_KEY").expect("OPENAI_KEY not set"),

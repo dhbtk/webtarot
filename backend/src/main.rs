@@ -23,9 +23,14 @@ async fn main() {
     fmt().with_env_filter("info,webtarot=trace").init();
     // Set default locale (Portuguese as the project currently uses PT as baseline)
     rust_i18n::set_locale("pt");
-
+    let state = AppState::new().await;
+    tracing::info!(
+        "[[webtarot]] Starting server with environment={:?}",
+        state.env.environment
+    );
     let app = app::create_app(AppState::new().await);
 
+    tracing::info!("[[webtarot]] Listening on port 3000");
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
     axum::serve(listener, app).await.unwrap();
 }

@@ -6,10 +6,12 @@ use crate::middleware;
 use crate::middleware::locale;
 use crate::middleware::metrics::setup_metrics_recorder;
 use crate::state::AppState;
+#[cfg(test)]
+use crate::state::RuntimeEnv;
 use axum::Router;
 use axum::http::HeaderValue;
 use axum::http::header::CACHE_CONTROL;
-use axum::middleware::{from_extractor, from_fn};
+use axum::middleware::{from_extractor, from_fn, from_fn_with_state};
 use axum::routing::{delete, get, patch, post};
 use std::future::ready;
 use tower::ServiceBuilder;
@@ -49,7 +51,7 @@ pub fn create_app(state: AppState) -> Router {
         .route("/api/v1/user", get(get_user::get_user))
         .route("/api/v1/user", patch(update_user::update_user))
         .route("/api/v1/login", post(log_in::log_in))
-        .with_state(state)
+        .with_state(state.clone())
         // Set locale and user for each request
         .route_layer(from_extractor::<locale::Locale>())
         .fallback_service({
@@ -73,6 +75,10 @@ pub fn create_app(state: AppState) -> Router {
 
             ServiceBuilder::new().layer(static_cache).service(combined)
         })
+        .layer(from_fn_with_state(
+            state,
+            middleware::domain_redirect::domain_redirect,
+        ))
         .layer(
             TraceLayer::new_for_http()
                 .make_span_with(DefaultMakeSpan::new().level(Level::INFO))
@@ -85,6 +91,7 @@ pub fn create_app(state: AppState) -> Router {
 #[cfg(test)]
 pub async fn create_test_app() -> (AppState, Router) {
     let state = AppState::from_env(crate::state::AppEnvironment {
+        environment: RuntimeEnv::Development,
         redis_url: "redis://localhost:6379/0".to_string(),
         database_url: "postgres://localhost/webtarot_test".to_string(),
         openai_api_key: "dummy".to_string(),
