@@ -40,6 +40,7 @@ COPY --from=backend-builder /app/target/release/webtarot-backend /app/webtarot-b
 COPY --from=frontend-builder /app/frontend/dist/ /static/
 
 ENV RUST_LOG=trace
+ENV RUST_ENV=production
 EXPOSE 3000
 
 WORKDIR /app

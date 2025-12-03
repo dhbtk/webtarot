@@ -13,7 +13,7 @@ pub async fn domain_redirect(
     if state.env.is_development()
         || request
             .headers()
-            .get("host")
+            .get("x-forwarded-host")
             .and_then(|i| i.to_str().ok())
             .unwrap_or_default()
             == DOMAIN
