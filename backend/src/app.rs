@@ -76,7 +76,7 @@ pub fn create_app(state: AppState) -> Router {
             ServiceBuilder::new().layer(static_cache).service(combined)
         })
         .layer(from_fn_with_state(
-            state,
+            state.env.clone(),
             middleware::domain_redirect::domain_redirect,
         ))
         .layer(
