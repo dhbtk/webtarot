@@ -121,6 +121,7 @@
       "askedAt": "Question asked on {{date}}",
       "shuffledTimes_one": "Shuffled {{count}} time",
       "shuffledTimes_other": "Shuffled {{count}} times",
+      "userReading": "User pulled cards",
       "waiting": "Waiting for interpretation..."
     },
     "interpretation": {

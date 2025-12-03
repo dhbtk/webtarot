@@ -17,6 +17,7 @@ import { isInterpretationsWebsocketMessage } from '../../backend/models.ts'
 import { useTranslation } from 'react-i18next'
 import { getStoredUser } from '../../backend/user.ts'
 import logoUrl from '../../assets/logo.png'
+import { ShareAltOutlined } from '@ant-design/icons'
 
 export const Route = createFileRoute('/readings/$id')({
   component: ReadingDetails
@@ -125,6 +126,24 @@ function ReadingDetails () {
     }
   }
 
+  const triggerShare = async () => {
+    try {
+      const url = typeof window !== 'undefined' ? window.location.href : ''
+      const title = reading?.question ?? 'webtarot.io'
+      const text = title
+
+      if ('share' in navigator && typeof navigator.share === 'function') {
+        await navigator.share({ title, text, url })
+      } else {
+        if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+          await navigator.clipboard.writeText(url)
+        }
+      }
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
   return (
     <ReadingSubLayout>
       <ReadingContainer>
@@ -133,11 +152,12 @@ function ReadingDetails () {
             <ReadingTitle>{reading.question}</ReadingTitle>
             <MiniHeading style={{ display: 'flex', justifyContent: 'space-between' }}>
             <span>
-              {t('reading.details.askedAt', { date: new Date(reading.createdAt).toLocaleString() })}
+              {t('reading.details.askedAt', { date: new Date(reading.createdAt).toLocaleString() })}<br/>
+              {reading.shuffledTimes > 0 ? t('reading.details.shuffledTimes', { count: reading.shuffledTimes }) : t('reading.details.userReading')}
             </span>
-              <span>
-                {t('reading.details.shuffledTimes', { count: reading.shuffledTimes })}
-              </span>
+              <ShareButton type="button" onClick={triggerShare}>
+                <ShareAltOutlined/>
+              </ShareButton>
             </MiniHeading>
 
             {reading && (
@@ -179,6 +199,28 @@ function ReadingDetails () {
     </ReadingSubLayout>
   )
 }
+
+const ShareButton = styled.button`
+  border-radius: 50%;
+  border: 1px solid rgb(var(--white-rgb) / 0.25);
+  background: rgb(var(--white-rgb) / 0.08);
+  color: inherit;
+  box-shadow: 3px 3px 6px 2px rgb(var(--black-rgb) / 0.2);
+  font-size: var(--fs-xs);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  margin-right: 1rem;
+  transition: all calc(var(--anim-duration) / 5) ease-in-out;
+
+  &:hover {
+    background: rgb(var(--white-rgb) / 0.1);
+    box-shadow: 3px 3px 6px 2px rgb(var(--black-rgb) / 0.3);
+    transform: scale(1.1);
+  }
+`
 
 const ReadingContainer = styled.div`
   height: 100%;

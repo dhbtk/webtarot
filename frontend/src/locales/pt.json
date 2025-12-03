@@ -121,6 +121,7 @@
       "askedAt": "Pergunta feita em {{date}}",
       "shuffledTimes_one": "Embaralhado {{count}} vez",
       "shuffledTimes_other": "Embaralhado {{count}} vezes",
+      "userReading": "Tiragem do usuário",
       "waiting": "Aguardando interpretação..."
     },
     "interpretation": {

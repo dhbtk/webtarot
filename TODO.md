@@ -1,11 +1,11 @@
-- [ ] Botão de compartilhar na tiragem
 - [ ] campo de contexto para interpretar (ter pergunta, contexto, opção para enviar ou não contexto para interpretar)
 - [ ] "esqueci minha senha"
 - [ ] Tiragem do dia por email pela manhã?
- 
+
 ## Itens para produção (backend, frontend e infraestrutura)
 
 ### Backend (Rust/Axum)
+
 - [ ] Autenticação/JWT sólida: expiração/refresh token, revogação, rotação de chaves (JWKS) e storage seguro de secrets
 - [ ] Fluxo completo de recuperação de senha (link com token de uso único, expiração e invalidation)
 - [ ] Políticas de senha (mínimo, entropia) e proteção contra brute-force (rate limit por IP/usuário)
@@ -26,6 +26,7 @@
 - [ ] Paginação/limites em endpoints de histórico para evitar respostas muito grandes
 
 ### Frontend (Vite/React)
+
 - [ ] Tratamento de erros global (ErrorBoundary) e feedback ao usuário
 - [ ] Armazenamento seguro de token (evitar XSS; considerar cookies httpOnly + CSRF se for sessão)
 - [ ] Integração com Sentry (ou similar) para erros de frontend e performance
@@ -38,11 +39,13 @@
 - [ ] Tratamento de reconexão de WebSocket e indicadores de status em tempo real
 
 ### Emails e Notificações
+
 - [ ] Provedor de email transacional (SES, Mailgun, Postmark) com domínio verificado e DKIM/SPF/DMARC
 - [ ] Templates de email (pt/en) para recuperação de senha e "tiragem do dia" (opt-in explícito)
 - [ ] Preferências de notificação por usuário e fácil opt-out
 
 ### Segurança e Compliance
+
 - [ ] Gestão de segredos (OPENAI_KEY, DB, SMTP) via variáveis seguras (Docker/Secrets/Vault) – nunca em repo
 - [ ] Política de CORS restritiva em produção e CSP adequada ao frontend
 - [ ] Scanner de dependências (SAST/Dependabot) e política de atualização
@@ -50,12 +53,14 @@
 - [ ] Registro e atendimento de pedidos de exclusão/exportação de dados (LGPD/GDPR)
 
 ### Observabilidade e Operação
+
 - [ ] Dashboards (logs, métricas, traces) – por exemplo, Grafana/Prometheus/Loki + OpenTelemetry
 - [ ] Alertas (latência, taxa de erro, tempo de resposta OpenAI, uso de tokens, filas)
 - [ ] Uptime checks externos e verificação do fluxo crítico (login → criar tiragem → interpretar)
 - [ ] Tracing distribuído entre frontend (web-vitals) e backend
 
 ### Infra/DevOps
+
 - [ ] Docker multi-stage já existe: adicionar liveness/readiness no compose/orquestrador
 - [ ] Pipeline CI/CD: build, testes (unit/integração/E2E), scan de segurança, criação de imagem e deploy
 - [ ] Migrações automáticas em deploy com rollback seguro
@@ -65,6 +70,7 @@
 - [ ] Estratégia de escalabilidade (autoscaling por CPU/RAM/latência) e limites de recursos
 
 ### Qualidade e Testes
+
 - [ ] Testes unitários backend (handlers, repos, validação) e mocks para OpenAI
 - [ ] Testes de integração (rotas principais, auth, WebSocket)
 - [ ] Testes E2E (Playwright/Cypress) cobrindo fluxos: signup/login, criação de tiragem, interpretação, histórico
@@ -72,12 +78,14 @@
 - [ ] Linters/formatadores (Rustfmt/Clippy, ESLint/Prettier) e verificação em CI
 
 ### Produto/UX
+
 - [ ] Onboarding e dicas de uso das tiragens; estados vazios
 - [ ] Tela de perfil com gerenciamento completo (idioma, email, senha, preferências)
 - [ ] Exportação de histórico (CSV/JSON) com limites
 - [ ] Feedback de custo/tempo quando interpretação estiver em processamento
 
 ### Documentação
+
 - [ ] Documentar variáveis de ambiente e exemplos (produção vs dev)
 - [ ] Runbooks de incidentes (como investigar erros do OpenAI, esgotamento de cota, timeouts)
 - [ ] Política de backup/restore, retenção de dados e cron jobs
