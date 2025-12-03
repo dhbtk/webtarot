@@ -10,8 +10,11 @@ pub async fn domain_redirect(
     request: Request,
     next: Next,
 ) -> impl IntoResponse {
-    // Allow everything in development to avoid redirects during local runs
     if env.is_development() {
+        return next.run(request).await;
+    }
+
+    if request.uri().path() == "/metrics" {
         return next.run(request).await;
     }
 
@@ -131,5 +134,26 @@ mod tests {
 
         let res = app.clone().oneshot(req).await.unwrap();
         assert_eq!(res.status(), StatusCode::OK);
+    }
+
+    #[tokio::test]
+    async fn no_redirect_for_metrics_endpoint() {
+        let app = Router::new()
+            .route("/metrics", get(|| async { "metrics" }))
+            .layer(axum::middleware::from_fn_with_state(
+                prod_env(),
+                domain_redirect,
+            ));
+
+        let req = HttpRequest::builder()
+            .uri("/metrics")
+            .header("host", "example.com")
+            .body(axum::body::Body::empty())
+            .unwrap();
+
+        let res = app.clone().oneshot(req).await.unwrap();
+        assert_eq!(res.status(), StatusCode::OK);
+        // Ensure there's no redirect header
+        assert!(res.headers().get(LOCATION).is_none());
     }
 }
