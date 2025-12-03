@@ -10,7 +10,14 @@ pub async fn domain_redirect(
     request: Request,
     next: Next,
 ) -> impl IntoResponse {
-    if state.env.is_development() || request.uri().host().unwrap_or_default() == DOMAIN {
+    if state.env.is_development()
+        || request
+            .headers()
+            .get("host")
+            .and_then(|i| i.to_str().ok())
+            .unwrap_or_default()
+            == DOMAIN
+    {
         return next.run(request).await;
     }
     let uri = format!("https://{}{}", DOMAIN, request.uri());
