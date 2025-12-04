@@ -12,7 +12,7 @@ mod state;
 mod test_helpers;
 
 use crate::state::AppState;
-use tracing_subscriber::fmt;
+use tracing_subscriber::{EnvFilter, fmt};
 
 // Initialize rust-i18n. This looks for YAML files under backend/locales
 rust_i18n::i18n!("locales");
@@ -20,7 +20,14 @@ rust_i18n::i18n!("locales");
 #[tokio::main]
 async fn main() {
     dotenv::dotenv().ok();
-    fmt().with_env_filter("info,webtarot=trace").init();
+    let env_filter =
+        EnvFilter::try_from_default_env().unwrap_or_else(|_| EnvFilter::new("info,webtarot=trace"));
+
+    fmt()
+        .json()
+        .with_env_filter(env_filter)
+        .with_target(true)
+        .init();
     // Set default locale (Portuguese as the project currently uses PT as baseline)
     rust_i18n::set_locale("pt");
     let state = AppState::new().await;
