@@ -20,7 +20,7 @@ services:
     logging:
       driver: gelf
       options:
-        gelf-address: "udp://logstash:12201"
+        gelf-address: "udp://127.0.0.1:12201"
         tag: "webtarot_app"
 
   redis:
@@ -79,8 +79,10 @@ services:
       - elasticsearch
     environment:
       - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
-      - ELASTICSEARCH_USERNAME=elastic
-      - ELASTICSEARCH_PASSWORD=${ELASTIC_PASSWORD}
+      # Use a service account token instead of the elastic superuser
+      # Generate a token and set it in your .env as KIBANA_SERVICE_ACCOUNT_TOKEN
+      # Docs: https://www.elastic.co/guide/en/elasticsearch/reference/8.0/service-accounts.html
+      - ELASTICSEARCH_SERVICEACCOUNT_TOKEN=${KIBANA_SERVICE_ACCOUNT_TOKEN}
       - SERVER_PUBLICBASEURL=https://kibana.webtarot.io
     ports:
       - "5601:5601"

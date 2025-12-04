@@ -28,6 +28,9 @@ diesel-async = { version = "0.7.4", features = ["postgres", "bb8"] }
 diesel_migrations = { version = "2.3.1", features = ["postgres"] }
 password-auth = "1.0.0"
 hyper = { version = "1.8.1", features = ["full"] }
+sentry = "0.34.0"
+sentry-tracing = "0.34.0"
+sentry-tower = "0.34.0"
 
 [dev-dependencies]
 serial_test = "3.2.0"
