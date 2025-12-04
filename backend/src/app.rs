@@ -86,10 +86,15 @@ pub fn create_app(state: AppState) -> Router {
 
 #[cfg(test)]
 pub async fn create_test_app() -> (AppState, Router) {
+    let redis_url =
+        std::env::var("TEST_REDIS_URL").unwrap_or_else(|_| "redis://localhost:6379/0".to_string());
+    let database_url = std::env::var("TEST_DATABASE_URL")
+        .unwrap_or_else(|_| "postgres://localhost/webtarot_test".to_string());
+
     let state = AppState::from_env(crate::state::AppEnvironment {
         environment: RuntimeEnv::Development,
-        redis_url: "redis://localhost:6379/0".to_string(),
-        database_url: "postgres://localhost/webtarot_test".to_string(),
+        redis_url,
+        database_url,
         openai_api_key: "dummy".to_string(),
     })
     .await;
