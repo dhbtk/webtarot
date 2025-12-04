@@ -11,7 +11,7 @@ use crate::state::RuntimeEnv;
 use axum::Router;
 use axum::http::HeaderValue;
 use axum::http::header::CACHE_CONTROL;
-use axum::middleware::{from_extractor, from_fn, from_fn_with_state};
+use axum::middleware::{from_extractor, from_fn};
 use axum::routing::{delete, get, patch, post};
 use std::future::ready;
 use tower::ServiceBuilder;
@@ -75,10 +75,6 @@ pub fn create_app(state: AppState) -> Router {
 
             ServiceBuilder::new().layer(static_cache).service(combined)
         })
-        .layer(from_fn_with_state(
-            state.env.clone(),
-            middleware::domain_redirect::domain_redirect,
-        ))
         .layer(
             TraceLayer::new_for_http()
                 .make_span_with(DefaultMakeSpan::new().level(Level::INFO))
