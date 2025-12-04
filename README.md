@@ -43,13 +43,21 @@ npm -v
   ```bash
   export REDIS_URL="redis://localhost:6379/0"
   ```
+- `DATABASE_URL` (obrigatória — Postgres):
+  - Formato: `postgres://USUARIO:SENHA@HOST:PORTA/NOME_DB`
+  - Exemplo local: `postgres://postgres:postgres@localhost:5432/webtarot`
+  - No `docker-compose` já é injetada para o container do app.
+  ```bash
+  export DATABASE_URL="postgres://postgres:postgres@localhost:5432/webtarot"
+  ```
 
 ---
 
 ## Rodar o backend (desenvolvimento)
 
 1. Defina `OPENAI_KEY` no seu terminal (ver acima).
-2. Execute:
+2. Garanta um Postgres disponível e a variável `DATABASE_URL` configurada (ver acima). Você pode usar um Postgres local ou subir via Docker (ver seção docker-compose).
+3. Execute:
    ```bash
    cd backend
    cargo run
@@ -79,15 +87,18 @@ Apenas construir a imagem localmente:
 docker build -t webtarot:latest .
 ```
 
-Opcional: rodar com docker-compose (inclui Redis e expõe porta 3000):
-
+Rodar com docker-compose (inclui Redis e Postgres; expõe portas 3000 e 5432):
 ```bash
 export OPENAI_KEY="sua_chave_aqui"
 docker compose up --build
 ```
 
 - App: `http://localhost:3000`
-- A variável `REDIS_URL` é injetada pelo `docker-compose.yml` para o container do app.
+- Redis: `redis://localhost:6379` (volume `redis-data` persistente)
+- Postgres: porta `5432` exposta; DB padrão `webtarot`, user `postgres`, senha `postgres` (volume `postgres-data` persistente)
+- As variáveis `REDIS_URL` e `DATABASE_URL` são injetadas pelo `docker-compose.yml` para o container do app.
+
+Se preferir usar um Postgres local fora do compose, ajuste `DATABASE_URL` de acordo e não suba o serviço `postgres`.
 
 ---
 

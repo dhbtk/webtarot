@@ -6,15 +6,15 @@ services:
       context: .
       dockerfile: Dockerfile
     environment:
-      # The application expects Redis URL here
       - REDIS_URL=redis://redis:6379/0
-      # Optional: respect local RUST_LOG, default to info
+      - DATABASE_URL=postgres://postgres:postgres@postgres:5432/webtarot?sslmode=disable
       - RUST_LOG=${RUST_LOG:-info}
       - OPENAI_KEY=${OPENAI_KEY}
     ports:
       - "3000:3000"
     depends_on:
       - redis
+      - postgres
     restart: unless-stopped
 
   redis:
@@ -24,5 +24,23 @@ services:
       - redis-data:/data
     restart: unless-stopped
 
+  postgres:
+    image: postgres:18-alpine
+    environment:
+      - POSTGRES_DB=webtarot
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres -d webtarot" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    restart: unless-stopped
+
 volumes:
   redis-data:
+  postgres-data:
