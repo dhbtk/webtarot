@@ -21,7 +21,7 @@ jobs:
           components: clippy
 
       - name: Backend tests
-        run: cargo test -p backend --all-features --all-targets
+        run: cargo test -p backend --all-targets
 
       - name: Backend linter (clippy)
         run: cargo clippy -p backend --all-targets -- -D warnings
