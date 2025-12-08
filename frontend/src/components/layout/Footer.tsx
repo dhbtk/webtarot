@@ -12,7 +12,7 @@ const FooterWrapper = styled.footer`
   justify-content: space-between;
   gap: 1.5rem;
   animation: fade-in var(--anim-duration) var(--anim-function) forwards;
-  animation-delay: calc(var(--anim-duration) * 2);
+  animation-delay: calc(var(--anim-duration) * 2.5);
   opacity: 0;
   text-shadow: 1px 1px 2px rgb(var(--black-rgb) / 0.8);
   color: rgb(var(--white-rgb) / 0.75);
@@ -39,6 +39,7 @@ const FooterWrapper = styled.footer`
     margin-bottom: -1rem;
     border-radius: 0.5rem;
     border: 1px solid rgb(var(--black-rgb) / 0.1);
+    animation-delay: calc(var(--anim-duration) * 1.5);
   }
 
   font-size: var(--fs-xs);
