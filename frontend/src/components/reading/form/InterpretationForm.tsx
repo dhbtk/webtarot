@@ -177,6 +177,21 @@ const CardImage = styled.img`
   &.flipped {
     transform: rotateZ(180deg);
   }
+
+  // card back using ::after?
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #b91c1c;
+    border-radius: 6px;
+    backface-visibility: hidden;
+    transform: rotateY(180deg);
+  }
 `
 
 const CardLabel = styled.div`

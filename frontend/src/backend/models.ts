@@ -159,6 +159,13 @@ export function interpretationReading (i: Interpretation): Reading {
   throw new Error('Unknown Interpretation variant')
 }
 
+export function interpretationText (i: Interpretation): string {
+  if ('Pending' in i) return ''
+  if ('Done' in i) return i.Done[1]
+  if ('Failed' in i) return i.Failed[1]
+  return ''
+}
+
 // Mirrors Rust enum InterpretationsWebsocketMessage in backend/src/main.rs
 // #[serde(rename_all = "camelCase")] with externally-tagged enum variants:
 // - Subscribe { uuid: Uuid }  => { "subscribe": { "uuid": "<uuid>" } }
@@ -196,16 +203,16 @@ export interface AccessToken {
 export type User =
   | { anonymous: { id: string } }
   | {
-      authenticated: {
-        id: string;
-        createdAt: string;
-        updatedAt: string;
-        email: string;
-        name: string;
-        selfDescription: string;
-        accessToken: AccessToken;
-      };
-    };
+  authenticated: {
+    id: string;
+    createdAt: string;
+    updatedAt: string;
+    email: string;
+    name: string;
+    selfDescription: string;
+    accessToken: AccessToken;
+  };
+};
 
 export interface CreateUserRequest {
   email: string;

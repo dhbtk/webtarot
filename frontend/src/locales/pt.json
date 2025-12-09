@@ -124,6 +124,9 @@
       "userReading": "Tiragem do usuário",
       "waiting": "Aguardando interpretação..."
     },
+    "list": {
+      "askedAt": "{{date}}"
+    },
     "interpretation": {
       "title": "Interpretar tiragem",
       "submit": "Interpretar",

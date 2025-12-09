@@ -174,7 +174,7 @@ function ReadingDetails () {
                 <MarkdownContainer>
                   {query.data?.done ? (
                     <Markdown remarkPlugins={[remarkBreaks]}>
-                      {query.data?.interpretation}
+                      {query.data?.interpretation || query.data?.error}
                     </Markdown>
                   ) : (
                     <>

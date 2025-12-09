@@ -9,16 +9,23 @@ import {
 } from '@tanstack/react-table'
 import styled from 'styled-components'
 import { deleteInterpretation, getHistory } from '../../backend/api.ts'
-import type { Reading } from '../../backend/models.ts'
+import type { Interpretation, Reading } from '../../backend/models.ts'
 import { interpretationReading } from '../../backend/models.ts'
 import { removeReading } from '../../backend/savedReadings.ts'
 import { cardLabel } from '../../util/cards.ts'
 import { ReadingSubLayout } from '../../components/reading/layout/ReadingSubLayout.tsx'
 import { useTranslation } from 'react-i18next'
+import { ReadingListItem } from '../../components/reading/history/ReadingListItem.tsx'
 
 export const Route = createFileRoute('/readings/history')({
   component: RouteComponent,
 })
+
+const ScrollableContainer = styled.div`
+  overflow-y: auto;
+  max-height: 100%;
+  min-width: 0;
+`
 
 const StyledTable = styled.table`
   width: 100%;
@@ -65,16 +72,31 @@ function formatDate (iso: string): string {
 
 const defaultArray: Reading[] = []
 
+const ReadingListContainer = styled.div`
+  display: grid;
+  gap: 1rem;
+  overflow: auto;
+`
+
+function ReadingList (props: { readingList: Interpretation[] }) {
+  const readings = props.readingList
+  return (
+    <ReadingListContainer>
+      {readings.map(r => <ReadingListItem interpretation={r}/>)}
+    </ReadingListContainer>
+  )
+}
+
 function RouteComponent () {
   const queryClient = useQueryClient()
   const { t } = useTranslation()
 
   const query = useQuery({
     queryKey: ['history'],
-    queryFn: async () => getHistory().then(it => it.map(interpretationReading)),
+    queryFn: async () => getHistory(),
   })
 
-  const readings: Reading[] = (query.data ?? defaultArray)
+  const readings: Reading[] = query.data?.map(interpretationReading) ?? defaultArray
 
   const columnHelper = createColumnHelper<Reading>()
   const columns = [
@@ -113,9 +135,17 @@ function RouteComponent () {
     getSortedRowModel: getSortedRowModel(),
   })
 
+  const useTable = false
+
+  if (!useTable) {
+    return (
+      <ReadingList readingList={query.data ?? []}/>
+    )
+  }
+
   return (
     <ReadingSubLayout>
-      <div style={{ padding: '1rem', height: '100%', overflow: 'auto', minWidth: 0 }}>
+      <ScrollableContainer>
         <StyledTable>
           <thead>
           {table.getHeaderGroups().map(headerGroup => (
@@ -160,7 +190,7 @@ function RouteComponent () {
           ))}
           </tbody>
         </StyledTable>
-      </div>
+      </ScrollableContainer>
     </ReadingSubLayout>
   )
 }
