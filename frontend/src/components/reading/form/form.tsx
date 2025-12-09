@@ -157,6 +157,11 @@ export const FormWrapper = styled.div`
     font-size: var(--fs-lg);
     font-weight: 500;
   }
+
+  @media (max-width: 768px) {
+    margin: 0.5rem;
+    max-width: min(calc(100% - 1rem), 500px);
+  }
 `
 
 // Shared page wrapper for auth/profile pages

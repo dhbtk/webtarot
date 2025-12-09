@@ -29,6 +29,10 @@ const FooterWrapper = styled.footer`
     border-radius: 0.75rem;
     box-shadow: 0.5rem 0.5rem 0.75rem 0 rgba(0, 0, 0, 0.25);
     color: rgb(var(--white-rgb) / 0.7);
+
+    @media (max-width: 768px) {
+      border-radius: 0;
+    }
   }
 
   &.layout-only {

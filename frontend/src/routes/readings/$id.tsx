@@ -226,7 +226,7 @@ const ReadingContainer = styled.div`
   height: 100%;
   overflow: auto;
   font-family: var(--font-sans-alt);
-  padding-top: 0.25rem;
+  padding: 0.5rem;
 `
 
 const CardBadgeContainer = styled.div`

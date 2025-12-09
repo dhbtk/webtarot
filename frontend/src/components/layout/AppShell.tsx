@@ -47,6 +47,11 @@ const Header = styled.header`
     display: grid;
     grid-template-rows: min-content 0fr;
     align-items: unset;
+    border-radius: 0;
+    padding: 0.75rem 0.75rem 0.12rem;
+    border-bottom: 1px solid rgb(var(--black-rgb) / 0.1);
+    z-index: 1;
+    box-shadow: 0 0.5rem 0.5rem 0 rgb(var(--black-rgb) / 0.3);
 
     nav {
       flex-direction: column;
@@ -85,8 +90,8 @@ const Wrapper = styled.div`
   padding-bottom: 1rem;
   gap: 1rem;
   @media (max-width: 768px) {
-    padding: calc(0.5rem + env(safe-area-inset-top)) 0.5rem calc(0.5rem + env(safe-area-inset-bottom));
-    gap: 0.5rem;
+    padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
+    gap: 0;
   }
 `
 const HeaderLink = styled(Link)`

@@ -10,6 +10,10 @@ const Wrapper = styled.div`
   flex-direction: column;
   gap: 1rem;
   flex: 1;
+
+  @media (max-width: 768px) {
+    padding-top: 1.5rem;
+  }
 `
 
 const Heading = styled.h2`

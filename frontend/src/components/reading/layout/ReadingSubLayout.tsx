@@ -14,6 +14,11 @@ export const Section = styled.section`
   &:last-child {
     height: 100%;
   }
+
+  @media (max-width: 768px) {
+    padding: 0;
+    border-radius: 0;
+  }
 `
 
 export const ReadingSubLayout: React.FC<React.PropsWithChildren> = ({ children }) => (
