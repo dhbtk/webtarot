@@ -94,4 +94,4 @@ jobs:
           INNER_DIR: /home/diana/Projetos/webtarot
         run: |
           ssh -A -o StrictHostKeyChecking=no "$OUTER_HOST" \
-            "ssh -o StrictHostKeyChecking=no $INNER_HOST \"cd $INNER_DIR && git pull && docker-compose up -d\""
+            "ssh -o StrictHostKeyChecking=no $INNER_HOST \"cd $INNER_DIR && git pull && docker-compose build app && docker-compose up -d\""

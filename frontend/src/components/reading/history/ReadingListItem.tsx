@@ -104,6 +104,7 @@ export const ReadingListItem: React.FC<{ interpretation: Interpretation }> = ({ 
         {reading.cards.map((card, i) => <CardImage key={i} className={card.flipped ? 'flipped' : ''}
                                                    src={arcanaImage(card.arcana)}/>)}
       </CardImageContainer>
+      {/* TODO: strip markdown from abbreviated interpretation */}
       <AbbreviatedInterpretation>{interpretationStr}</AbbreviatedInterpretation>
     </Container>
   )
