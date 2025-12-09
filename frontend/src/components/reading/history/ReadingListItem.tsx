@@ -44,21 +44,6 @@ const ReadingDate = styled.div`
   color: rgb(var(--white-rgb) / 0.65);
 `
 
-const ReadingQuestion = styled(Link)`
-  font-size: var(--fs-md);
-  color: rgb(var(--white-rgb) / 0.87);
-  font-weight: 500;
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-
-  &:hover {
-    text-decoration: underline;
-    color: rgb(var(--white-rgb) / 1);
-  }
-`
-
 const CardImage = styled.img`
   width: 2rem;
   height: calc((527 / 300) * 2rem);
