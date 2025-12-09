@@ -21,6 +21,21 @@ const Container = styled.div`
     padding: 0.5rem;
     border-radius: 0;
   }
+
+  a {
+    font-size: var(--fs-md);
+    color: rgb(var(--white-rgb) / 0.87);
+    font-weight: 500;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+
+    &:hover {
+      text-decoration: underline;
+      color: rgb(var(--white-rgb) / 1);
+    }
+  }
 `
 
 const ReadingDate = styled.div`
@@ -97,9 +112,9 @@ export const ReadingListItem: React.FC<{ interpretation: Interpretation }> = ({ 
         </> : t('reading.details.userReading')}
 
       </ReadingDate>
-      <ReadingQuestion to="/readings/$id" params={{ id: reading.id }} title={reading.question}>
+      <Link to="/readings/$id" params={{ id: reading.id }} title={reading.question}>
         {reading.question}
-      </ReadingQuestion>
+      </Link>
       <CardImageContainer>
         {reading.cards.map((card, i) => <CardImage key={i} className={card.flipped ? 'flipped' : ''}
                                                    src={arcanaImage(card.arcana)}/>)}
