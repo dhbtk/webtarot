@@ -193,24 +193,6 @@ impl InterpretationRepository {
             .collect()
     }
 
-    pub async fn get_history_for_user(&self, user_id: Uuid) -> Vec<Interpretation> {
-        let mut conn = self.db_pool.get().await.unwrap();
-        crate::schema::readings::dsl::readings
-            .select(crate::model::Reading::as_select())
-            .filter(
-                crate::schema::readings::dsl::user_id
-                    .eq(user_id)
-                    .and(crate::schema::readings::dsl::deleted_at.is_null()),
-            )
-            .order(crate::schema::readings::dsl::created_at.desc())
-            .load::<crate::model::Reading>(&mut conn)
-            .await
-            .unwrap()
-            .into_iter()
-            .map(Interpretation::from)
-            .collect()
-    }
-
     pub async fn get_history_for_user_paged(
         &self,
         user_id: Uuid,
