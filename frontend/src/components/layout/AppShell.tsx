@@ -48,10 +48,9 @@ const Header = styled.header`
     grid-template-rows: min-content 0fr;
     align-items: unset;
     border-radius: 0;
-    padding: 0.75rem 0.75rem 0.12rem;
-    border-bottom: 1px solid rgb(var(--black-rgb) / 0.1);
+    padding: calc(0.75rem + env(safe-area-inset-top)) 0.75rem 0.12rem;
     z-index: 1;
-    box-shadow: 0 0.5rem 0.5rem 0 rgb(var(--black-rgb) / 0.3);
+    box-shadow: 0 0.5rem 0.5rem 0 rgb(var(--black-rgb) / 0.4);
 
     nav {
       flex-direction: column;
