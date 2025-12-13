@@ -211,6 +211,34 @@ impl InterpretationRepository {
             .collect()
     }
 
+    pub async fn get_history_for_user_paged(
+        &self,
+        user_id: Uuid,
+        before: Option<chrono::NaiveDateTime>,
+        limit: i64,
+    ) -> Vec<Interpretation> {
+        use crate::schema::readings::dsl as r;
+        let mut conn = self.db_pool.get().await.unwrap();
+        let mut query = r::readings
+            .select(crate::model::Reading::as_select())
+            .filter(r::user_id.eq(user_id).and(r::deleted_at.is_null()))
+            .into_boxed();
+
+        if let Some(before) = before {
+            query = query.filter(r::created_at.lt(before));
+        }
+
+        query
+            .order(r::created_at.desc())
+            .limit(limit)
+            .load::<crate::model::Reading>(&mut conn)
+            .await
+            .unwrap()
+            .into_iter()
+            .map(Interpretation::from)
+            .collect()
+    }
+
     pub async fn delete_interpretation(&self, uuid: Uuid, user_id: Uuid) -> Option<()> {
         let mut conn = self.db_pool.get().await.unwrap();
         diesel::update(crate::schema::readings::dsl::readings.find(uuid))

@@ -91,8 +91,8 @@ export const ReadingListItem: React.FC<{ interpretation: Interpretation }> = ({ 
     <Container>
       <ReadingDate>
         {t('reading.list.askedAt', { date: new Date(reading.createdAt).toLocaleString() })}
+        {' '}&bull;{' '}
         {reading.shuffledTimes > 0 ? <>
-          {' '}&bull;{' '}
           {t('reading.details.shuffledTimes', { count: reading.shuffledTimes })}
         </> : t('reading.details.userReading')}
 

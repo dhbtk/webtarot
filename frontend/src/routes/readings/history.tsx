@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import {
   createColumnHelper,
   flexRender,
@@ -16,6 +16,7 @@ import { cardLabel } from '../../util/cards.ts'
 import { ReadingSubLayout } from '../../components/reading/layout/ReadingSubLayout.tsx'
 import { useTranslation } from 'react-i18next'
 import { ReadingListItem } from '../../components/reading/history/ReadingListItem.tsx'
+import InfiniteScroll from 'react-infinite-scroll-component'
 
 export const Route = createFileRoute('/readings/history')({
   component: RouteComponent,
@@ -82,7 +83,7 @@ function ReadingList (props: { readingList: Interpretation[] }) {
   const readings = props.readingList
   return (
     <ReadingListContainer>
-      {readings.map(r => <ReadingListItem interpretation={r}/>)}
+      {readings.map(r => <ReadingListItem key={interpretationReading(r).id} interpretation={r}/>)}
     </ReadingListContainer>
   )
 }
@@ -91,12 +92,24 @@ function RouteComponent () {
   const queryClient = useQueryClient()
   const { t } = useTranslation()
 
-  const query = useQuery({
+  const PAGE_SIZE = 30
+
+  const query = useInfiniteQuery<Interpretation[], Error>({
     queryKey: ['history'],
-    queryFn: async () => getHistory(),
+    queryFn: async ({ pageParam }) => {
+      const before = typeof pageParam === 'string' ? pageParam : undefined
+      return getHistory({ before, limit: PAGE_SIZE })
+    },
+    initialPageParam: undefined,
+    getNextPageParam: (lastPage) => {
+      if (!lastPage || lastPage.length < PAGE_SIZE) return undefined
+      const last = interpretationReading(lastPage[lastPage.length - 1])
+      return last.createdAt
+    },
   })
 
-  const readings: Reading[] = query.data?.map(interpretationReading) ?? defaultArray
+  const readings: Reading[] = (query.data?.pages || [])
+    .flatMap(page => page.map(interpretationReading)) ?? defaultArray
 
   const columnHelper = createColumnHelper<Reading>()
   const columns = [
@@ -139,7 +152,17 @@ function RouteComponent () {
 
   if (!useTable) {
     return (
-      <ReadingList readingList={query.data ?? []}/>
+      <ReadingSubLayout>
+        <InfiniteScroll
+          dataLength={readings.length}
+          next={() => query.fetchNextPage()}
+          hasMore={query.hasNextPage}
+          loader={<p>Loading...</p>}
+          endMessage={<p style={{ textAlign: 'center', color: 'var(--text-muted)' }}>— End —</p>}
+        >
+          <ReadingList readingList={(query.data?.pages || []).flat()}/>
+        </InfiniteScroll>
+      </ReadingSubLayout>
     )
   }
 

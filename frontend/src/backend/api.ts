@@ -110,10 +110,19 @@ export async function getStats (init?: RequestInit): Promise<Stats> {
 
 /**
  * Fetch interpretation history for the current user.
- * GET /api/v1/interpretation/history
+ * Cursor pagination: pass `before` (ISO timestamp) to get items with createdAt < before.
+ * Optional `limit` controls page size.
+ * GET /api/v1/interpretation/history?before=...&limit=...
  */
-export async function getHistory (init?: RequestInit): Promise<Interpretation[]> {
-  const res = await fetch(`${API_BASE}/interpretation/history`, {
+export async function getHistory (
+  params?: { before?: string, limit?: number },
+  init?: RequestInit,
+): Promise<Interpretation[]> {
+  const qs = new URLSearchParams()
+  if (params?.before) qs.set('before', params.before)
+  if (typeof params?.limit === 'number') qs.set('limit', String(params.limit))
+  const url = `${API_BASE}/interpretation/history${qs.toString() ? `?${qs.toString()}` : ''}`
+  const res = await fetch(url, {
     method: 'GET',
     headers: { ...getDefaultHeaders(), ...(init?.headers ?? {}) },
     ...init,
