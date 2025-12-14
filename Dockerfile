@@ -10,6 +10,9 @@ RUN npm ci --no-audit --no-fund
 
 # Build the app (Vite default output: ./dist)
 COPY frontend/ .
+# Accept and forward build-time env var for Vite
+ARG VITE_SENTRY_DSN
+ENV VITE_SENTRY_DSN=${VITE_SENTRY_DSN}
 RUN npm run build
 
 

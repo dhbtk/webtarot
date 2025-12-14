@@ -5,6 +5,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        # Pass through to Vite build ARG in Dockerfile (frontend stage)
+        VITE_SENTRY_DSN: ${SENTRY_DSN}
     environment:
       - REDIS_URL=redis://redis:6379/0
       - DATABASE_URL=postgres://postgres:postgres@postgres:5432/webtarot?sslmode=disable
