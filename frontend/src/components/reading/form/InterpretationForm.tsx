@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import React, { useMemo, useRef, useState } from 'react'
 import { Form, InputWrapper, Label, SubmitButton, Textarea } from './form.tsx'
 import {
   type Card,
@@ -45,7 +45,7 @@ export default function InterpretationForm() {
 
   const [query, setQuery] = useState('')
 
-  const { refs, floatingStyles, placement } = useFloating({
+  const { refs, floatingStyles, placement, update } = useFloating({
     middleware: [
       flip(), // Automatically flips to the top if no space at the bottom
       autoPlacement({ allowedPlacements: ['top', 'bottom'] }), // Tries to place options where there is most space
@@ -109,11 +109,6 @@ export default function InterpretationForm() {
 
   const inputRef = useRef<HTMLInputElement>(null)
 
-  useEffect(() => {
-    inputRef.current?.focus()
-    inputRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [inputRef, cards])
-
   return (
     <Form onSubmit={onSubmit}>
       <Label>
@@ -162,6 +157,10 @@ export default function InterpretationForm() {
               if (arc) {
                 setCards([...cards, { arcana: allArcana[arc.id], flipped: false }])
                 setQuery('')
+                setTimeout(() => {
+                  inputRef.current?.focus()
+                  inputRef.current?.scrollIntoView({ behavior: 'smooth' })
+                }, 0)
               }
             }}
           >
@@ -172,7 +171,10 @@ export default function InterpretationForm() {
                     as={ComboInput}
                     placeholder={t('common.combobox.selectCard')}
                     displayValue={() => ''}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setQuery(e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                      setQuery(e.target.value)
+                      update()
+                    }}
                     ref={inputRef}
                   />
                 </InputWrapper>
@@ -273,6 +275,7 @@ const RoundPurpleButton = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
 
   &:hover {
     background-color: rgb(var(--panel-purple-rgb) / 0.8);
@@ -286,6 +289,17 @@ const RoundPurpleButton = styled.button`
 
   svg {
     width: 0.75rem;
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    box-shadow: 3px 3px 6px 2px rgb(var(--black-rgb) / 0.2);
   }
 `
 
