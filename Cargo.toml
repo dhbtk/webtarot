@@ -5,3 +5,8 @@ members = [
     "shared",
 ]
 resolver = "2"
+
+[profile.release]
+# Include debug symbols in release builds to enable better production stack traces
+# and profiling. Level 1 is a good balance of size and usefulness.
+debug = 1

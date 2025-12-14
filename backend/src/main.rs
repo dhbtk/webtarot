@@ -19,14 +19,14 @@ use tracing_subscriber::{EnvFilter, fmt};
 // Initialize rust-i18n. This looks for YAML files under backend/locales
 rust_i18n::i18n!("locales");
 
-#[tokio::main]
-async fn main() {
+pub fn main() {
     dotenv::dotenv().ok();
     let sentry_guard = std::env::var("SENTRY_DSN").ok().map(|dsn| {
         sentry::init((
             dsn,
             sentry::ClientOptions {
                 release: sentry::release_name!(),
+                enable_logs: true,
                 ..Default::default()
             },
         ))
@@ -44,6 +44,19 @@ async fn main() {
         .init();
     // Set default locale (Portuguese as the project currently uses PT as baseline)
     rust_i18n::set_locale("pt");
+
+    tokio::runtime::Builder::new_multi_thread()
+        .enable_all()
+        .build()
+        .unwrap()
+        .block_on(async_main());
+
+    if let Some(guard) = sentry_guard {
+        let _ = guard.flush(Some(std::time::Duration::from_secs(2)));
+    }
+}
+
+async fn async_main() {
     let state = AppState::new().await;
     tracing::info!(
         "[[webtarot]] Starting server with environment={:?}",
@@ -54,8 +67,4 @@ async fn main() {
     tracing::info!("[[webtarot]] Listening on port 3000");
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
     axum::serve(listener, app).await.unwrap();
-
-    if let Some(guard) = sentry_guard {
-        let _ = guard.flush(Some(std::time::Duration::from_secs(2)));
-    }
 }
