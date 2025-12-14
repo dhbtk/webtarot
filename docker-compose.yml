@@ -10,6 +10,8 @@ services:
       - DATABASE_URL=postgres://postgres:postgres@postgres:5432/webtarot?sslmode=disable
       - RUST_LOG=info,webtarot=debug
       - OPENAI_KEY=${OPENAI_KEY}
+      - SENTRY_DSN=${SENTRY_DSN}
+      - VITE_SENTRY_DSN=${SENTRY_DSN}
     ports:
       - "3000:3000"
     depends_on:
