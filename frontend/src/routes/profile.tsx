@@ -12,7 +12,7 @@ import {
 } from '../components/reading/form/form'
 import { useTranslation } from 'react-i18next'
 import { useCurrentUserQuery, useUpdateUserMutation } from '../backend/queries'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import type { User } from '../backend/models'
 import { useUser } from '../context/useUser'
 import { Footer } from '../components/layout/Footer.tsx'
@@ -32,6 +32,7 @@ function RouteComponent() {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const { user: ctxUser, setUser } = useUser()
+  const queryClient = useQueryClient()
 
   const userQuery = useQuery(useCurrentUserQuery())
   const updateMutation = useMutation(useUpdateUserMutation())
@@ -73,6 +74,10 @@ function RouteComponent() {
         onSuccess: (updated) => {
           // Reflect updated user in context (token preserved by context implementation)
           setUser(updated)
+          // Update the cached current user query so the rest of the app sees fresh data
+          queryClient.setQueryData(['auth'], updated)
+          // Optionally refetch to ensure we have canonical data from backend (in case of server-side normalization)
+          void queryClient.invalidateQueries({ queryKey: ['auth'] })
           setSaved(true)
         },
       },
