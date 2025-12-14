@@ -48,7 +48,7 @@ const Header = styled.header`
     grid-template-rows: min-content 0fr;
     align-items: unset;
     border-radius: 0;
-    padding: calc(0.75rem + env(safe-area-inset-top)) 0.75rem 0.12rem;
+    padding: 0.75rem 0.75rem 0.12rem;
     z-index: 1;
     box-shadow: 0 0.5rem 0.5rem 0 rgb(var(--black-rgb) / 0.4);
 
@@ -80,8 +80,8 @@ const Wrapper = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100vh;
-  min-height: 100vh;
+  height: 100dvh;
+  min-height: 100dvh;
   width: 100%;
   max-width: min(100vw, 1200px);
   margin: 0 auto;
@@ -126,26 +126,34 @@ export const AppShell: React.FC<React.PropsWithChildren> = ({ children }) => {
   return (
     <Wrapper>
       <Header className={open ? 'open' : ''}>
-        <Link to="/readings"
-              style={{
-                color: 'inherit',
-                textDecoration: 'none',
-                marginRight: 'auto',
-                display: 'flex',
-                gap: '0.5rem',
-                alignItems: 'center'
-              }}>
-          <HamburgerButton type="button" onClick={toggleOpen} aria-label={t('aria.openMenu')} aria-expanded={open}
-                           aria-controls="menu" title={t('aria.openMenu')}>
-            <MenuOutlined/>
+        <Link
+          to="/readings"
+          style={{
+            color: 'inherit',
+            textDecoration: 'none',
+            marginRight: 'auto',
+            display: 'flex',
+            gap: '0.5rem',
+            alignItems: 'center',
+          }}
+        >
+          <HamburgerButton
+            type="button"
+            onClick={toggleOpen}
+            aria-label={t('aria.openMenu')}
+            aria-expanded={open}
+            aria-controls="menu"
+            title={t('aria.openMenu')}
+          >
+            <MenuOutlined />
           </HamburgerButton>
-          <img className="logo" alt={t('hero.logo_alt')} src={logoUrl}/>
+          <img className="logo" alt={t('hero.logo_alt')} src={logoUrl} />
           <h1>{t('hero.title')}</h1>
         </Link>
         <nav>
-          {'anonymous' in user && (<HeaderLink to="/signup">{t('nav.register')}</HeaderLink>)}
-          {'anonymous' in user && (<HeaderLink to="/login">{t('nav.login')}</HeaderLink>)}
-          {'authenticated' in user && (<HeaderLink to="/profile">{t('nav.profile')}</HeaderLink>)}
+          {'anonymous' in user && <HeaderLink to="/signup">{t('nav.register')}</HeaderLink>}
+          {'anonymous' in user && <HeaderLink to="/login">{t('nav.login')}</HeaderLink>}
+          {'authenticated' in user && <HeaderLink to="/profile">{t('nav.profile')}</HeaderLink>}
           <HeaderLink to="/interpretations/new">{t('nav.interpret')}</HeaderLink>
           <HeaderLink to="/readings/history">{t('nav.history')}</HeaderLink>
           <HeaderLink to="/readings/stats">{t('nav.stats')}</HeaderLink>

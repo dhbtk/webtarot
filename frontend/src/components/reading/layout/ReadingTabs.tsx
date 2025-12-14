@@ -11,11 +11,13 @@ const Wrapper = styled.div`
   border-bottom: 1px solid rgb(var(--white-rgb) / 0.35);
 `
 
-export default function ReadingTabs () {
+export default function ReadingTabs() {
   const result = useQuery(useReadingIds())
   return (
     <Wrapper style={{ display: result.data?.length ? 'flex' : 'none' }}>
-      {result.data?.map(id => <ReadingTab key={id} id={id}/>)}
+      {result.data?.map((id) => (
+        <ReadingTab key={id} id={id} />
+      ))}
     </Wrapper>
   )
 }

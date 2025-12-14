@@ -106,19 +106,22 @@ export const ReadingTab: React.FC<{ id: string }> = ({ id }: { id: string }) => 
           await navigate({ to: '/readings' })
         }
       }
-    }
+    },
   })
 
   return (
     <TabLink to={`/readings/${id}`} activeProps={{ className: 'active' }} title={title}>
       <span>{title}</span>
-      <button type="button" onClick={(e) => {
-        e.preventDefault()
-        if (confirm(t('history.delete.confirm'))) {
-          removeMutation.mutate()
-        }
-      }}>
-        <CloseOutlined/>
+      <button
+        type="button"
+        onClick={(e) => {
+          e.preventDefault()
+          if (confirm(t('history.delete.confirm'))) {
+            removeMutation.mutate()
+          }
+        }}
+      >
+        <CloseOutlined />
       </button>
     </TabLink>
   )

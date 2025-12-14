@@ -1,6 +1,14 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import React from 'react'
-import { Form, FormWrapper, Input, InputWrapper, Label, PageWrapper, SubmitButton } from '../components/reading/form/form.tsx'
+import {
+  Form,
+  FormWrapper,
+  Input,
+  InputWrapper,
+  Label,
+  PageWrapper,
+  SubmitButton,
+} from '../components/reading/form/form.tsx'
 import { Footer } from '../components/layout/Footer.tsx'
 import { useMutation } from '@tanstack/react-query'
 import { useLogInMutation } from '../backend/queries.ts'
@@ -11,7 +19,7 @@ export const Route = createFileRoute('/login')({
   component: RouteComponent,
 })
 
-function RouteComponent () {
+function RouteComponent() {
   const [email, setEmail] = React.useState('')
   const [password, setPassword] = React.useState('')
   const navigate = useNavigate()
@@ -19,7 +27,7 @@ function RouteComponent () {
   const loginMutation = useMutation(useLogInMutation())
   const { t } = useTranslation()
 
-  async function onSubmit (e: React.FormEvent) {
+  async function onSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!email || !password || loginMutation.isPending) return
     loginMutation.mutate(
@@ -31,7 +39,7 @@ function RouteComponent () {
           // Navigate to a sensible post-login page
           await navigate({ to: '/readings' })
         },
-      }
+      },
     )
   }
 
@@ -69,7 +77,11 @@ function RouteComponent () {
             </InputWrapper>
           </Label>
           {loginMutation.error && (
-            <div role="alert" aria-live="assertive" style={{ color: 'salmon', fontSize: 'var(--fs-xs)' }}>
+            <div
+              role="alert"
+              aria-live="assertive"
+              style={{ color: 'salmon', fontSize: 'var(--fs-xs)' }}
+            >
               {(loginMutation.error as Error).message || t('auth.login.error')}
             </div>
           )}
@@ -78,7 +90,7 @@ function RouteComponent () {
           </SubmitButton>
         </Form>
       </FormWrapper>
-      <Footer/>
+      <Footer />
     </PageWrapper>
   )
 }

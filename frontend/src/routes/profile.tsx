@@ -8,7 +8,7 @@ import {
   Label,
   PageWrapper,
   SubmitButton,
-  Textarea
+  Textarea,
 } from '../components/reading/form/form'
 import { useTranslation } from 'react-i18next'
 import { useCurrentUserQuery, useUpdateUserMutation } from '../backend/queries'
@@ -28,7 +28,7 @@ export const Route = createFileRoute('/profile')({
   },
 })
 
-function RouteComponent () {
+function RouteComponent() {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const { user: ctxUser, setUser } = useUser()
@@ -49,9 +49,12 @@ function RouteComponent () {
       void navigate({ to: '/login', replace: true })
       return
     }
-    const u = (userQuery.data && 'authenticated' in userQuery.data)
-      ? userQuery.data.authenticated
-      : ('authenticated' in ctxUser ? ctxUser.authenticated : undefined)
+    const u =
+      userQuery.data && 'authenticated' in userQuery.data
+        ? userQuery.data.authenticated
+        : 'authenticated' in ctxUser
+          ? ctxUser.authenticated
+          : undefined
     if (u) {
       setName(u.name || '')
       setEmail(u.email || '')
@@ -60,7 +63,7 @@ function RouteComponent () {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userQuery.data, authenticated])
 
-  async function onSubmit (e: React.FormEvent) {
+  async function onSubmit(e: React.FormEvent) {
     e.preventDefault()
     setSaved(false)
     if (!name || !email || updateMutation.isPending) return
@@ -72,7 +75,7 @@ function RouteComponent () {
           setUser(updated)
           setSaved(true)
         },
-      }
+      },
     )
   }
 
@@ -124,22 +127,33 @@ function RouteComponent () {
             </InputWrapper>
           </Label>
           {updateMutation.error && (
-            <div role="alert" aria-live="assertive" style={{ color: 'salmon', fontSize: 'var(--fs-xs)' }}>
-              {(updateMutation.error as Error).message || t('profile.error', 'Could not update profile')}
+            <div
+              role="alert"
+              aria-live="assertive"
+              style={{ color: 'salmon', fontSize: 'var(--fs-xs)' }}
+            >
+              {(updateMutation.error as Error).message ||
+                t('profile.error', 'Could not update profile')}
             </div>
           )}
           {saved && !updateMutation.isPending && (
-            <div role="status" aria-live="polite" style={{ color: 'palegreen', fontSize: 'var(--fs-xs)' }}>
+            <div
+              role="status"
+              aria-live="polite"
+              style={{ color: 'palegreen', fontSize: 'var(--fs-xs)' }}
+            >
               {t('profile.saved', 'Profile updated!')}
             </div>
           )}
 
           <SubmitButton type="submit" disabled={updateMutation.isPending}>
-            {updateMutation.isPending ? t('profile.submitting', 'Saving...') : t('profile.submit', 'Save changes')}
+            {updateMutation.isPending
+              ? t('profile.submitting', 'Saving...')
+              : t('profile.submit', 'Save changes')}
           </SubmitButton>
         </Form>
       </FormWrapper>
-      <Footer/>
+      <Footer />
     </PageWrapper>
   )
 }

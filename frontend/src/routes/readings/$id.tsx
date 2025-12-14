@@ -20,20 +20,22 @@ import logoUrl from '../../assets/logo.png'
 import { ShareAltOutlined } from '@ant-design/icons'
 
 export const Route = createFileRoute('/readings/$id')({
-  component: ReadingDetails
+  component: ReadingDetails,
 })
 
-function ReadingDetails () {
+function ReadingDetails() {
   const { id } = useParams({ from: '/readings/$id' }) as { id: string }
   const queryClient = useQueryClient()
   const navigate = useNavigate()
   const { t } = useTranslation()
   const { user } = useUser()
-  const [notifPermission, setNotifPermission] = useState<NotificationPermission | 'unsupported'>(() => {
-    if (typeof window === 'undefined') return 'unsupported'
-    if (!('Notification' in window)) return 'unsupported'
-    return Notification.permission
-  })
+  const [notifPermission, setNotifPermission] = useState<NotificationPermission | 'unsupported'>(
+    () => {
+      if (typeof window === 'undefined') return 'unsupported'
+      if (!('Notification' in window)) return 'unsupported'
+      return Notification.permission
+    },
+  )
 
   useEffect(() => {
     // Keep local permission state in sync (in case it changes elsewhere)
@@ -54,7 +56,7 @@ function ReadingDetails () {
       } else {
         await navigate({ to: '/readings' })
       }
-    }
+    },
   })
 
   useEffect(() => {
@@ -67,7 +69,7 @@ function ReadingDetails () {
   useEffect(() => {
     const url = new URL('/api/v1/interpretation/notify', window.location.href)
     url.protocol = url.protocol.replace('http', 'ws')
-    const idToSend = 'anonymous' in user ? user.anonymous.id : getStoredUser().accessToken ?? ''
+    const idToSend = 'anonymous' in user ? user.anonymous.id : (getStoredUser().accessToken ?? '')
     const websocket = new WebSocket(url.href, [idToSend])
 
     websocket.onopen = () => {
@@ -83,13 +85,18 @@ function ReadingDetails () {
         if (data.done.uuid === id) {
           queryClient.invalidateQueries({ queryKey: ['readings', id] })
           try {
-            if (typeof document !== 'undefined' && document.visibilityState === 'hidden' && 'Notification' in window && Notification.permission === 'granted') {
+            if (
+              typeof document !== 'undefined' &&
+              document.visibilityState === 'hidden' &&
+              'Notification' in window &&
+              Notification.permission === 'granted'
+            ) {
               new Notification(t('reading.notification.title'), {
                 body: t('reading.notification.body'),
                 icon: logoUrl,
               })
             }
-          } catch (e) {
+          } catch {
             // ignore notification errors
           }
           websocket.close()
@@ -98,7 +105,7 @@ function ReadingDetails () {
     }
 
     return () => websocket.close()
-  }, [id, user, queryClient])
+  }, [id, user, queryClient, t])
 
   const query = useQuery({
     queryKey: ['readings', id],
@@ -121,7 +128,7 @@ function ReadingDetails () {
     try {
       const result = await Notification.requestPermission()
       setNotifPermission(result)
-    } catch (e) {
+    } catch {
       // ignore
     }
   }
@@ -151,22 +158,27 @@ function ReadingDetails () {
           <>
             <ReadingTitle>{reading.question}</ReadingTitle>
             <MiniHeading style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <span>
-              {t('reading.details.askedAt', { date: new Date(reading.createdAt).toLocaleString() })}<br/>
-              {reading.shuffledTimes > 0 ? t('reading.details.shuffledTimes', { count: reading.shuffledTimes }) : t('reading.details.userReading')}
-            </span>
+              <span>
+                {t('reading.details.askedAt', {
+                  date: new Date(reading.createdAt).toLocaleString(),
+                })}
+                <br />
+                {reading.shuffledTimes > 0
+                  ? t('reading.details.shuffledTimes', { count: reading.shuffledTimes })
+                  : t('reading.details.userReading')}
+              </span>
               <ShareButton type="button" onClick={triggerShare}>
-                <ShareAltOutlined/>
+                <ShareAltOutlined />
               </ShareButton>
             </MiniHeading>
 
             {reading && (
               <section style={{ display: 'grid', gap: '0.75rem' }}>
                 <div>
-                  <CardDisplay cards={reading.cards} uuid={reading.id}/>
+                  <CardDisplay cards={reading.cards} uuid={reading.id} />
                   <CardBadgeContainer>
                     {reading.cards.map((c, i) => (
-                      <CardBadge key={i} card={c}/>
+                      <CardBadge key={i} card={c} />
                     ))}
                   </CardBadgeContainer>
                 </div>
@@ -178,7 +190,7 @@ function ReadingDetails () {
                     </Markdown>
                   ) : (
                     <>
-                      <CardSpinner/>
+                      <CardSpinner />
                       <h3 style={{ textAlign: 'center' }}>{t('reading.details.waiting')}</h3>
                       {isNotifSupported && notifPermission === 'default' && (
                         <NotificationContainer>
@@ -189,7 +201,6 @@ function ReadingDetails () {
                       )}
                     </>
                   )}
-
                 </MarkdownContainer>
               </section>
             )}
@@ -239,12 +250,16 @@ const CardBadgeContainer = styled.div`
 const MiniHeading = styled.header`
   font-size: var(--fs-xs);
   color: rgb(var(--white-rgb) / 0.65);
-
 `
 const MarkdownContainer = styled.div`
   text-shadow: 2px 1px 3px rgb(var(--black-rgb) / 0.8);
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-family: var(--font-sans);
     font-size: var(--fs-md);
     font-weight: 600;
@@ -268,7 +283,8 @@ const MarkdownContainer = styled.div`
   }
 
   @media (min-width: 768px) {
-    ul, ol {
+    ul,
+    ol {
       padding-left: 1.25rem;
 
       li {
@@ -326,12 +342,6 @@ const BadgeSpan = styled.span`
   box-shadow: 3px 3px 6px 2px rgb(var(--black-rgb) / 0.2);
 `
 
-function CardBadge ({ card }: { card: Card }) {
-  return (
-    <BadgeSpan
-      title={cardLabel(card)}
-    >
-      {cardLabel(card)}
-    </BadgeSpan>
-  )
+function CardBadge({ card }: { card: Card }) {
+  return <BadgeSpan title={cardLabel(card)}>{cardLabel(card)}</BadgeSpan>
 }

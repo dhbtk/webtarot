@@ -2,27 +2,27 @@ import type { Arcana, Card, MajorArcana, Rank, Suit } from '../backend/models.ts
 import i18n from '../i18n.ts'
 
 // Type guards for the Arcana union
-function isMajor (arcana: Arcana): arcana is { major: { name: MajorArcana } } {
+function isMajor(arcana: Arcana): arcana is { major: { name: MajorArcana } } {
   return typeof arcana === 'object' && arcana !== null && 'major' in arcana
 }
 
-function isMinor (arcana: Arcana): arcana is { minor: { rank: Rank; suit: Suit } } {
+function isMinor(arcana: Arcana): arcana is { minor: { rank: Rank; suit: Suit } } {
   return typeof arcana === 'object' && arcana !== null && 'minor' in arcana
 }
 
-function tMajor (name: MajorArcana): string {
+function tMajor(name: MajorArcana): string {
   return i18n.t(`tarot.major.${name}`)
 }
 
-function tRank (rank: Rank): string {
+function tRank(rank: Rank): string {
   return i18n.t(`tarot.rank.${rank}`)
 }
 
-function tSuit (suit: Suit): string {
+function tSuit(suit: Suit): string {
   return i18n.t(`tarot.suit.${suit}`)
 }
 
-export function arcanaLabel (arcana: Arcana): string {
+export function arcanaLabel(arcana: Arcana): string {
   if (isMajor(arcana)) {
     return tMajor(arcana.major.name)
   }
@@ -36,7 +36,7 @@ export function arcanaLabel (arcana: Arcana): string {
   return ''
 }
 
-export function cardLabel (card: Card): string {
+export function cardLabel(card: Card): string {
   const base = arcanaLabel(card.arcana)
   return card.flipped ? `${base} ${i18n.t('tarot.reversed')}` : base
 }
@@ -50,7 +50,7 @@ export function cardLabel (card: Card): string {
 const imageModules = import.meta.glob('../assets/cardimages/*.{jpg,JPG,png,svg}', {
   eager: true,
   query: '?url',
-  import: 'default'
+  import: 'default',
 }) as Record<string, string>
 
 // Build quick lookup maps from the imported modules
@@ -126,7 +126,7 @@ const rankNumber: Record<Rank, number> = {
   king: 14,
 }
 
-export function arcanaImage (arcana: Arcana): string {
+export function arcanaImage(arcana: Arcana): string {
   if (isMajor(arcana)) {
     const idx = majorIndexMap[arcana.major.name]
     const url = majorByIndex[idx]

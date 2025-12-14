@@ -1,14 +1,14 @@
 import { createRootRoute, Outlet } from '@tanstack/react-router'
 import { AppShell } from '../components/layout/AppShell.tsx'
 
-function RootRoute () {
+function RootRoute() {
   return (
     <AppShell>
-      <Outlet/>
+      <Outlet />
     </AppShell>
   )
 }
 
 export const Route = createRootRoute({
-  component: RootRoute
+  component: RootRoute,
 })

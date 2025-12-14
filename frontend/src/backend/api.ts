@@ -7,7 +7,20 @@
 //
 // Models are defined in ./models.ts and mirror the Rust types.
 
-import type { CreateReadingRequest, CreateReadingResponse, GetInterpretationResult, Stats, Interpretation, CreateInterpretationRequest, CreateInterpretationResponse, CreateUserRequest, CreateUserResponse, LogInRequest, UpdateUserRequest, User } from './models'
+import type {
+  CreateReadingRequest,
+  CreateReadingResponse,
+  GetInterpretationResult,
+  Stats,
+  Interpretation,
+  CreateInterpretationRequest,
+  CreateInterpretationResponse,
+  CreateUserRequest,
+  CreateUserResponse,
+  LogInRequest,
+  UpdateUserRequest,
+  User,
+} from './models'
 import { getAuthHeaders } from './user.ts'
 import i18n from '../i18n.ts'
 
@@ -18,7 +31,7 @@ const JSON_HEADERS = {
 // Base path is proxied by Vite in development (see vite.config.ts), so relative `/api` works.
 const API_BASE = '/api/v1'
 
-async function handleJsonResponse<T> (res: Response): Promise<T> {
+async function handleJsonResponse<T>(res: Response): Promise<T> {
   const contentType = res.headers.get('Content-Type') || ''
   const isJson = contentType.includes('application/json')
   if (!res.ok) {
@@ -44,18 +57,22 @@ async function handleJsonResponse<T> (res: Response): Promise<T> {
   return isJson ? res.json() : (undefined as unknown as T)
 }
 
-function getCurrentLocale (): string {
+function getCurrentLocale(): string {
   // Prefer resolvedLanguage, then language, falling back to configured fallbackLng
-  const raw = (i18n.resolvedLanguage || i18n.language || (
-    Array.isArray(i18n.options.fallbackLng)
+  const raw =
+    i18n.resolvedLanguage ||
+    i18n.language ||
+    (Array.isArray(i18n.options.fallbackLng)
       ? i18n.options.fallbackLng[0]
-      : (typeof i18n.options.fallbackLng === 'string' ? i18n.options.fallbackLng : 'en')
-  )) || 'en'
+      : typeof i18n.options.fallbackLng === 'string'
+        ? i18n.options.fallbackLng
+        : 'en') ||
+    'en'
   // Normalize to just the language part expected by the backend (e.g., en, pt)
   return raw.split(/[-_]/)[0]?.toLowerCase() || 'en'
 }
 
-function getDefaultHeaders () {
+function getDefaultHeaders() {
   return {
     ...getAuthHeaders(),
     'x-locale': getCurrentLocale(),
@@ -66,7 +83,7 @@ function getDefaultHeaders () {
  * Create a new tarot reading.
  * POST /api/v1/reading
  */
-export async function createReading (
+export async function createReading(
   payload: CreateReadingRequest,
   init?: RequestInit,
 ): Promise<CreateReadingResponse> {
@@ -83,7 +100,7 @@ export async function createReading (
  * Fetch the interpretation for a reading by ID.
  * GET /api/v1/interpretation/{id}
  */
-export async function getInterpretation (
+export async function getInterpretation(
   interpretationId: string,
   init?: RequestInit,
 ): Promise<GetInterpretationResult> {
@@ -99,7 +116,7 @@ export async function getInterpretation (
  * Fetch aggregate statistics about readings and cards.
  * GET /api/v1/stats
  */
-export async function getStats (init?: RequestInit): Promise<Stats> {
+export async function getStats(init?: RequestInit): Promise<Stats> {
   const res = await fetch(`${API_BASE}/stats`, {
     method: 'GET',
     headers: { ...getDefaultHeaders(), ...(init?.headers ?? {}) },
@@ -114,8 +131,8 @@ export async function getStats (init?: RequestInit): Promise<Stats> {
  * Optional `limit` controls page size.
  * GET /api/v1/interpretation/history?before=...&limit=...
  */
-export async function getHistory (
-  params?: { before?: string, limit?: number },
+export async function getHistory(
+  params?: { before?: string; limit?: number },
   init?: RequestInit,
 ): Promise<Interpretation[]> {
   const qs = new URLSearchParams()
@@ -134,7 +151,7 @@ export async function getHistory (
  * Create a new interpretation from a manually provided question and cards.
  * POST /api/v1/interpretation
  */
-export async function createInterpretation (
+export async function createInterpretation(
   payload: CreateInterpretationRequest,
   init?: RequestInit,
 ): Promise<CreateInterpretationResponse> {
@@ -151,7 +168,7 @@ export async function createInterpretation (
  * Delete an interpretation by ID.
  * DELETE /api/v1/interpretation/{id}
  */
-export async function deleteInterpretation (
+export async function deleteInterpretation(
   interpretationId: string,
   init?: RequestInit,
 ): Promise<void> {
@@ -168,7 +185,7 @@ export async function deleteInterpretation (
  * Create user (sign up)
  * POST /api/v1/user
  */
-export async function createUser (
+export async function createUser(
   payload: CreateUserRequest,
   init?: RequestInit,
 ): Promise<CreateUserResponse> {
@@ -185,7 +202,7 @@ export async function createUser (
  * Log in
  * POST /api/v1/login
  */
-export async function logIn (
+export async function logIn(
   payload: LogInRequest,
   init?: RequestInit,
 ): Promise<CreateUserResponse> {
@@ -202,7 +219,7 @@ export async function logIn (
  * Get current user
  * GET /api/v1/user
  */
-export async function getUser (init?: RequestInit): Promise<User> {
+export async function getUser(init?: RequestInit): Promise<User> {
   const res = await fetch(`${API_BASE}/user`, {
     method: 'GET',
     headers: { ...getDefaultHeaders(), ...(init?.headers ?? {}) },
@@ -215,10 +232,7 @@ export async function getUser (init?: RequestInit): Promise<User> {
  * Update current user
  * PATCH /api/v1/user
  */
-export async function updateUser (
-  payload: UpdateUserRequest,
-  init?: RequestInit,
-): Promise<User> {
+export async function updateUser(payload: UpdateUserRequest, init?: RequestInit): Promise<User> {
   const res = await fetch(`${API_BASE}/user`, {
     method: 'PATCH',
     headers: { ...getDefaultHeaders(), ...JSON_HEADERS, ...(init?.headers ?? {}) },

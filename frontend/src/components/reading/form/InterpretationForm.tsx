@@ -1,6 +1,10 @@
 import React, { useMemo, useState } from 'react'
 import { Form, InputWrapper, Label, SubmitButton, Textarea } from './form.tsx'
-import { type Card, type CreateInterpretationRequest, getAllArcana } from '../../../backend/models.ts'
+import {
+  type Card,
+  type CreateInterpretationRequest,
+  getAllArcana,
+} from '../../../backend/models.ts'
 import { arcanaImage, arcanaLabel, cardLabel } from '../../../util/cards.ts'
 import styled from 'styled-components'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
@@ -14,7 +18,7 @@ import { useTranslation } from 'react-i18next'
 
 const allArcana = getAllArcana()
 
-export default function InterpretationForm () {
+export default function InterpretationForm() {
   const router = useRouter()
   const queryClient = useQueryClient()
   const { t, i18n } = useTranslation()
@@ -23,26 +27,37 @@ export default function InterpretationForm () {
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const mappedArcana = useMemo(() => allArcana.map((arc, index) => ({
-    name: arcanaLabel(arc),
-    id: index
-  })), [i18n.language])
+  const mappedArcana = useMemo(
+    () =>
+      allArcana.map((arc, index) => ({
+        name: arcanaLabel(arc),
+        id: index,
+      })),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [i18n.language],
+  )
   const filteredArcana = useMemo(() => {
-    return mappedArcana.filter(arc => !cards.some(card => arcanaLabel(card.arcana) === arc.name))
+    return mappedArcana.filter(
+      (arc) => !cards.some((card) => arcanaLabel(card.arcana) === arc.name),
+    )
   }, [cards, mappedArcana])
 
   const [query, setQuery] = useState('')
 
-  const fuse = useMemo(() => new Fuse(filteredArcana, {
-    keys: ['name'],
-    threshold: 0.4,
-    ignoreLocation: true,
-  }), [filteredArcana])
+  const fuse = useMemo(
+    () =>
+      new Fuse(filteredArcana, {
+        keys: ['name'],
+        threshold: 0.4,
+        ignoreLocation: true,
+      }),
+    [filteredArcana],
+  )
 
   const searchedArcana = useMemo(() => {
     const q = query.trim()
     if (!q) return filteredArcana
-    return fuse.search(q).map(r => r.item)
+    return fuse.search(q).map((r) => r.item)
   }, [filteredArcana, fuse, query])
 
   const submitMutation = useMutation({
@@ -52,10 +67,10 @@ export default function InterpretationForm () {
       saveReadings([...getSavedReadings(), data.interpretationId])
       addToHistory(data.interpretationId)
       await queryClient.invalidateQueries({ queryKey: ['readings'] })
-    }
+    },
   })
 
-  async function onSubmit (e: React.FormEvent) {
+  async function onSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError(null)
     setSubmitting(true)
@@ -103,16 +118,23 @@ export default function InterpretationForm () {
           <div style={{ display: 'grid', gap: '0.5rem', marginBottom: '0.5rem' }}>
             {cards.map((card, index) => (
               <CardContainer key={index}>
-                <CardImage src={arcanaImage(card.arcana)} alt={arcanaLabel(card.arcana)}
-                           className={card.flipped ? 'flipped' : ''}/>
-                <CardLabel style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flex: 1 }}>
+                <CardImage
+                  src={arcanaImage(card.arcana)}
+                  alt={arcanaLabel(card.arcana)}
+                  className={card.flipped ? 'flipped' : ''}
+                />
+                <CardLabel
+                  style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flex: 1 }}
+                >
                   <span style={{ flex: 1 }}>{cardLabel(card)}</span>
                   <RoundPurpleButton type="button" onClick={() => invertCard(index)}>
-                    <RedoOutlined/>
+                    <RedoOutlined />
                   </RoundPurpleButton>
-                  <RoundPurpleButton type="button"
-                                     onClick={() => setCards(cards.filter((_, i) => i !== index))}>
-                    <CloseOutlined/>
+                  <RoundPurpleButton
+                    type="button"
+                    onClick={() => setCards(cards.filter((_, i) => i !== index))}
+                  >
+                    <CloseOutlined />
                   </RoundPurpleButton>
                 </CardLabel>
               </CardContainer>
@@ -138,7 +160,7 @@ export default function InterpretationForm () {
                 {searchedArcana.length === 0 && (
                   <EmptyOption>{t('common.combobox.noResults')}</EmptyOption>
                 )}
-                {searchedArcana.map(arc => (
+                {searchedArcana.map((arc) => (
                   <ComboboxOption key={arc.id} value={arc} as={Option}>
                     {arc.name}
                   </ComboboxOption>
@@ -148,13 +170,12 @@ export default function InterpretationForm () {
           </ComboWrapper>
         </div>
       </Label>
-      <SubmitButton
-        type="submit"
-        disabled={submitting || !question.trim() || cards.length === 0}
-      >
+      <SubmitButton type="submit" disabled={submitting || !question.trim() || cards.length === 0}>
         {submitting ? t('reading.interpretation.submitting') : t('reading.interpretation.submit')}
       </SubmitButton>
-      {error && <div style={{ color: 'var(--color-error)', fontSize: 'var(--fs-xs)' }}>{error}</div>}
+      {error && (
+        <div style={{ color: 'var(--color-error)', fontSize: 'var(--fs-xs)' }}>{error}</div>
+      )}
     </Form>
   )
 }

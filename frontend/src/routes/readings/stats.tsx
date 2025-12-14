@@ -7,7 +7,7 @@ import {
   flexRender,
   getCoreRowModel,
   getSortedRowModel,
-  useReactTable
+  useReactTable,
 } from '@tanstack/react-table'
 import { arcanaLabel } from '../../util/cards.ts'
 import styled from 'styled-components'
@@ -28,7 +28,8 @@ const StyledTable = styled.table`
   font-size: 85%;
   font-family: var(--font-sans-alt);
 
-  thead, tbody {
+  thead,
+  tbody {
     border-bottom: 2px solid var(--border-light);
   }
 
@@ -37,22 +38,25 @@ const StyledTable = styled.table`
     user-select: none;
   }
 
-  th, td {
+  th,
+  td {
     padding: 0.5rem;
     text-align: right;
   }
 
-  th:first-child, td:first-child {
+  th:first-child,
+  td:first-child {
     text-align: left;
   }
 
-  th:not(:first-child), td:not(:first-child) {
+  th:not(:first-child),
+  td:not(:first-child) {
     width: 1rem;
     white-space: nowrap;
   }
 `
 
-function RouteComponent () {
+function RouteComponent() {
   const { t } = useTranslation()
   const query = useQuery({
     queryKey: ['stats'],
@@ -61,7 +65,7 @@ function RouteComponent () {
   const data = query.data?.arcanaStats ?? defaultArray
   const columnHelper = createColumnHelper<ArcanaStats>()
   const columns = [
-    columnHelper.accessor(row => arcanaLabel(row.arcana), {
+    columnHelper.accessor((row) => arcanaLabel(row.arcana), {
       cell: (info) => info.getValue(),
       header: t('stats.table.arcana'),
       id: 'arcanaName',
@@ -69,7 +73,7 @@ function RouteComponent () {
     }),
     columnHelper.accessor('totalCount', {
       header: t('stats.table.total'),
-      footer: () => query.data?.totalCardsDrawn
+      footer: () => query.data?.totalCardsDrawn,
     }),
     columnHelper.accessor('drawnCount', {
       header: t('stats.table.uprightTotal'),
@@ -99,72 +103,60 @@ function RouteComponent () {
   return (
     <ReadingSubLayout>
       <div style={{ padding: '1rem', height: '100%', overflow: 'auto', minWidth: 0 }}>
-        {query.data && <ReadingStats stats={query.data}/>}
+        {query.data && <ReadingStats stats={query.data} />}
         <StyledTable>
           <thead>
-          {table.getHeaderGroups().map(headerGroup => (
-            <tr key={headerGroup.id}>
-              {headerGroup.headers.map(header => (
-                <th key={header.id}>
-                  {header.isPlaceholder ? null : (
-                    <div
-                      className={
-                        header.column.getCanSort()
-                          ? 'sortable'
-                          : ''
-                      }
-                      onClick={header.column.getToggleSortingHandler()}
-                      title={
-                        header.column.getCanSort()
-                          ? header.column.getNextSortingOrder() === 'asc'
-                            ? t('table.sort.asc')
-                            : header.column.getNextSortingOrder() === 'desc'
-                              ? t('table.sort.desc')
-                              : t('table.sort.clear')
-                          : undefined
-                      }
-                    >
-                      {flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
-                      {{
-                        asc: t('table.ascending'),
-                        desc: t('table.descending'),
-                      }[header.column.getIsSorted() as string] ?? null}
-                    </div>
-                  )}
-                </th>
-              ))}
-            </tr>
-          ))}
+            {table.getHeaderGroups().map((headerGroup) => (
+              <tr key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <th key={header.id}>
+                    {header.isPlaceholder ? null : (
+                      <div
+                        className={header.column.getCanSort() ? 'sortable' : ''}
+                        onClick={header.column.getToggleSortingHandler()}
+                        title={
+                          header.column.getCanSort()
+                            ? header.column.getNextSortingOrder() === 'asc'
+                              ? t('table.sort.asc')
+                              : header.column.getNextSortingOrder() === 'desc'
+                                ? t('table.sort.desc')
+                                : t('table.sort.clear')
+                            : undefined
+                        }
+                      >
+                        {flexRender(header.column.columnDef.header, header.getContext())}
+                        {{
+                          asc: t('table.ascending'),
+                          desc: t('table.descending'),
+                        }[header.column.getIsSorted() as string] ?? null}
+                      </div>
+                    )}
+                  </th>
+                ))}
+              </tr>
+            ))}
           </thead>
           <tbody>
-          {table.getRowModel().rows.map(row => (
-            <tr key={row.id}>
-              {row.getVisibleCells().map(cell => (
-                <td key={cell.id}>
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </td>
-              ))}
-            </tr>
-          ))}
+            {table.getRowModel().rows.map((row) => (
+              <tr key={row.id}>
+                {row.getVisibleCells().map((cell) => (
+                  <td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</td>
+                ))}
+              </tr>
+            ))}
           </tbody>
           <tfoot>
-          {table.getFooterGroups().map(footerGroup => (
-            <tr key={footerGroup.id}>
-              {footerGroup.headers.map(header => (
-                <th key={header.id}>
-                  {header.isPlaceholder
-                    ? null
-                    : flexRender(
-                      header.column.columnDef.footer,
-                      header.getContext()
-                    )}
-                </th>
-              ))}
-            </tr>
-          ))}
+            {table.getFooterGroups().map((footerGroup) => (
+              <tr key={footerGroup.id}>
+                {footerGroup.headers.map((header) => (
+                  <th key={header.id}>
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(header.column.columnDef.footer, header.getContext())}
+                  </th>
+                ))}
+              </tr>
+            ))}
           </tfoot>
         </StyledTable>
       </div>

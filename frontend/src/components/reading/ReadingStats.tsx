@@ -69,7 +69,9 @@ export const ReadingStats: React.FC<{ stats: Stats }> = ({ stats }) => {
         </StatDiv>
       </WrapperDiv>
       <NeverDrawnGallery>
-        {stats.neverDrawn.map((arcana, i) => <img key={i} src={arcanaImage(arcana)} alt={arcanaLabel(arcana)}/>)}
+        {stats.neverDrawn.map((arcana, i) => (
+          <img key={i} src={arcanaImage(arcana)} alt={arcanaLabel(arcana)} />
+        ))}
       </NeverDrawnGallery>
     </>
   )

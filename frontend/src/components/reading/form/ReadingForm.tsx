@@ -8,7 +8,7 @@ import { Form, InputWrapper, Label, RoundButton, SubmitButton, Textarea } from '
 import { MinusOutlined, PlusOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
 
-export default function ReadingForm () {
+export default function ReadingForm() {
   const router = useRouter()
   const queryClient = useQueryClient()
   const { t } = useTranslation()
@@ -23,10 +23,10 @@ export default function ReadingForm () {
       saveReadings([...getSavedReadings(), data.interpretationId])
       addToHistory(data.interpretationId)
       await queryClient.invalidateQueries({ queryKey: ['readings'] })
-    }
+    },
   })
 
-  async function onSubmit (e: React.FormEvent) {
+  async function onSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError(null)
     setSubmitting(true)
@@ -63,21 +63,20 @@ export default function ReadingForm () {
         <span>{t('reading.form.cardsLabel')}</span>
         <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', fontSize: '0.85rem' }}>
           <RoundButton type="button" onClick={() => setCards(Math.max(1, cards - 1))}>
-            <MinusOutlined/>
+            <MinusOutlined />
           </RoundButton>
           <span style={{ width: '1rem', textAlign: 'center', fontSize: '0.85rem' }}>{cards}</span>
           <RoundButton type="button" onClick={() => setCards(Math.min(13, cards + 1))}>
-            <PlusOutlined/>
+            <PlusOutlined />
           </RoundButton>
         </div>
       </Label>
-      <SubmitButton
-        type="submit"
-        disabled={submitting}
-      >
+      <SubmitButton type="submit" disabled={submitting}>
         {submitting ? t('reading.form.submitting') : t('reading.form.submit')}
       </SubmitButton>
-      {error && <div style={{ color: 'var(--color-error)', fontSize: 'var(--fs-xs)' }}>{error}</div>}
+      {error && (
+        <div style={{ color: 'var(--color-error)', fontSize: 'var(--fs-xs)' }}>{error}</div>
+      )}
     </Form>
   )
 }

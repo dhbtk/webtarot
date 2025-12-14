@@ -1,9 +1,17 @@
-import React from 'react'
-import { type Interpretation, interpretationReading, interpretationText } from '../../../backend/models.ts'
+import React, { useEffect, useState } from 'react'
+import {
+  type Interpretation,
+  interpretationReading,
+  interpretationText,
+} from '../../../backend/models.ts'
 import styled from 'styled-components'
 import { useTranslation } from 'react-i18next'
 import { arcanaImage } from '../../../util/cards.ts'
 import { Link } from '@tanstack/react-router'
+import { remark } from 'remark'
+import strip from 'strip-markdown'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { deleteInterpretation } from '../../../backend/api.ts'
 
 const Container = styled.div`
   display: flex;
@@ -14,7 +22,7 @@ const Container = styled.div`
   box-shadow: 0.5rem 0.5rem 0.75rem 0 rgba(0, 0, 0, 0.25);
   border-radius: 0.75rem;
   opacity: 0;
-  animation: slide-from-bottom var(--anim-duration) var(--anim-function) forwards;
+  animation: slide-from-right var(--anim-duration) var(--anim-function) forwards;
   gap: 0.5rem;
 
   @media (max-width: 768px) {
@@ -83,29 +91,117 @@ const AbbreviatedInterpretation = styled.pre`
   white-space: pre-wrap;
 `
 
-export const ReadingListItem: React.FC<{ interpretation: Interpretation }> = ({ interpretation }) => {
+export const ReadingListItem: React.FC<{ interpretation: Interpretation; index: number }> = ({
+  interpretation,
+  index,
+}) => {
   const { t } = useTranslation()
+  const queryClient = useQueryClient()
   const reading = interpretationReading(interpretation)
   const interpretationStr = interpretationText(interpretation)
+  const [strippedInterpretation, setStrippedInterpretation] = useState('')
+  useEffect(() => {
+    remark()
+      .use(strip)
+      .process(interpretationStr)
+      .then((result) => setStrippedInterpretation(String(result)))
+  }, [interpretation, interpretationStr])
   return (
-    <Container>
-      <ReadingDate>
-        {t('reading.list.askedAt', { date: new Date(reading.createdAt).toLocaleString() })}
-        {' '}&bull;{' '}
-        {reading.shuffledTimes > 0 ? <>
-          {t('reading.details.shuffledTimes', { count: reading.shuffledTimes })}
-        </> : t('reading.details.userReading')}
-
-      </ReadingDate>
+    <Container style={{ animationDelay: `calc(${index % 5} * 0.5 * var(--anim-duration))` }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <ReadingDate>
+          {t('reading.list.askedAt', { date: new Date(reading.createdAt).toLocaleString() })} &bull;{' '}
+          {reading.shuffledTimes > 0 ? (
+            <>{t('reading.details.shuffledTimes', { count: reading.shuffledTimes })}</>
+          ) : (
+            t('reading.details.userReading')
+          )}
+        </ReadingDate>
+        <DeleteButton
+          id={reading.id}
+          onDeleted={() => queryClient.invalidateQueries({ queryKey: ['history'] })}
+        />
+      </div>
       <Link to="/readings/$id" params={{ id: reading.id }} title={reading.question}>
         {reading.question}
       </Link>
       <CardImageContainer>
-        {reading.cards.map((card, i) => <CardImage key={i} className={card.flipped ? 'flipped' : ''}
-                                                   src={arcanaImage(card.arcana)}/>)}
+        {reading.cards.map((card, i) => (
+          <CardImage
+            key={i}
+            className={card.flipped ? 'flipped' : ''}
+            src={arcanaImage(card.arcana)}
+          />
+        ))}
       </CardImageContainer>
-      {/* TODO: strip markdown from abbreviated interpretation */}
-      <AbbreviatedInterpretation>{interpretationStr}</AbbreviatedInterpretation>
+      <AbbreviatedInterpretation>{strippedInterpretation}</AbbreviatedInterpretation>
     </Container>
   )
 }
+
+function DeleteButton({
+  id,
+  onDeleted,
+}: {
+  id: string
+  onDeleted: (id: string) => Promise<void> | void
+}) {
+  const { t } = useTranslation()
+  const mutation = useMutation({
+    mutationFn: async () => {
+      await deleteInterpretation(id)
+      return id
+    },
+    onSuccess: async (deletedId) => {
+      await onDeleted(deletedId)
+    },
+  })
+  return (
+    <StyledDeleteButton
+      onClick={() => {
+        if (confirm(t('history.delete.confirm'))) {
+          mutation.mutate()
+        }
+      }}
+      disabled={mutation.isPending}
+      title={mutation.isPending ? t('history.delete.deleting') : t('history.delete.delete')}
+      style={{
+        cursor: mutation.isPending ? 'default' : 'pointer',
+      }}
+    >
+      {mutation.isPending ? t('history.delete.deleting') : t('history.delete.delete')}
+    </StyledDeleteButton>
+  )
+}
+
+const StyledDeleteButton = styled.button`
+  font-size: var(--fs-xs);
+  padding: 0.25rem 0.5rem;
+  background: transparent;
+  border: 1px solid rgb(255 255 255 / 0.3);
+  color: inherit;
+  border-radius: 6px;
+
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 6px;
+    box-shadow: 2px 2px 2px 2px rgb(var(--black-rgb) / 0.2);
+  }
+
+  &:hover {
+    background-position: 100px;
+    box-shadow: 0 0 2px 2px rgb(var(--accent-rgb) / 0.5);
+  }
+
+  &:active {
+    background-position: 150px;
+    box-shadow: 0 0 2px 2px rgb(var(--accent-rgb) / 1);
+  }
+`

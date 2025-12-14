@@ -96,9 +96,13 @@ export const Footer: React.FC<{ minimal?: boolean }> = ({ minimal }) => {
         ) : (
           <code>{user.anonymous.id}</code>
         )}
-        <br/>
-      <span>{t('layout.footer.madeBy')} <a href="https://github.com/dhbtk" target="_blank">@dhbtk</a>
-      </span>
+        <br />
+        <span>
+          {t('layout.footer.madeBy')}{' '}
+          <a href="https://github.com/dhbtk" target="_blank">
+            @dhbtk
+          </a>
+        </span>
       </span>
       <LocaleSelect
         aria-label={t('layout.footer.languageAriaLabel')}

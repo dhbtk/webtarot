@@ -31,7 +31,7 @@ const Heading = styled.h2`
   }
 `
 
-function ReadingsIndex () {
+function ReadingsIndex() {
   // const result = useQuery(useReadingIds())
   const { t } = useTranslation()
 
@@ -43,13 +43,13 @@ function ReadingsIndex () {
       <Heading>{t('hero.tagline1')}</Heading>
       <Heading>{t('hero.tagline2')}</Heading>
       <FormWrapper>
-        <ReadingForm/>
+        <ReadingForm />
       </FormWrapper>
-      <Footer/>
+      <Footer />
     </Wrapper>
   )
 }
 
 export const Route = createFileRoute('/readings/')({
-  component: ReadingsIndex
+  component: ReadingsIndex,
 })

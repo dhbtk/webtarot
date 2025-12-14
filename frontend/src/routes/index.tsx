@@ -4,7 +4,7 @@ const beforeLoad = () => {
   throw redirect({ to: '/readings' })
 }
 
-function IndexRedirect () {
+function IndexRedirect() {
   return null
 }
 

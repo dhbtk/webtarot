@@ -20,6 +20,7 @@ export default defineConfig(({ mode }) => {
       'import.meta.env.VITE_SENTRY_DSN': JSON.stringify(rootEnv.SENTRY_DSN ?? ''),
     },
     server: {
+      host: true,
       proxy: {
         '/api': {
           target: 'http://localhost:3000',

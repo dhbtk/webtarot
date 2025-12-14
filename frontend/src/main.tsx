@@ -11,8 +11,7 @@ import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClient } from './queryClient.tsx'
 import { UserProvider } from './context/UserContext'
 
-// Initialize Sentry (only if DSN provided at build time)
-const dsn = (import.meta as any).env?.VITE_SENTRY_DSN as string | undefined
+const dsn = import.meta.env?.VITE_SENTRY_DSN as string | undefined
 if (dsn) {
   Sentry.init({
     dsn,
@@ -31,7 +30,7 @@ createRoot(document.getElementById('root')!).render(
     <Sentry.ErrorBoundary fallback={<div>Something went wrong.</div>}>
       <QueryClientProvider client={queryClient}>
         <UserProvider>
-          <RouterProvider router={router}/>
+          <RouterProvider router={router} />
         </UserProvider>
       </QueryClientProvider>
     </Sentry.ErrorBoundary>

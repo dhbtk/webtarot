@@ -1,8 +1,8 @@
 :root {
   /* Fonts */
-  --font-sans: "Montserrat", system-ui, Avenir, Helvetica, Arial, sans-serif;
-  --font-sans-alt: "Varta", system-ui, sans-serif;
-  --font-mono: "Fira Code", monospace;
+  --font-sans: 'Montserrat', system-ui, Avenir, Helvetica, Arial, sans-serif;
+  --font-sans-alt: 'Varta', system-ui, sans-serif;
+  --font-mono: 'Fira Code', monospace;
 
   /* Font sizes */
   --fs-h1: 3.2em;
@@ -26,7 +26,7 @@
   --soft-pink-rgb: 251 131 207;
   --link: rgb(var(--soft-pink-rgb) / 0.82);
   --link-hover: rgb(var(--soft-pink-rgb) / 1);
-  --color-bg: #170F49;
+  --color-bg: #170f49;
   --color-text: rgb(var(--white-rgb) / 0.87);
   --color-error: #b91c1c;
 
@@ -48,12 +48,11 @@
 
   --anim-duration: 0.65s;
   --anim-function: cubic-bezier(0.65, 0, 0.35, 1);
-
 }
 
 #root {
   flex: 1;
-  background-image: linear-gradient(to bottom right, rgba(23, 15, 73, 0.0), rgba(0, 0, 0, 0.75));
+  background-image: linear-gradient(to bottom right, rgba(23, 15, 73, 0), rgba(0, 0, 0, 0.75));
 }
 
 a {

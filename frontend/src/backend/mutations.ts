@@ -3,7 +3,7 @@ import { createUser } from './api'
 import type { CreateUserRequest, CreateUserResponse, User } from './models'
 import { setAuthenticatedUser } from './user'
 
-export function useSignUpMutation () {
+export function useSignUpMutation() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationKey: ['auth', 'signup'],

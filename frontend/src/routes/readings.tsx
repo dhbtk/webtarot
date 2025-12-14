@@ -44,7 +44,7 @@ const FormWrapper = styled.div`
   }
 `
 
-function RouteComponent () {
+function RouteComponent() {
   const { width } = useWindowDimensions()
   const { t } = useTranslation()
   const showFormWrapper = width > 768
@@ -52,16 +52,18 @@ function RouteComponent () {
     <Wrapper>
       {showFormWrapper && (
         <MatchRoute to="/readings">
-          {(match) => !match && (
-            <FormWrapper>
-              <h2>{t('reading.new.title')}</h2>
-              <ReadingForm/>
-              <Footer minimal/>
-            </FormWrapper>
-          )}
+          {(match) =>
+            !match && (
+              <FormWrapper>
+                <h2>{t('reading.new.title')}</h2>
+                <ReadingForm />
+                <Footer minimal />
+              </FormWrapper>
+            )
+          }
         </MatchRoute>
       )}
-      <Outlet/>
+      <Outlet />
     </Wrapper>
   )
 }

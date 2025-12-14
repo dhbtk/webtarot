@@ -8,7 +8,7 @@ import {
   Label,
   PageWrapper,
   SubmitButton,
-  Textarea
+  Textarea,
 } from '../components/reading/form/form.tsx'
 import { Footer } from '../components/layout/Footer.tsx'
 import { useSignUpMutation } from '../backend/mutations.ts'
@@ -19,7 +19,7 @@ export const Route = createFileRoute('/signup')({
   component: RouteComponent,
 })
 
-function RouteComponent () {
+function RouteComponent() {
   const [name, setName] = React.useState('')
   const [email, setEmail] = React.useState('')
   const [password, setPassword] = React.useState('')
@@ -29,7 +29,7 @@ function RouteComponent () {
   const signUpMutation = useSignUpMutation()
   const { t } = useTranslation()
 
-  async function onSubmit (e: React.FormEvent) {
+  async function onSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!email || !password || !name || signUpMutation.isPending) return
     signUpMutation.mutate(
@@ -41,7 +41,7 @@ function RouteComponent () {
           // Navigate to a sensible post-signup page
           await navigate({ to: '/readings' })
         },
-      }
+      },
     )
   }
 
@@ -105,7 +105,11 @@ function RouteComponent () {
             </InputWrapper>
           </Label>
           {signUpMutation.error && (
-            <div role="alert" aria-live="assertive" style={{ color: 'salmon', fontSize: 'var(--fs-xs)' }}>
+            <div
+              role="alert"
+              aria-live="assertive"
+              style={{ color: 'salmon', fontSize: 'var(--fs-xs)' }}
+            >
               {(signUpMutation.error as Error).message || t('auth.signup.error')}
             </div>
           )}
@@ -114,7 +118,7 @@ function RouteComponent () {
           </SubmitButton>
         </Form>
       </FormWrapper>
-      <Footer/>
+      <Footer />
     </PageWrapper>
   )
 }

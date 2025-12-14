@@ -12,7 +12,8 @@ const ANIMATION_DURATION_PER_CARD = 0.4
 const PlayMat = styled.div<{ cards: Card[] }>`
   position: relative;
   flex: 1;
-  height: ${({ cards }) => cards.length > 5 ? CARD_HEIGHT * 2 + GAP * 4 : CARD_HEIGHT + 2 * GAP}px;
+  height: ${({ cards }) =>
+    cards.length > 5 ? CARD_HEIGHT * 2 + GAP * 4 : CARD_HEIGHT + 2 * GAP}px;
   container-type: size;
   margin-left: ${-CARD_WIDTH - 2 * GAP}px;
   overflow-x: auto;
@@ -94,49 +95,63 @@ export const CardBack = styled.div`
   border-radius: 6px;
 `
 
-function calculateCardPosition (index: number, total: number): string {
+function calculateCardPosition(index: number, total: number): string {
   if (total < 6) {
-    const x = (CARD_WIDTH + GAP * 2) + (index * (CARD_WIDTH + GAP))
+    const x = CARD_WIDTH + GAP * 2 + index * (CARD_WIDTH + GAP)
     return `${x}px calc(50cqh - ${CARD_HEIGHT / 2}px)`
   } else {
     if (total % 2 === 1) {
       const half = Math.ceil(total / 2)
-      const x = (CARD_WIDTH + GAP * 2) + ((index % half) * (CARD_WIDTH + GAP)) + (index >= half ? (CARD_WIDTH / 2 + GAP / 2) : 0)
+      const x =
+        CARD_WIDTH +
+        GAP * 2 +
+        (index % half) * (CARD_WIDTH + GAP) +
+        (index >= half ? CARD_WIDTH / 2 + GAP / 2 : 0)
       const y = index < half ? `${GAP}` : `${CARD_HEIGHT + 3 * GAP}`
       return `${x}px ${y}px`
     } else {
       const half = Math.floor(total / 2)
-      const x = (CARD_WIDTH + GAP * 2) + ((index % half) * (CARD_WIDTH + GAP))
+      const x = CARD_WIDTH + GAP * 2 + (index % half) * (CARD_WIDTH + GAP)
       const y = index < half ? `${GAP}` : `${CARD_HEIGHT + 3 * GAP}`
       return `${x}px ${y}px`
     }
   }
 }
 
-const CardWidget: React.FC<{ card: Card, index: number, total: number }> = ({ card, index, total }) => {
+const CardWidget: React.FC<{ card: Card; index: number; total: number }> = ({
+  card,
+  index,
+  total,
+}) => {
   const [className, setClassName] = useState(`anchored${card.flipped ? ' flipped' : ''}`)
   useEffect(() => {
-    setTimeout(() => {
-      setClassName(card.flipped ? ' flipped' : '')
-    }, (ANIMATION_DURATION_PER_CARD * 1000) * index)
-    setTimeout(() => {
-      setClassName(card.flipped ? 'revealed flipped' : 'revealed')
-    }, (ANIMATION_DURATION_PER_CARD * 1000 * total) + (ANIMATION_DURATION_PER_CARD * 1000) * index)
+    setTimeout(
+      () => {
+        setClassName(card.flipped ? ' flipped' : '')
+      },
+      ANIMATION_DURATION_PER_CARD * 1000 * index,
+    )
+    setTimeout(
+      () => {
+        setClassName(card.flipped ? 'revealed flipped' : 'revealed')
+      },
+      ANIMATION_DURATION_PER_CARD * 1000 * total + ANIMATION_DURATION_PER_CARD * 1000 * index,
+    )
   }, [card.flipped, index, total])
   return (
     <CardDiv className={className} style={{ translate: calculateCardPosition(index, total) }}>
-      <CardImage style={{ backgroundImage: `url(${arcanaImage(card.arcana)})` }}/>
-      <CardBack/>
+      <CardImage style={{ backgroundImage: `url(${arcanaImage(card.arcana)})` }} />
+      <CardBack />
     </CardDiv>
   )
 }
 
-export const CardDisplay: React.FC<{ cards: Card[], uuid: string }> = ({ cards, uuid }) => {
+export const CardDisplay: React.FC<{ cards: Card[]; uuid: string }> = ({ cards, uuid }) => {
   return (
     <PlayMat cards={cards}>
       {cards.map((card, index) => {
         return (
-          <CardWidget key={`${uuid}-${index}`} index={index} total={cards.length} card={card}/>
+          <CardWidget key={`${uuid}-${index}`} index={index} total={cards.length} card={card} />
         )
       })}
     </PlayMat>

@@ -106,7 +106,12 @@ export const SubmitButton = styled.button`
   font-family: var(--font-sans);
   font-size: var(--fs-sm);
   font-weight: 600;
-  background: linear-gradient(135deg, rgba(174, 146, 248, 0.5), rgba(246, 113, 225, 0.5) 50%, rgba(174, 146, 248, 0.5));
+  background: linear-gradient(
+    135deg,
+    rgba(174, 146, 248, 0.5),
+    rgba(246, 113, 225, 0.5) 50%,
+    rgba(174, 146, 248, 0.5)
+  );
   padding: 0.5rem 1rem;
   border-radius: 0.5rem;
   border: 1px solid rgb(var(--white-rgb) / 0.1);

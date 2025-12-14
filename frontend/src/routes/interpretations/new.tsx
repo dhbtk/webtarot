@@ -14,13 +14,13 @@ export const Route = createFileRoute('/interpretations/new')({
   component: RouteComponent,
 })
 
-function RouteComponent () {
+function RouteComponent() {
   const { t } = useTranslation()
   return (
     <Wrapper>
       <FormWrapper style={{ overflow: 'auto', flex: 1 }}>
         <h2>{t('reading.interpretation.title')}</h2>
-        <InterpretationForm/>
+        <InterpretationForm />
       </FormWrapper>
     </Wrapper>
   )
