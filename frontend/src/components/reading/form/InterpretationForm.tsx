@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { Form, InputWrapper, Label, SubmitButton, Textarea } from './form.tsx'
 import {
   type Card,
@@ -15,6 +15,7 @@ import { CloseOutlined, RedoOutlined } from '@ant-design/icons'
 import { Combobox, ComboboxInput, ComboboxOption, ComboboxOptions } from '@headlessui/react'
 import Fuse from 'fuse.js'
 import { useTranslation } from 'react-i18next'
+import { autoPlacement, flip, useFloating } from '@floating-ui/react'
 
 const allArcana = getAllArcana()
 
@@ -43,6 +44,14 @@ export default function InterpretationForm() {
   }, [cards, mappedArcana])
 
   const [query, setQuery] = useState('')
+
+  const { refs, floatingStyles, placement } = useFloating({
+    middleware: [
+      flip(), // Automatically flips to the top if no space at the bottom
+      autoPlacement({ allowedPlacements: ['top', 'bottom'] }), // Tries to place options where there is most space
+    ],
+    placement: 'bottom', // Initial placement
+  })
 
   const fuse = useMemo(
     () =>
@@ -98,8 +107,15 @@ export default function InterpretationForm() {
     setCards(copy)
   }
 
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    inputRef.current?.focus()
+    inputRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }, [inputRef, cards])
+
   return (
-    <Form onSubmit={onSubmit} style={{ paddingBottom: '7rem' }}>
+    <Form onSubmit={onSubmit}>
       <Label>
         <span>{t('reading.form.questionLabel')}</span>
         <InputWrapper>
@@ -140,34 +156,48 @@ export default function InterpretationForm() {
               </CardContainer>
             ))}
           </div>
-          <ComboWrapper>
-            <Combobox<{ id: number; name: string } | null>
-              value={null}
-              onChange={(arc) => {
-                if (arc) {
-                  setCards([...cards, { arcana: allArcana[arc.id], flipped: false }])
-                  setQuery('')
-                }
-              }}
-            >
-              <ComboboxInput
-                as={ComboInput}
-                placeholder={t('common.combobox.selectCard')}
-                displayValue={() => ''}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setQuery(e.target.value)}
-              />
-              <ComboboxOptions as={Options}>
-                {searchedArcana.length === 0 && (
-                  <EmptyOption>{t('common.combobox.noResults')}</EmptyOption>
+          <Combobox<{ id: number; name: string } | null>
+            value={null}
+            onChange={(arc) => {
+              if (arc) {
+                setCards([...cards, { arcana: allArcana[arc.id], flipped: false }])
+                setQuery('')
+              }
+            }}
+          >
+            {({ open }) => (
+              <ComboWrapper ref={refs.setReference}>
+                <InputWrapper>
+                  <ComboboxInput
+                    as={ComboInput}
+                    placeholder={t('common.combobox.selectCard')}
+                    displayValue={() => ''}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setQuery(e.target.value)}
+                    ref={inputRef}
+                  />
+                </InputWrapper>
+                {open && (
+                  <ComboboxOptions
+                    as={Options}
+                    ref={refs.setFloating}
+                    style={{
+                      flexDirection: placement === 'bottom' ? 'column' : 'column-reverse',
+                      ...floatingStyles,
+                    }}
+                  >
+                    {searchedArcana.length === 0 && (
+                      <EmptyOption>{t('common.combobox.noResults')}</EmptyOption>
+                    )}
+                    {searchedArcana.map((arc) => (
+                      <ComboboxOption key={arc.id} value={arc} as={Option}>
+                        {arc.name}
+                      </ComboboxOption>
+                    ))}
+                  </ComboboxOptions>
                 )}
-                {searchedArcana.map((arc) => (
-                  <ComboboxOption key={arc.id} value={arc} as={Option}>
-                    {arc.name}
-                  </ComboboxOption>
-                ))}
-              </ComboboxOptions>
-            </Combobox>
-          </ComboWrapper>
+              </ComboWrapper>
+            )}
+          </Combobox>
         </div>
       </Label>
       <SubmitButton type="submit" disabled={submitting || !question.trim() || cards.length === 0}>
@@ -295,6 +325,7 @@ const Options = styled.ul`
   max-height: 14rem;
   overflow: auto;
   width: 100%;
+  min-height: 2rem;
   list-style: none;
   padding: 0.25rem;
   margin: 0.25rem 0 0 0;
@@ -303,6 +334,8 @@ const Options = styled.ul`
   border: 1px solid rgb(var(--accent-rgb) / 0.5);
   border-radius: 6px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  display: flex;
+  flex-direction: column;
 `
 
 const Option = styled.li`
@@ -310,6 +343,7 @@ const Option = styled.li`
   border-radius: 4px;
   cursor: pointer;
   font-size: var(--fs-sm);
+  display: block;
 
   &[data-headlessui-state~='active'] {
     background: rgb(var(--panel-purple-rgb) / 0.6);

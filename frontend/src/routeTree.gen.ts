@@ -263,7 +263,9 @@ const ReadingsRouteChildren: ReadingsRouteChildren = {
   ReadingsIndexRoute: ReadingsIndexRoute,
 }
 
-const ReadingsRouteWithChildren = ReadingsRoute._addFileChildren(ReadingsRouteChildren)
+const ReadingsRouteWithChildren = ReadingsRoute._addFileChildren(
+  ReadingsRouteChildren,
+)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
