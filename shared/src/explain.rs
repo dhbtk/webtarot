@@ -1,6 +1,6 @@
 use crate::model::Card;
 use crate::t;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use std::error::Error as StdError;
 use std::fmt;
 use std::sync::Arc;
@@ -23,6 +23,13 @@ struct Message {
 
 pub type ExplainResult = Result<String, ExplainError>;
 
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum InterpretationBackend {
+    ChatGPT,
+    Gemini,
+}
+
 #[derive(Clone, Debug)]
 pub enum ExplainError {
     MissingApiKey,
@@ -41,14 +48,20 @@ impl fmt::Display for ExplainError {
         match self {
             ExplainError::MissingApiKey => write!(
                 f,
-                "Não encontrei a variável de ambiente OPENAI_KEY. Defina-a com sua chave da OpenAI."
+                "Chave de API ausente. Defina a variável de ambiente adequada para o provedor selecionado."
             ),
             ExplainError::HttpClientBuild(e) => write!(f, "Erro criando cliente HTTP: {}", e),
-            ExplainError::Request(e) => write!(f, "Falha ao chamar a API da OpenAI: {}", e),
+            ExplainError::Request(e) => write!(f, "Falha ao chamar a API do provedor LLM: {}", e),
             ExplainError::ApiError { status, body } => {
-                write!(f, "A API da OpenAI retornou erro ({}): {}", status, body)
+                write!(
+                    f,
+                    "A API do provedor LLM retornou erro ({}): {}",
+                    status, body
+                )
             }
-            ExplainError::ParseResponse(e) => write!(f, "Falha ao ler resposta da OpenAI: {}", e),
+            ExplainError::ParseResponse(e) => {
+                write!(f, "Falha ao ler resposta do provedor LLM: {}", e)
+            }
             ExplainError::EmptyResponse => write!(
                 f,
                 "Não foi possível obter a interpretação das cartas no momento."
@@ -71,17 +84,22 @@ impl StdError for ExplainError {
 #[derive(Clone)]
 pub struct InterpretationService {
     client: reqwest::Client,
-    api_key: String,
+    openai_api_key: String,
+    google_api_key: String,
 }
 
 impl InterpretationService {
-    pub fn new(api_key: String) -> Self {
+    pub fn new(openai_api_key: String, google_api_key: String) -> Self {
         let client = reqwest::Client::builder()
             .user_agent("webtarot/0.1")
             .timeout(Duration::from_secs(120))
             .build()
             .unwrap();
-        Self { client, api_key }
+        Self {
+            client,
+            openai_api_key,
+            google_api_key,
+        }
     }
 
     pub async fn explain(
@@ -91,62 +109,145 @@ impl InterpretationService {
         cards: &[Card],
         user_name: Option<String>,
         user_self_description: Option<String>,
+        backend: InterpretationBackend,
     ) -> ExplainResult {
         let user =
             Self::get_user_prompt(question, context, cards, user_name, user_self_description);
 
-        // Read API key from environment
-        let key = self.api_key.clone();
-
-        // Build HTTP client
-        let client = self.client.clone();
-
-        // Compose request body for Chat Completions API using i18n system prompt
+        // Compose prompts
         let system_prompt = t!("system.prompt");
 
-        let body = serde_json::json!({
-            "model": "gpt-5.1",
-            "messages": [
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user}
-            ]
-        });
+        match backend {
+            InterpretationBackend::ChatGPT => {
+                // Build HTTP client
+                let client = self.client.clone();
+                let key = self.openai_api_key.clone();
 
-        // Allow overriding the base URL via env var for testing
-        let base_url = std::env::var("OPENAI_BASE_URL")
-            .unwrap_or_else(|_| "https://api.openai.com".to_string());
-        let endpoint = format!("{}/v1/chat/completions", base_url.trim_end_matches('/'));
+                let body = serde_json::json!({
+                    "model": "gpt-5.1",
+                    "messages": [
+                        {"role": "system", "content": system_prompt},
+                        {"role": "user", "content": user}
+                    ]
+                });
 
-        let req = client
-            .post(endpoint)
-            .bearer_auth(key)
-            .header(reqwest::header::CONTENT_TYPE, "application/json")
-            .timeout(Duration::from_mins(5))
-            .json(&body);
+                // Allow overriding the base URL via env var for testing
+                let base_url = std::env::var("OPENAI_BASE_URL")
+                    .unwrap_or_else(|_| "https://api.openai.com".to_string());
+                let endpoint = format!("{}/v1/chat/completions", base_url.trim_end_matches('/'));
 
-        let resp = match req.send().await {
-            Ok(r) => r,
-            Err(e) => return Err(ExplainError::Request(Arc::new(e))),
-        };
+                let req = client
+                    .post(endpoint)
+                    .bearer_auth(key)
+                    .header(reqwest::header::CONTENT_TYPE, "application/json")
+                    .timeout(Duration::from_mins(5))
+                    .json(&body);
 
-        if !resp.status().is_success() {
-            let status = resp.status();
-            let text = resp.text().await.unwrap_or_default();
-            return Err(ExplainError::ApiError { status, body: text });
+                let resp = match req.send().await {
+                    Ok(r) => r,
+                    Err(e) => return Err(ExplainError::Request(Arc::new(e))),
+                };
+
+                if !resp.status().is_success() {
+                    let status = resp.status();
+                    let text = resp.text().await.unwrap_or_default();
+                    return Err(ExplainError::ApiError { status, body: text });
+                }
+
+                let parsed: ChatResponse = match resp.json().await {
+                    Ok(p) => p,
+                    Err(e) => return Err(ExplainError::ParseResponse(Arc::new(e))),
+                };
+
+                if let Some(first) = parsed.choices.into_iter().next()
+                    && !first.message.content.trim().is_empty()
+                {
+                    return Ok(first.message.content);
+                }
+                Err(ExplainError::EmptyResponse)
+            }
+            InterpretationBackend::Gemini => {
+                // Google Generative Language API (Gemini)
+                let client = self.client.clone();
+                let key = self.google_api_key.clone();
+                if key.trim().is_empty() {
+                    return Err(ExplainError::MissingApiKey);
+                }
+
+                // Allow overriding the base URL via env var for testing
+                let base_url = std::env::var("GOOGLE_AI_BASE_URL")
+                    .unwrap_or_else(|_| "https://generativelanguage.googleapis.com".to_string());
+                let endpoint = format!(
+                    "{}/v1beta/models/gemini-3-flash-preview:generateContent",
+                    base_url.trim_end_matches('/')
+                );
+
+                let body = serde_json::json!({
+                    "systemInstruction": {
+                        "role": "system",
+                        "parts": [{"text": system_prompt}]
+                    },
+                    "contents": [
+                        {
+                            "role": "user",
+                            "parts": [{"text": user}]
+                        }
+                    ]
+                });
+
+                let req = client
+                    .post(endpoint)
+                    .query(&[("key", key.as_str())])
+                    .header(reqwest::header::CONTENT_TYPE, "application/json")
+                    .timeout(Duration::from_mins(5))
+                    .json(&body);
+
+                let resp = match req.send().await {
+                    Ok(r) => r,
+                    Err(e) => return Err(ExplainError::Request(Arc::new(e))),
+                };
+
+                if !resp.status().is_success() {
+                    let status = resp.status();
+                    let text = resp.text().await.unwrap_or_default();
+                    return Err(ExplainError::ApiError { status, body: text });
+                }
+
+                // Parse Gemini response
+                #[derive(Deserialize)]
+                struct GeminiPart {
+                    text: Option<String>,
+                }
+                #[derive(Deserialize)]
+                struct GeminiContent {
+                    parts: Option<Vec<GeminiPart>>,
+                }
+                #[derive(Deserialize)]
+                struct GeminiCandidate {
+                    content: Option<GeminiContent>,
+                }
+                #[derive(Deserialize)]
+                struct GeminiResponse {
+                    candidates: Option<Vec<GeminiCandidate>>,
+                }
+
+                let parsed: GeminiResponse = match resp.json().await {
+                    Ok(p) => p,
+                    Err(e) => return Err(ExplainError::ParseResponse(Arc::new(e))),
+                };
+
+                if let Some(cands) = parsed.candidates
+                    && let Some(first) = cands.into_iter().next()
+                    && let Some(content) = first.content
+                    && let Some(parts) = content.parts
+                    && let Some(part) = parts.into_iter().find_map(|p| p.text)
+                    && !part.trim().is_empty()
+                {
+                    return Ok(part);
+                }
+                Err(ExplainError::EmptyResponse)
+            }
         }
-
-        let parsed: ChatResponse = match resp.json().await {
-            Ok(p) => p,
-            Err(e) => return Err(ExplainError::ParseResponse(Arc::new(e))),
-        };
-
-        if let Some(first) = parsed.choices.into_iter().next()
-            && !first.message.content.trim().is_empty()
-        {
-            return Ok(first.message.content);
-        }
-
-        Err(ExplainError::EmptyResponse)
     }
 
     fn get_user_prompt(
@@ -263,7 +364,7 @@ mod tests {
             )
             .create();
 
-        let svc = InterpretationService::new("test_key".into());
+        let svc = InterpretationService::new("test_key".into(), String::new());
 
         let cards = sample_cards();
         let result = svc
@@ -273,6 +374,7 @@ mod tests {
                 &cards,
                 Some("Alice".to_string()),
                 Some("A software engineer".to_string()),
+                InterpretationBackend::ChatGPT,
             )
             .await
             .expect("explain should succeed");

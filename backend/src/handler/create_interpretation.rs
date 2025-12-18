@@ -41,6 +41,7 @@ mod tests {
     use serial_test::serial;
     use tower::ServiceExt;
     use uuid::Uuid;
+    use webtarot_shared::explain::InterpretationBackend::ChatGPT;
     use webtarot_shared::model::MajorArcana::Fool;
     use webtarot_shared::model::{Arcana, Card};
 
@@ -66,6 +67,7 @@ mod tests {
                 },
             ],
             context: "".to_string(),
+            backend: ChatGPT,
         };
 
         let uuid = Uuid::new_v4();
@@ -134,6 +136,7 @@ mod tests {
                 },
             ],
             context: "".to_string(),
+            backend: ChatGPT,
         };
 
         let uuid = Uuid::new_v4();

@@ -9,6 +9,7 @@ pub struct AppEnvironment {
     pub redis_url: String,
     pub database_url: String,
     pub openai_api_key: String,
+    pub google_api_key: String,
 }
 
 impl AppEnvironment {
@@ -46,6 +47,7 @@ impl AppEnvironment {
             redis_url: env::var("REDIS_URL").expect("REDIS_URL not set"),
             database_url: env::var("DATABASE_URL").expect("DATABASE_URL not set"),
             openai_api_key: env::var("OPENAI_KEY").expect("OPENAI_KEY not set"),
+            google_api_key: env::var("GOOG_API_KEY").unwrap_or_default(),
         }
     }
 }

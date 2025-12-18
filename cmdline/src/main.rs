@@ -1,5 +1,5 @@
 use clap::Parser;
-use webtarot_shared::explain::InterpretationService;
+use webtarot_shared::explain::{InterpretationBackend, InterpretationService};
 use webtarot_shared::model::Deck;
 
 #[derive(Parser, Debug)]
@@ -10,6 +10,9 @@ struct CliArgs {
     cards: usize,
     #[arg(short, long, default_value_t = true)]
     explain: bool,
+    /// Backend provider: chatgpt or gemini
+    #[arg(short = 'b', long = "backend", default_value = "chatgpt")]
+    backend: String,
 }
 
 #[tokio::main]
@@ -32,8 +35,16 @@ async fn main() {
 
     if args.explain {
         println!("Interpretando...\n\n");
-        let explanation = InterpretationService::new(std::env::var("OPENAI_KEY").unwrap())
-            .explain(&args.question, None, &cards, None, None)
+        let backend = match args.backend.to_lowercase().as_str() {
+            "gemini" => InterpretationBackend::Gemini,
+            _ => InterpretationBackend::ChatGPT,
+        };
+        let service = InterpretationService::new(
+            std::env::var("OPENAI_KEY").unwrap_or_default(),
+            std::env::var("GOOG_API_KEY").unwrap_or_default(),
+        );
+        let explanation = service
+            .explain(&args.question, None, &cards, None, None, backend)
             .await;
         if let Ok(explanation) = explanation {
             println!("{}", explanation);

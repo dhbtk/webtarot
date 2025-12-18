@@ -5,6 +5,7 @@ use rust_i18n::t;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 use webtarot_shared::explain::ExplainError;
+use webtarot_shared::explain::InterpretationBackend;
 use webtarot_shared::model::Card;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -109,6 +110,7 @@ impl From<crate::model::Reading> for Interpretation {
             user_name: value.user_name,
             user_self_description: value.user_self_description,
             context: value.context,
+            backend: Some(InterpretationBackend::ChatGPT),
         };
 
         match value.interpretation_status {
@@ -131,6 +133,7 @@ pub struct CreateInterpretationRequest {
     pub question: String,
     pub cards: Vec<Card>,
     pub context: String,
+    pub backend: InterpretationBackend,
 }
 
 impl From<(CreateInterpretationRequest, &User)> for Reading {
@@ -145,6 +148,7 @@ impl From<(CreateInterpretationRequest, &User)> for Reading {
             user_name: user.name().unwrap_or_default().to_string(),
             user_self_description: user.self_description().unwrap_or_default().to_string(),
             context: value.context.clone(),
+            backend: Some(value.backend),
         }
     }
 }

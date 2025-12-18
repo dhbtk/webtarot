@@ -89,6 +89,7 @@ export default function InterpretationForm() {
         question: question.trim(),
         cards,
         context,
+        backend: 'gemini',
       }
       const res = await submitMutation.mutateAsync(payload)
       // reset

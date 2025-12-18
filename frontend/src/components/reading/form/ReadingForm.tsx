@@ -32,7 +32,12 @@ export default function ReadingForm() {
     setError(null)
     setSubmitting(true)
     try {
-      const payload: CreateReadingRequest = { question: question.trim(), cards, context }
+      const payload: CreateReadingRequest = {
+        question: question.trim(),
+        cards,
+        context,
+        backend: 'gemini',
+      }
       const res = await submitMutation.mutateAsync(payload)
       // reset
       setQuestion('')

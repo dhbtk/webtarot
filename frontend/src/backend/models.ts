@@ -91,11 +91,14 @@ export interface Reading {
   context: string
 }
 
+type InterpretationBackend = 'chatGPT' | 'gemini'
+
 // Mirrors Rust: CreateReadingRequest { question: String, cards: u8 }
 export interface CreateReadingRequest {
   question: string
   cards: number // u8 in Rust → number in TS
   context: string
+  backend: InterpretationBackend
 }
 
 // Mirrors Rust: CreateReadingResponse { shuffledTimes: usize, cards: Vec<Card>, interpretationId: String }
@@ -118,6 +121,7 @@ export interface CreateInterpretationRequest {
   question: string
   cards: Card[]
   context: string
+  backend: InterpretationBackend
 }
 
 // Mirrors Rust: CreateInterpretationResponse { interpretationId: Uuid }

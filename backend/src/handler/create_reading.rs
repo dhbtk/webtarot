@@ -40,6 +40,7 @@ mod tests {
     use serial_test::serial;
     use tower::ServiceExt;
     use uuid::Uuid;
+    use webtarot_shared::explain::InterpretationBackend::ChatGPT;
 
     #[tokio::test]
     #[serial]
@@ -51,6 +52,7 @@ mod tests {
             question: "test question".to_string(),
             cards: 3,
             context: "".to_string(),
+            backend: ChatGPT,
         };
 
         let uuid = Uuid::new_v4();
@@ -139,6 +141,7 @@ mod tests {
             question: "test broadcast question".to_string(),
             cards: 3,
             context: "".to_string(),
+            backend: ChatGPT,
         };
 
         let uuid = Uuid::new_v4();

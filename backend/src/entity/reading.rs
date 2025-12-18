@@ -1,6 +1,7 @@
 use crate::entity::user::User;
 use serde::{Deserialize, Serialize};
 use tracing::instrument;
+use webtarot_shared::explain::InterpretationBackend;
 use webtarot_shared::model::{Card, Deck};
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -9,6 +10,7 @@ pub struct CreateReadingRequest {
     pub question: String,
     pub cards: u8,
     pub context: String,
+    pub backend: InterpretationBackend,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -41,6 +43,8 @@ pub struct Reading {
     pub user_name: String,
     pub user_self_description: String,
     pub context: String,
+    #[serde(default)]
+    pub backend: Option<InterpretationBackend>,
 }
 
 #[instrument]
@@ -58,5 +62,6 @@ pub fn perform_reading(request: &CreateReadingRequest, user: &User) -> Reading {
         user_name: user.name().unwrap_or_default().to_string(),
         user_self_description: user.self_description().unwrap_or_default().to_string(),
         context: request.context.clone(),
+        backend: Some(request.backend.clone()),
     }
 }

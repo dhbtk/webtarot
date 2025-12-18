@@ -18,7 +18,7 @@ use std::convert::Infallible;
 use std::fmt::{Debug, Formatter};
 use std::time::Instant;
 use uuid::Uuid;
-use webtarot_shared::explain::InterpretationService;
+use webtarot_shared::explain::{InterpretationBackend, InterpretationService};
 
 #[derive(Clone)]
 pub struct InterpretationRepository {
@@ -49,7 +49,10 @@ impl From<AppState> for InterpretationRepository {
         Self {
             broadcast: value.interpretation_broadcast,
             db_pool: value.postgresql_pool,
-            interpretation_service: InterpretationService::new(value.env.openai_api_key.clone()),
+            interpretation_service: InterpretationService::new(
+                value.env.openai_api_key.clone(),
+                value.env.google_api_key.clone(),
+            ),
         }
     }
 }
@@ -97,6 +100,10 @@ impl InterpretationRepository {
                 &reading.cards,
                 Some(reading.user_name.clone()).filter(|i| !i.trim().is_empty()),
                 Some(reading.user_self_description.clone()).filter(|i| !i.trim().is_empty()),
+                reading
+                    .backend
+                    .clone()
+                    .unwrap_or(InterpretationBackend::ChatGPT),
             )
             .await;
         let elapsed = start.elapsed();

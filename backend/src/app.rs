@@ -96,6 +96,7 @@ pub async fn create_test_app() -> (AppState, Router) {
         redis_url,
         database_url,
         openai_api_key: "dummy".to_string(),
+        google_api_key: "dummy".to_string(),
     })
     .await;
 
