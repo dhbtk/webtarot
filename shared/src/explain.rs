@@ -87,11 +87,13 @@ impl InterpretationService {
     pub async fn explain(
         &self,
         question: &str,
+        context: Option<String>,
         cards: &[Card],
         user_name: Option<String>,
         user_self_description: Option<String>,
     ) -> ExplainResult {
-        let user = Self::get_user_prompt(question, cards, user_name, user_self_description);
+        let user =
+            Self::get_user_prompt(question, context, cards, user_name, user_self_description);
 
         // Read API key from environment
         let key = self.api_key.clone();
@@ -149,6 +151,7 @@ impl InterpretationService {
 
     fn get_user_prompt(
         question: &str,
+        context: Option<String>,
         cards: &[Card],
         user_name: Option<String>,
         user_self_description: Option<String>,
@@ -174,6 +177,14 @@ impl InterpretationService {
             "{} {}\n{} {}\n{}\n{}",
             label_now, now, label_question, question, label_cards, cards_list
         );
+
+        if let Some(ctx) = context
+            && !ctx.trim().is_empty()
+        {
+            user.push('\n');
+            // Keep a simple, neutral label to avoid touching i18n catalogs for now.
+            user.push_str(&format!("Context: {}", ctx));
+        }
 
         if let Some(name) = user_name {
             user.push('\n');
@@ -258,6 +269,7 @@ mod tests {
         let result = svc
             .explain(
                 "Will I get the job?",
+                None,
                 &cards,
                 Some("Alice".to_string()),
                 Some("A software engineer".to_string()),
@@ -273,7 +285,7 @@ mod tests {
         let cards = sample_cards();
 
         let prompt_no_user =
-            InterpretationService::get_user_prompt("What is my path?", &cards, None, None);
+            InterpretationService::get_user_prompt("What is my path?", None, &cards, None, None);
         assert!(
             prompt_no_user.contains(t!("labels.question").as_ref()),
             "should include localized question label"
@@ -290,6 +302,7 @@ mod tests {
 
         let prompt_with_name = InterpretationService::get_user_prompt(
             "What is my path?",
+            None,
             &cards,
             Some("Bob".into()),
             None,
@@ -299,6 +312,7 @@ mod tests {
 
         let prompt_with_desc = InterpretationService::get_user_prompt(
             "What is my path?",
+            None,
             &cards,
             None,
             Some("Curious learner".into()),
@@ -310,6 +324,7 @@ mod tests {
 
         let prompt_with_both = InterpretationService::get_user_prompt(
             "What is my path?",
+            None,
             &cards,
             Some("Carol".into()),
             Some("Explorer".into()),
@@ -319,5 +334,16 @@ mod tests {
             "{} Explorer",
             t!("labels.user_self_description").as_ref()
         )));
+
+        // Context inclusion
+        let prompt_with_context = InterpretationService::get_user_prompt(
+            "What is my path?",
+            Some("I'm switching careers soon".into()),
+            &cards,
+            None,
+            None,
+        );
+        assert!(prompt_with_context.contains("Context:"));
+        assert!(prompt_with_context.contains("switching careers"));
     }
 }

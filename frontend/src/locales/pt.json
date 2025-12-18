@@ -113,6 +113,8 @@
     "form": {
       "questionLabel": "Pergunta",
       "questionPlaceholder": "O que você está buscando saber?",
+      "contextLabel": "Contexto",
+      "contextPlaceholder": "Contexto adicional para interpretar sua pergunta. Opcional.",
       "cardsLabel": "Cartas",
       "submit": "Perguntar",
       "submitting": "Embaralhando…"
@@ -122,7 +124,8 @@
       "shuffledTimes_one": "Embaralhado {{count}} vez",
       "shuffledTimes_other": "Embaralhado {{count}} vezes",
       "userReading": "Tiragem do usuário",
-      "waiting": "Aguardando interpretação..."
+      "waiting": "Aguardando interpretação...",
+      "context": "Contexto"
     },
     "list": {
       "askedAt": "{{date}}"

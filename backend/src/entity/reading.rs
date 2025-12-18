@@ -8,6 +8,7 @@ use webtarot_shared::model::{Card, Deck};
 pub struct CreateReadingRequest {
     pub question: String,
     pub cards: u8,
+    pub context: String,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -37,6 +38,9 @@ pub struct Reading {
     pub shuffled_times: usize,
     pub cards: Vec<Card>,
     pub user_id: Option<uuid::Uuid>,
+    pub user_name: String,
+    pub user_self_description: String,
+    pub context: String,
 }
 
 #[instrument]
@@ -51,5 +55,8 @@ pub fn perform_reading(request: &CreateReadingRequest, user: &User) -> Reading {
         shuffled_times: shuffles,
         cards,
         user_id: Some(user.id()),
+        user_name: user.name().unwrap_or_default().to_string(),
+        user_self_description: user.self_description().unwrap_or_default().to_string(),
+        context: request.context.clone(),
     }
 }

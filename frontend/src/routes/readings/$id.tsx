@@ -174,6 +174,12 @@ function ReadingDetails() {
 
             {reading && (
               <section style={{ display: 'grid', gap: '0.75rem' }}>
+                {reading.context && (
+                  <ContextContainer>
+                    <h3>{t('reading.details.context')}</h3>
+                    <p>{reading.context}</p>
+                  </ContextContainer>
+                )}
                 <div>
                   <CardDisplay cards={reading.cards} uuid={reading.id} />
                   <CardBadgeContainer>
@@ -251,6 +257,22 @@ const MiniHeading = styled.header`
   font-size: var(--fs-xs);
   color: rgb(var(--white-rgb) / 0.65);
 `
+
+const ContextContainer = styled.div`
+  h3 {
+    font-size: var(--fs-base);
+    margin-top: 0.25rem;
+    margin-bottom: 0.25rem;
+  }
+
+  p {
+    font-family: var(--font-sans-alt);
+    font-size: var(--fs-sm);
+    white-space: pre-wrap;
+    margin: 0;
+  }
+`
+
 const MarkdownContainer = styled.div`
   text-shadow: 2px 1px 3px rgb(var(--black-rgb) / 0.8);
 

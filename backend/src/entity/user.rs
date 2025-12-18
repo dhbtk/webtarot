@@ -26,6 +26,21 @@ impl User {
             Self::Authenticated { id, .. } => *id,
         }
     }
+    pub fn name(&self) -> Option<&str> {
+        match self {
+            Self::Anonymous { .. } => None,
+            Self::Authenticated { name, .. } => Some(name),
+        }
+    }
+
+    pub fn self_description(&self) -> Option<&str> {
+        match self {
+            Self::Anonymous { .. } => None,
+            Self::Authenticated {
+                self_description, ..
+            } => Some(self_description),
+        }
+    }
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]

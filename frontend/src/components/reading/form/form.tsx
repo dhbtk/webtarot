@@ -12,6 +12,7 @@ export const Label = styled.div`
   span {
     font-size: var(--fs-xs);
     color: rgb(var(--white-rgb) / 0.65);
+    cursor: default;
   }
 `
 export const Textarea = styled.textarea`

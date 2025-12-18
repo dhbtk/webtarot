@@ -113,6 +113,8 @@
     "form": {
       "questionLabel": "Question",
       "questionPlaceholder": "What do you seek to know?",
+      "contextLabel": "Context",
+      "contextPlaceholder": "Extra context you want to share for the interpretation. Optional.",
       "cardsLabel": "Cards",
       "submit": "Ask",
       "submitting": "Shuffling…"
@@ -122,7 +124,8 @@
       "shuffledTimes_one": "Shuffled {{count}} time",
       "shuffledTimes_other": "Shuffled {{count}} times",
       "userReading": "User pulled cards",
-      "waiting": "Waiting for interpretation..."
+      "waiting": "Waiting for interpretation...",
+      "context": "Context"
     },
     "interpretation": {
       "title": "Interpret Reading",

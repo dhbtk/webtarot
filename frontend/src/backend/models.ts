@@ -86,12 +86,16 @@ export interface Reading {
   shuffledTimes: number
   cards: Card[]
   userId: string
+  userName: string
+  userSelfDescription: string
+  context: string
 }
 
 // Mirrors Rust: CreateReadingRequest { question: String, cards: u8 }
 export interface CreateReadingRequest {
   question: string
   cards: number // u8 in Rust → number in TS
+  context: string
 }
 
 // Mirrors Rust: CreateReadingResponse { shuffledTimes: usize, cards: Vec<Card>, interpretationId: String }
@@ -113,6 +117,7 @@ export interface GetInterpretationResult {
 export interface CreateInterpretationRequest {
   question: string
   cards: Card[]
+  context: string
 }
 
 // Mirrors Rust: CreateInterpretationResponse { interpretationId: Uuid }
@@ -146,7 +151,7 @@ export interface Stats {
 // - { "Failed": [ { ...Reading }, "<error>" ] }
 export type Interpretation =
   | { Pending: Reading }
-  | { Done: [Reading, string] }
+  | { Done: [Reading, string, string] }
   | { Failed: [Reading, string] }
 
 export function interpretationReading(i: Interpretation): Reading {
@@ -155,6 +160,11 @@ export function interpretationReading(i: Interpretation): Reading {
   if ('Failed' in i) return i.Failed[0]
   // Fallback to a narrow type error; this should never happen at runtime
   throw new Error('Unknown Interpretation variant')
+}
+
+export function interpretationDoneAt(i: Interpretation): string | null {
+  if ('Done' in i) return i.Done[2]
+  return null
 }
 
 export function interpretationText(i: Interpretation): string {

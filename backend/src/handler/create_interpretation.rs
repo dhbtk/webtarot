@@ -65,6 +65,7 @@ mod tests {
                     flipped: false,
                 },
             ],
+            context: "".to_string(),
         };
 
         let uuid = Uuid::new_v4();
@@ -132,6 +133,7 @@ mod tests {
                     flipped: true,
                 },
             ],
+            context: "".to_string(),
         };
 
         let uuid = Uuid::new_v4();

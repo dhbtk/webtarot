@@ -50,6 +50,7 @@ mod tests {
         let request = CreateReadingRequest {
             question: "test question".to_string(),
             cards: 3,
+            context: "".to_string(),
         };
 
         let uuid = Uuid::new_v4();
@@ -137,6 +138,7 @@ mod tests {
         let request = CreateReadingRequest {
             question: "test broadcast question".to_string(),
             cards: 3,
+            context: "".to_string(),
         };
 
         let uuid = Uuid::new_v4();
@@ -165,7 +167,7 @@ mod tests {
         for _ in 0..5 {
             if let Ok(Ok(evt)) = timeout(deadline, rx.recv()).await {
                 match evt {
-                    Interpretation::Done(reading, text) if reading.id == interpretation_id => {
+                    Interpretation::Done(reading, text, _) if reading.id == interpretation_id => {
                         received_done = Some((reading, text));
                         break;
                     }

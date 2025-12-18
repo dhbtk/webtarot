@@ -33,7 +33,7 @@ async fn main() {
     if args.explain {
         println!("Interpretando...\n\n");
         let explanation = InterpretationService::new(std::env::var("OPENAI_KEY").unwrap())
-            .explain(&args.question, &cards, None, None)
+            .explain(&args.question, None, &cards, None, None)
             .await;
         if let Ok(explanation) = explanation {
             println!("{}", explanation);

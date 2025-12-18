@@ -8,6 +8,7 @@ use crate::middleware::locale::Locale;
 use crate::state::AppState;
 use axum::extract::FromRequestParts;
 use axum::http::request::Parts;
+use chrono::Utc;
 use diesel::{
     BoolExpressionMethods, ExpressionMethods, OptionalExtension, QueryDsl, SelectableHelper,
 };
@@ -84,28 +85,18 @@ impl InterpretationRepository {
             .unwrap();
     }
 
-    async fn start_interpretation_request(&self, reading: Reading, locale: Locale, user: User) {
+    async fn start_interpretation_request(&self, reading: Reading, locale: Locale, _user: User) {
         tracing::debug!("start_interpretation_request");
         rust_i18n::set_locale(&locale.0);
         let start = Instant::now();
-        let (user_name, user_self_description) = match user {
-            User::Authenticated {
-                name,
-                self_description,
-                ..
-            } => (
-                Some(name).filter(|s| !s.is_empty()),
-                Some(self_description).filter(|s| !s.is_empty()),
-            ),
-            _ => (None, None),
-        };
         let result = self
             .interpretation_service
             .explain(
                 &reading.question,
+                Some(reading.context.clone()).filter(|i| !i.trim().is_empty()),
                 &reading.cards,
-                user_name,
-                user_self_description,
+                Some(reading.user_name.clone()).filter(|i| !i.trim().is_empty()),
+                Some(reading.user_self_description.clone()).filter(|i| !i.trim().is_empty()),
             )
             .await;
         let elapsed = start.elapsed();
@@ -122,7 +113,7 @@ impl InterpretationRepository {
             .record(elapsed.as_secs_f64());
         tracing::debug!(result = ?result, ?elapsed, "start_interpretation_request result");
         let result = match result {
-            Ok(result) => Interpretation::Done(reading, result),
+            Ok(result) => Interpretation::Done(reading, result, Utc::now().naive_utc()),
             Err(e) => Interpretation::Failed(reading, interpretation::localize_explain_error(&e)),
         };
         self.broadcast

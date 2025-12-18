@@ -27,6 +27,7 @@ diesel::table! {
         interpretation_text -> Text,
         interpretation_error -> Text,
         deleted_at -> Nullable<Timestamp>,
+        interpretation_done_at -> Nullable<Timestamp>,
     }
 }
 

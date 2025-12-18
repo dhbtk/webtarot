@@ -26,6 +26,7 @@ pub struct Reading {
     pub interpretation_text: String,
     pub interpretation_error: String,
     pub deleted_at: Option<NaiveDateTime>,
+    pub interpretation_done_at: Option<NaiveDateTime>,
 }
 
 #[derive(Debug, Clone, FromSqlRow, Serialize, Deserialize, AsExpression)]

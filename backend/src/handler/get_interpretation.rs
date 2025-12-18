@@ -113,6 +113,7 @@ mod tests {
             interpretation_text: interpretation_text.to_string(),
             interpretation_error: interpretation_error.to_string(),
             deleted_at: None,
+            interpretation_done_at: Some(Utc::now().naive_utc()),
         };
         diesel::insert_into(crate::schema::readings::table)
             .values(reading)

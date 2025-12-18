@@ -59,7 +59,7 @@ pub async fn wait_for_done(
         // poll a few times within the global timeout
         match timeout(deadline, rx.recv()).await {
             Ok(Ok(evt)) => match evt {
-                Interpretation::Done(reading, text) if reading.id == interpretation_id => {
+                Interpretation::Done(reading, text, _) if reading.id == interpretation_id => {
                     return Ok((reading, text));
                 }
                 Interpretation::Failed(reading, err) if reading.id == interpretation_id => {

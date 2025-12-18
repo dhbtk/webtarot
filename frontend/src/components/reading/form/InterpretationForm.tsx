@@ -24,6 +24,7 @@ export default function InterpretationForm() {
   const queryClient = useQueryClient()
   const { t, i18n } = useTranslation()
   const [question, setQuestion] = useState('')
+  const [context, setContext] = useState('')
   const [cards, setCards] = useState<Card[]>([])
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -87,6 +88,7 @@ export default function InterpretationForm() {
       const payload: CreateInterpretationRequest = {
         question: question.trim(),
         cards,
+        context,
       }
       const res = await submitMutation.mutateAsync(payload)
       // reset
@@ -111,7 +113,7 @@ export default function InterpretationForm() {
 
   return (
     <Form onSubmit={onSubmit}>
-      <Label>
+      <Label as={'label'}>
         <span>{t('reading.form.questionLabel')}</span>
         <InputWrapper>
           <Textarea
@@ -119,6 +121,17 @@ export default function InterpretationForm() {
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
             placeholder={t('reading.form.questionPlaceholder')}
+            rows={4}
+          />
+        </InputWrapper>
+      </Label>
+      <Label as={'label'}>
+        <span>{t('reading.form.contextLabel')}</span>
+        <InputWrapper>
+          <Textarea
+            value={context}
+            onChange={(e) => setContext(e.target.value)}
+            placeholder={t('reading.form.contextPlaceholder')}
             rows={4}
           />
         </InputWrapper>

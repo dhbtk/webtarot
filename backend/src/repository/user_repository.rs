@@ -69,7 +69,7 @@ impl UserRepository {
     }
 
     pub async fn find_by_email(&self, email: &str) -> Result<crate::model::User, AppError> {
-        let mut conn = self.db_pool.get().await.map_err(AppError::from)?;
+        let mut conn = self.db_pool.get().await?;
         crate::schema::users::dsl::users
             .filter(crate::schema::users::dsl::email.eq(email))
             .select(crate::model::User::as_select())
@@ -83,11 +83,11 @@ impl UserRepository {
         id: Uuid,
         request: CreateUserRequest,
         headers: HeaderMap,
-    ) -> Result<AuthenticationResponse, AppError> {
+    ) -> AppResult<AuthenticationResponse> {
         request.validate()?;
         let ip = Self::extract_user_ip(&headers);
         let user_agent = Self::extract_user_agent(&headers);
-        let mut conn = self.db_pool.get().await.map_err(AppError::from)?;
+        let mut conn = self.db_pool.get().await?;
         let user = crate::model::User {
             id,
             created_at: Utc::now().naive_utc(),
@@ -117,7 +117,7 @@ impl UserRepository {
     async fn insert_access_token(
         mut conn: &mut DbConn<'_>,
         access_token: NewAccessToken,
-    ) -> Result<AccessToken, AppError> {
+    ) -> AppResult<AccessToken> {
         diesel::insert_into(crate::schema::access_tokens::table)
             .values(access_token)
             .returning(AccessToken::as_returning())
@@ -151,8 +151,8 @@ impl UserRepository {
         email: &str,
         password: &str,
         headers: &HeaderMap,
-    ) -> Result<AuthenticationResponse, AppError> {
-        let mut conn = self.db_pool.get().await.map_err(AppError::from)?;
+    ) -> AppResult<AuthenticationResponse> {
+        let mut conn = self.db_pool.get().await?;
         let user = self.find_by_email(email).await?;
         if password_auth::verify_password(password, &user.password_digest).is_ok() {
             let access_token = crate::model::NewAccessToken {
