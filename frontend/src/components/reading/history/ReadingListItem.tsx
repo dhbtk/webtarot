@@ -78,7 +78,15 @@ const CardImageContainer = styled.div`
   display: flex;
   align-items: center;
   overflow: hidden;
-  gap: 0.25rem;
+  gap: 0.5rem;
+`
+
+const InterpretationWrapper = styled.div`
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  border-radius: 0.375rem;
+  background: rgb(var(--white-rgb) / 0.08);
+  box-shadow: 3px 3px 6px 2px rgb(var(--black-rgb) / 0.2);
 `
 
 const AbbreviatedInterpretation = styled.pre`
@@ -134,7 +142,9 @@ export const ReadingListItem: React.FC<{ interpretation: Interpretation; index: 
           />
         ))}
       </CardImageContainer>
-      <AbbreviatedInterpretation>{strippedInterpretation}</AbbreviatedInterpretation>
+      <InterpretationWrapper>
+        <AbbreviatedInterpretation>{strippedInterpretation}</AbbreviatedInterpretation>
+      </InterpretationWrapper>
     </Container>
   )
 }
