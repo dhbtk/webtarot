@@ -13,7 +13,6 @@ export default function ReadingForm() {
   const queryClient = useQueryClient()
   const { t } = useTranslation()
   const [question, setQuestion] = useState('')
-  const [context, setContext] = useState('')
   const [cards, setCards] = useState(3)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -32,16 +31,16 @@ export default function ReadingForm() {
     setError(null)
     setSubmitting(true)
     try {
+      const [trimmedQuestion, context] = question.trim().split('?', 2)
       const payload: CreateReadingRequest = {
-        question: question.trim(),
+        question: trimmedQuestion.trim() + '?',
         cards,
         context,
-        backend: 'gemini',
+        backend: 'chatGPT',
       }
       const res = await submitMutation.mutateAsync(payload)
       // reset
       setQuestion('')
-      setContext('')
       setCards(3)
       await router.navigate({ to: '/readings/$id', params: { id: res.interpretationId } })
     } catch (err: unknown) {
@@ -63,17 +62,6 @@ export default function ReadingForm() {
             onChange={(e) => setQuestion(e.target.value)}
             placeholder={t('reading.form.questionPlaceholder')}
             rows={2}
-          />
-        </InputWrapper>
-      </Label>
-      <Label as={'label'}>
-        <span>{t('reading.form.contextLabel')}</span>
-        <InputWrapper>
-          <Textarea
-            value={context}
-            onChange={(e) => setContext(e.target.value)}
-            placeholder={t('reading.form.contextPlaceholder')}
-            rows={4}
           />
         </InputWrapper>
       </Label>

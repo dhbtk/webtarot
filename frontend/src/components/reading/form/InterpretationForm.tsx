@@ -24,7 +24,6 @@ export default function InterpretationForm() {
   const queryClient = useQueryClient()
   const { t, i18n } = useTranslation()
   const [question, setQuestion] = useState('')
-  const [context, setContext] = useState('')
   const [cards, setCards] = useState<Card[]>([])
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -85,11 +84,12 @@ export default function InterpretationForm() {
     setError(null)
     setSubmitting(true)
     try {
+      const [trimmedQuestion, context] = question.trim().split('?', 2)
       const payload: CreateInterpretationRequest = {
-        question: question.trim(),
+        question: trimmedQuestion.trim() + '?',
         cards,
         context,
-        backend: 'gemini',
+        backend: 'chatGPT',
       }
       const res = await submitMutation.mutateAsync(payload)
       // reset
@@ -122,17 +122,6 @@ export default function InterpretationForm() {
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
             placeholder={t('reading.form.questionPlaceholder')}
-            rows={4}
-          />
-        </InputWrapper>
-      </Label>
-      <Label as={'label'}>
-        <span>{t('reading.form.contextLabel')}</span>
-        <InputWrapper>
-          <Textarea
-            value={context}
-            onChange={(e) => setContext(e.target.value)}
-            placeholder={t('reading.form.contextPlaceholder')}
             rows={4}
           />
         </InputWrapper>
