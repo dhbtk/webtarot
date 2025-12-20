@@ -1,4 +1,4 @@
-import { createFileRoute, MatchRoute, Outlet } from '@tanstack/react-router'
+import { createFileRoute, Outlet, useMatchRoute } from '@tanstack/react-router'
 import ReadingForm from '../components/reading/form/ReadingForm.tsx'
 import styled from 'styled-components'
 import useWindowDimensions from '../util/useWindowDimensions.ts'
@@ -47,21 +47,17 @@ const FormWrapper = styled.div`
 function RouteComponent() {
   const { width } = useWindowDimensions()
   const { t } = useTranslation()
+  const matchRoute = useMatchRoute()
+  const hideFormWrapper = matchRoute({ to: '/readings' }) || matchRoute({ to: '/readings/history' })
   const showFormWrapper = width > 768
   return (
     <Wrapper>
-      {showFormWrapper && (
-        <MatchRoute to="/readings">
-          {(match) =>
-            !match && (
-              <FormWrapper>
-                <h2>{t('reading.new.title')}</h2>
-                <ReadingForm />
-                <Footer minimal />
-              </FormWrapper>
-            )
-          }
-        </MatchRoute>
+      {showFormWrapper && !hideFormWrapper && (
+        <FormWrapper>
+          <h2>{t('reading.new.title')}</h2>
+          <ReadingForm />
+          <Footer minimal />
+        </FormWrapper>
       )}
       <Outlet />
     </Wrapper>

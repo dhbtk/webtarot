@@ -25,19 +25,26 @@ const ScrollableContainer = styled.div`
   }
 `
 
+const ItemGrid = styled.div`
+  display: grid-lanes;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+`
+
 function ReadingList(props: { readingList: Interpretation[] }) {
   const readings = props.readingList
+  const display = CSS.supports('display', 'grid-lanes') ? 'grid-lanes' : 'grid'
   return (
-    <div style={{ display: 'grid', gap: '1rem' }}>
+    <ItemGrid style={{ display }}>
       {readings.map((r, i) => (
         <ReadingListItem index={i} key={interpretationReading(r).id} interpretation={r} />
       ))}
-    </div>
+    </ItemGrid>
   )
 }
 
 function RouteComponent() {
-  const PAGE_SIZE = 5
+  const PAGE_SIZE = 10
 
   const query = useInfiniteQuery<Interpretation[], Error>({
     queryKey: ['history'],
@@ -61,9 +68,14 @@ function RouteComponent() {
       <InfiniteScroll
         scrollableTarget="history_scrollable_container"
         dataLength={allData.length}
-        next={() => !query.isFetching && query.fetchNextPage()}
+        next={async () => {
+          if (!query.isFetching) {
+            await query.fetchNextPage()
+          }
+        }}
         hasMore={query.hasNextPage}
         loader={<p>Loading...</p>}
+        hasChildren={!!allData.length}
         endMessage={<p style={{ textAlign: 'center', color: 'var(--text-muted)' }}>— End —</p>}
       >
         <ReadingList readingList={allData} />

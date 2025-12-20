@@ -79,6 +79,8 @@ const CardImageContainer = styled.div`
   align-items: center;
   overflow: hidden;
   gap: 0.5rem;
+  flex-wrap: wrap;
+  padding-left: 0.5rem;
 `
 
 const InterpretationWrapper = styled.div`
@@ -97,6 +99,7 @@ const AbbreviatedInterpretation = styled.pre`
   -webkit-line-clamp: 5;
   font-family: var(--font-sans-alt);
   white-space: pre-wrap;
+  margin: 0;
 `
 
 export const ReadingListItem: React.FC<{ interpretation: Interpretation; index: number }> = ({
@@ -115,7 +118,7 @@ export const ReadingListItem: React.FC<{ interpretation: Interpretation; index: 
       .then((result) => setStrippedInterpretation(String(result)))
   }, [interpretation, interpretationStr])
   return (
-    <Container style={{ animationDelay: `calc(${index % 5} * 0.5 * var(--anim-duration))` }}>
+    <Container style={{ animationDelay: `calc(${index % 10} * 0.25 * var(--anim-duration))` }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <ReadingDate>
           {t('reading.list.askedAt', { date: new Date(reading.createdAt).toLocaleString() })} &bull;{' '}
