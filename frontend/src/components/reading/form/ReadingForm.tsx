@@ -23,6 +23,7 @@ export default function ReadingForm() {
       saveReadings([...getSavedReadings(), data.interpretationId])
       addToHistory(data.interpretationId)
       await queryClient.invalidateQueries({ queryKey: ['readings'] })
+      await queryClient.invalidateQueries({ queryKey: ['history'] })
     },
   })
 
