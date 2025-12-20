@@ -17,6 +17,7 @@
     }
   },
   "history": {
+    "title": "Readings",
     "headers": {
       "question": "Question",
       "cards": "Cards",

@@ -49,7 +49,6 @@ function RouteComponent() {
   const query = useInfiniteQuery<Interpretation[], Error>({
     queryKey: ['history'],
     queryFn: async ({ pageParam }) => {
-      console.log('pageParam', pageParam)
       const before = typeof pageParam === 'string' ? pageParam : undefined
       return getHistory({ before, limit: PAGE_SIZE })
     },

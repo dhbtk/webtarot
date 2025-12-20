@@ -4,6 +4,7 @@ import styled from 'styled-components'
 import useWindowDimensions from '../util/useWindowDimensions.ts'
 import { useTranslation } from 'react-i18next'
 import { Footer } from '../components/layout/Footer.tsx'
+import HistorySidebar from '../components/reading/history/HistorySidebar.tsx'
 
 export const Route = createFileRoute('/readings')({
   component: RouteComponent,
@@ -27,7 +28,7 @@ const FormWrapper = styled.div`
   border-radius: 0.75rem;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 0.5rem;
   box-shadow: 0.5rem 0.5rem 0.75rem 0 rgba(0, 0, 0, 0.25);
   animation: slide-from-left var(--anim-duration) var(--anim-function) forwards;
   flex-shrink: 0;
@@ -40,6 +41,17 @@ const FormWrapper = styled.div`
   h2 {
     margin: 0;
     font-size: var(--fs-lg);
+    font-weight: 500;
+  }
+
+  hr {
+    width: calc(100% - 1rem);
+    margin: 0.5rem 0.5rem 0;
+  }
+
+  h3 {
+    margin: 0;
+    font-size: var(--fs-base);
     font-weight: 500;
   }
 `
@@ -56,6 +68,9 @@ function RouteComponent() {
         <FormWrapper>
           <h2>{t('reading.new.title')}</h2>
           <ReadingForm />
+          <hr />
+          <h3>{t('history.title')}</h3>
+          <HistorySidebar />
           <Footer minimal />
         </FormWrapper>
       )}

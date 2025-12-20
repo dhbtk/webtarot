@@ -17,6 +17,7 @@
     }
   },
   "history": {
+    "title": "Tiragens",
     "headers": {
       "question": "Pergunta",
       "cards": "Cartas",
