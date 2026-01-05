@@ -6,7 +6,7 @@ export const Section = styled.section`
   display: flex;
   flex-direction: column;
   background-color: rgba(82, 69, 150, 0.7);
-  padding: 1rem;
+  padding: 0;
   border-radius: 0.75rem;
   box-shadow: 0.5rem 0.5rem 0.75rem 0 rgba(0, 0, 0, 0.25);
   animation: slide-from-right var(--anim-duration) var(--anim-function) forwards;
@@ -16,7 +16,6 @@ export const Section = styled.section`
   }
 
   @media (max-width: 768px) {
-    padding: 0;
     border-radius: 0;
   }
 `

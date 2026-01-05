@@ -7,6 +7,7 @@ import { interpretationReading } from '../../backend/models.ts'
 import { ReadingListItem } from '../../components/reading/history/ReadingListItem.tsx'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import { queryClient } from '../../queryClient.tsx'
+import { CardSpinner } from '../../components/reading/CardSpinner.tsx'
 
 export const Route = createFileRoute('/readings/history')({
   component: RouteComponent,
@@ -73,9 +74,15 @@ function RouteComponent() {
           }
         }}
         hasMore={query.hasNextPage}
-        loader={<p>Loading...</p>}
+        loader={<CardSpinner />}
         hasChildren={!!allData.length}
-        endMessage={<p style={{ textAlign: 'center', color: 'var(--text-muted)' }}>— End —</p>}
+        endMessage={
+          <p
+            style={{ textAlign: 'center', color: 'var(--text-muted)', fontSize: 'var(--text-sm)' }}
+          >
+            ——
+          </p>
+        }
       >
         <ReadingList readingList={allData} />
       </InfiniteScroll>

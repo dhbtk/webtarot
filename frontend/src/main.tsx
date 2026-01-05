@@ -7,9 +7,9 @@ import * as Sentry from '@sentry/react'
 
 // Import the generated route tree
 import { routeTree } from './routeTree.gen'
-import { QueryClientProvider } from '@tanstack/react-query'
-import { queryClient } from './queryClient.tsx'
+import { asyncStoragePersister, buster, queryClient } from './queryClient.tsx'
 import { UserProvider } from './context/UserContext'
+import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client'
 
 const dsn = import.meta.env?.VITE_SENTRY_DSN as string | undefined
 if (dsn) {
@@ -28,11 +28,14 @@ const router = createRouter({ routeTree })
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <Sentry.ErrorBoundary fallback={<div>Something went wrong.</div>}>
-      <QueryClientProvider client={queryClient}>
+      <PersistQueryClientProvider
+        client={queryClient}
+        persistOptions={{ persister: asyncStoragePersister, buster }}
+      >
         <UserProvider>
           <RouterProvider router={router} />
         </UserProvider>
-      </QueryClientProvider>
+      </PersistQueryClientProvider>
     </Sentry.ErrorBoundary>
   </StrictMode>,
 )

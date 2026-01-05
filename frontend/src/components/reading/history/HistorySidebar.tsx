@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next'
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { getHistory } from '../../../backend/api.ts'
 import InfiniteScroll from 'react-infinite-scroll-component'
+import { CardSpinner } from '../CardSpinner.tsx'
 
 const SidebarList = styled.div`
   flex: 1;
@@ -118,8 +119,14 @@ export default function HistorySidebar() {
           }
         }}
         hasMore={query.hasNextPage}
-        loader={<p>Loading...</p>}
-        endMessage={<p style={{ textAlign: 'center', color: 'var(--text-muted)' }}>— End —</p>}
+        loader={<CardSpinner />}
+        endMessage={
+          <p
+            style={{ textAlign: 'center', color: 'var(--text-muted)', fontSize: 'var(--text-sm)' }}
+          >
+            ——
+          </p>
+        }
       >
         {allData.map((item, i) => (
           <HistoryListItem index={i} key={i} interpretation={item}></HistoryListItem>

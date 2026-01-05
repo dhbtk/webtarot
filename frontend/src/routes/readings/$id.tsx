@@ -243,7 +243,11 @@ const ReadingContainer = styled.div`
   height: 100%;
   overflow: auto;
   font-family: var(--font-sans-alt);
-  padding: 0.5rem;
+  padding: 1rem;
+
+  @media (max-width: 768px) {
+    padding: 0.5rem;
+  }
 `
 
 const CardBadgeContainer = styled.div`
