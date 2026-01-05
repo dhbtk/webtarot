@@ -10,6 +10,9 @@ import { routeTree } from './routeTree.gen'
 import { asyncStoragePersister, buster, queryClient } from './queryClient.tsx'
 import { UserProvider } from './context/UserContext'
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client'
+// @ts-expect-error blah
+import { registerSW } from 'virtual:pwa-register'
+import type { RegisterSWOptions } from 'vite-plugin-pwa/types'
 
 const dsn = import.meta.env?.VITE_SENTRY_DSN as string | undefined
 if (dsn) {
@@ -21,6 +24,30 @@ if (dsn) {
     enabled: true,
   })
 }
+
+const intervalMS = 60 * 60 * 1000
+
+registerSW({
+  immediate: true,
+  onRegisteredSW(swUrl, r) {
+    if (r)
+      setInterval(async () => {
+        if (r.installing || !navigator) return
+
+        if ('connection' in navigator && !navigator.onLine) return
+
+        const resp = await fetch(swUrl, {
+          cache: 'no-store',
+          headers: {
+            cache: 'no-store',
+            'cache-control': 'no-cache',
+          },
+        })
+
+        if (resp?.status === 200) await r.update()
+      }, intervalMS)
+  },
+} as RegisterSWOptions)
 
 // Create a new router instance
 const router = createRouter({ routeTree })

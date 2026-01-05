@@ -4,3 +4,4 @@ target/
 .env
 rules.md
 .DS_Store
+dev-dist/
