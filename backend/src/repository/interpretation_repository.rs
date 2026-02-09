@@ -179,19 +179,6 @@ impl InterpretationRepository {
         Ok(())
     }
 
-    pub async fn get_all_interpretations(&self) -> Vec<Interpretation> {
-        let mut conn = self.db_pool.get().await.unwrap();
-        crate::schema::readings::dsl::readings
-            .select(crate::model::Reading::as_select())
-            .filter(crate::schema::readings::dsl::deleted_at.is_null())
-            .load::<crate::model::Reading>(&mut conn)
-            .await
-            .unwrap()
-            .into_iter()
-            .map(Interpretation::from)
-            .collect()
-    }
-
     pub async fn get_interpretations_for_stats(
         &self,
         request: StatsRequest,
