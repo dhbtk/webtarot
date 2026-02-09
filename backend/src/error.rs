@@ -1,6 +1,7 @@
 use axum::Json;
 use axum::http::StatusCode;
 use axum::response::{IntoResponse, Response};
+use chrono::ParseError;
 use serde::{Deserialize, Serialize};
 use tracing::error;
 
@@ -79,5 +80,11 @@ impl From<RunError> for AppError {
 impl From<DieselError> for AppError {
     fn from(value: DieselError) -> Self {
         AppError::from_diesel_with_log("Failed to execute DB query", value)
+    }
+}
+
+impl From<ParseError> for AppError {
+    fn from(value: ParseError) -> Self {
+        AppError::ValidateError(value.to_string())
     }
 }

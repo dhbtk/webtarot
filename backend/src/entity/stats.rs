@@ -12,6 +12,23 @@ pub struct Stats {
     pub never_drawn: Vec<Arcana>,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+#[serde(rename_all = "camelCase")]
+pub struct StatsRequest {
+    pub draw_method: DrawMethod,
+    pub date_range_start: Option<String>,
+    pub date_range_end: Option<String>,
+}
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, Default, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
+pub enum DrawMethod {
+    #[default]
+    All,
+    User,
+    System,
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ArcanaStats {

@@ -3,6 +3,7 @@ import { useUser } from '../../context/useUser'
 import { useTranslation } from 'react-i18next'
 import { Link } from '@tanstack/react-router'
 import React from 'react'
+import { Select } from '../reading/form/form.tsx'
 
 const FooterWrapper = styled.footer`
   margin-top: auto;
@@ -53,31 +54,6 @@ const FooterWrapper = styled.footer`
   }
 `
 
-const LocaleSelect = styled.select`
-  font-family: var(--font-sans-alt);
-  font-size: var(--fs-xs);
-  background: rgb(var(--black-rgb) / 0.2);
-  border: 1px solid rgb(var(--accent-rgb) / 0.4);
-  border-radius: 6px;
-  box-shadow: 0 0 2px 2px transparent;
-  transition: box-shadow 0.25s ease-in-out;
-  color: rgb(var(--white-rgb) / 0.75);
-  padding: 0.12rem 0.25rem 0 0.5rem;
-
-  &:hover {
-    box-shadow: 0 0 2px 2px rgb(var(--accent-rgb) / 0.5);
-  }
-
-  &:focus {
-    outline: none;
-    box-shadow: 0 0 2px 2px rgb(var(--accent-rgb));
-  }
-
-  @media (max-width: 768px) {
-    font-size: var(--fs-xxs);
-  }
-`
-
 export const Footer: React.FC<{ minimal?: boolean }> = ({ minimal }) => {
   const { i18n, t } = useTranslation()
   const { user } = useUser()
@@ -104,7 +80,7 @@ export const Footer: React.FC<{ minimal?: boolean }> = ({ minimal }) => {
           </a>
         </span>
       </span>
-      <LocaleSelect
+      <Select
         aria-label={t('layout.footer.languageAriaLabel')}
         title={t('layout.footer.languageTitle')}
         value={i18n.language?.split('-')[0] ?? 'en'}
@@ -112,7 +88,7 @@ export const Footer: React.FC<{ minimal?: boolean }> = ({ minimal }) => {
       >
         <option value="en">English</option>
         <option value="pt">Português</option>
-      </LocaleSelect>
+      </Select>
     </FooterWrapper>
   )
 }

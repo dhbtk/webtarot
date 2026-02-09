@@ -14,6 +14,12 @@
     },
     "footer": {
       "totalReadings": "Tiragens: {{count}}"
+    },
+    "drawMethod": {
+      "label": "Método da tiragem",
+      "all": "Todas",
+      "user": "Usuário",
+      "system": "Sistema"
     }
   },
   "history": {

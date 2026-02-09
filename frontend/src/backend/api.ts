@@ -8,16 +8,17 @@
 // Models are defined in ./models.ts and mirror the Rust types.
 
 import type {
-  CreateReadingRequest,
-  CreateReadingResponse,
-  GetInterpretationResult,
-  Stats,
-  Interpretation,
   CreateInterpretationRequest,
   CreateInterpretationResponse,
+  CreateReadingRequest,
+  CreateReadingResponse,
   CreateUserRequest,
   CreateUserResponse,
+  GetInterpretationResult,
+  Interpretation,
   LogInRequest,
+  Stats,
+  StatsRequest,
   UpdateUserRequest,
   User,
 } from './models'
@@ -116,8 +117,10 @@ export async function getInterpretation(
  * Fetch aggregate statistics about readings and cards.
  * GET /api/v1/stats
  */
-export async function getStats(init?: RequestInit): Promise<Stats> {
-  const res = await fetch(`${API_BASE}/stats`, {
+export async function getStats(request: StatsRequest, init?: RequestInit): Promise<Stats> {
+  const searchParams = new URLSearchParams(request as unknown as Record<string, string>)
+
+  const res = await fetch(`${API_BASE}/stats?${searchParams.toString()}`, {
     method: 'GET',
     headers: { ...getDefaultHeaders(), ...(init?.headers ?? {}) },
     ...init,

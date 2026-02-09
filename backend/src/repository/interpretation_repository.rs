@@ -2,6 +2,7 @@ use crate::database::DbPool;
 use crate::entity::interpretation;
 use crate::entity::interpretation::Interpretation;
 use crate::entity::reading::Reading;
+use crate::entity::stats::{DrawMethod, StatsRequest};
 use crate::entity::user::User;
 use crate::error::AppResult;
 use crate::middleware::locale::Locale;
@@ -189,6 +190,36 @@ impl InterpretationRepository {
             .into_iter()
             .map(Interpretation::from)
             .collect()
+    }
+
+    pub async fn get_interpretations_for_stats(
+        &self,
+        request: StatsRequest,
+    ) -> AppResult<Vec<Interpretation>> {
+        let mut conn = self.db_pool.get().await?;
+        let mut query = crate::schema::readings::dsl::readings
+            .select(crate::model::Reading::as_select())
+            .filter(crate::schema::readings::dsl::deleted_at.is_null())
+            .into_boxed();
+        if request.draw_method == DrawMethod::System {
+            query = query.filter(crate::schema::readings::dsl::shuffled_times.gt(0));
+        } else if request.draw_method == DrawMethod::User {
+            query = query.filter(crate::schema::readings::dsl::shuffled_times.eq(0));
+        }
+        if let Some(date_range_start) = request.date_range_start {
+            query = query.filter(
+                crate::schema::readings::dsl::created_at
+                    .ge(date_range_start.parse::<chrono::NaiveDateTime>()?),
+            );
+        }
+        if let Some(date_range_end) = request.date_range_end {
+            query = query.filter(
+                crate::schema::readings::dsl::created_at
+                    .le(date_range_end.parse::<chrono::NaiveDateTime>()?),
+            );
+        }
+        let result = query.load::<crate::model::Reading>(&mut conn).await?;
+        Ok(result.into_iter().map(Interpretation::from).collect())
     }
 
     pub async fn get_history_for_user_paged(

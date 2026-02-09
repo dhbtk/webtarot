@@ -14,6 +14,12 @@
     },
     "footer": {
       "totalReadings": "Readings: {{count}}"
+    },
+    "drawMethod": {
+      "label": "Draw method",
+      "all": "All",
+      "user": "User",
+      "system": "System"
     }
   },
   "history": {

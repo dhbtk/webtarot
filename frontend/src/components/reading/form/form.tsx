@@ -177,3 +177,27 @@ export const PageWrapper = styled.div`
   gap: 1rem;
   flex: 1;
 `
+export const Select = styled.select`
+  font-family: var(--font-sans-alt);
+  font-size: var(--fs-xs);
+  background: rgb(var(--black-rgb) / 0.2);
+  border: 1px solid rgb(var(--accent-rgb) / 0.4);
+  border-radius: 6px;
+  box-shadow: 0 0 2px 2px transparent;
+  transition: box-shadow 0.25s ease-in-out;
+  color: rgb(var(--white-rgb) / 0.75);
+  padding: 0.12rem 0.25rem 0 0.5rem;
+
+  &:hover {
+    box-shadow: 0 0 2px 2px rgb(var(--accent-rgb) / 0.5);
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 2px 2px rgb(var(--accent-rgb));
+  }
+
+  @media (max-width: 768px) {
+    font-size: var(--fs-xxs);
+  }
+`

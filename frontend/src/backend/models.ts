@@ -148,6 +148,14 @@ export interface Stats {
   neverDrawn: Arcana[]
 }
 
+export type DrawMethod = 'all' | 'user' | 'system'
+
+export interface StatsRequest {
+  drawMethod: DrawMethod
+  dateRangeStart?: string
+  dateRangeEnd?: string
+}
+
 // Mirrors Rust enum Interpretation in backend/src/interpretation.rs
 // Serde externally-tagged enum with tuple variants serializes as:
 // - { "Pending": { ...Reading } }
